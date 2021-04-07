@@ -8,5 +8,6 @@ done
 cd ..
 git add .
 git commit -m "TOC"
-git push
+git push -u origin
+git push -u gitee
 #echo 'gaa && gcam "TOC" && gp'
