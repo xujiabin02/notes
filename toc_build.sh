@@ -5,4 +5,7 @@ do
 title=$(echo $i|awk -F"." '{print$1}')
 echo "###### [$title](./$i)" >> README.md
 done
+git add .
+git commit -m "TOC"
+git push
 echo 'gaa && gcam "TOC" && gp'
