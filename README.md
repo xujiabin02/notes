@@ -1,10 +1,7 @@
-[toc]
 ###### [Cgroups与Systemd](./Cgroups与Systemd.md)
 ###### [Go语言学习笔记](./Go语言学习笔记.md)
-
 ###### [JAVA_GC](./JAVA_GC.md)
 ###### [ansbile](./ansbile.md)
-
 ###### [clickhouse](./clickhouse.md)
 ###### [hbase](./hbase.md)
 ###### [linux清理message](./linux清理message.md)
