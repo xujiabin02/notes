@@ -12,6 +12,12 @@ https://www.jianshu.com/p/72b0c9bd3967
 select name,path,formatReadableSize(free_space) AS free,formatReadableSize(total_space) AS total,formatReadableSize(keep_free_space) AS reserved from system.disks;
 ```
 
+
+
+```sql
+SELECT policy_name, volume_name, disks FROM system.storage_policies
+```
+
 https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree/#table_engine-mergetree-multiple-volumes_configure
 
 
@@ -51,3 +57,8 @@ https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree
 4、[《交互式分析领域，为何ClickHouse能够杀出重围？》](https://mp.weixin.qq.com/s?__biz=MzI2NDU4OTExOQ==&mid=2247508197&idx=1&sn=b8924b10f61c22537568a42f326bfa04&scene=21#wechat_redirect)
 
 5、[对象存储COS文档中心](https://cloud.tencent.com/document/product/436?from=10680)
+
+
+
+
+

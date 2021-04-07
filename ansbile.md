@@ -1,0 +1,2 @@
+在ansible中foo_port是合法的变量名
+
