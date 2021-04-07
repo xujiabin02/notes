@@ -8,4 +8,4 @@ done
 git add .
 git commit -m "TOC"
 git push
-echo 'gaa && gcam "TOC" && gp'
+#echo 'gaa && gcam "TOC" && gp'
