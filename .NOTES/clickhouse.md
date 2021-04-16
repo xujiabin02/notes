@@ -1,10 +1,12 @@
-## 支撑700亿数据量的ClickHouse高可用架构实践
+# 支撑700亿数据量的ClickHouse高可用架构实践
 
 https://mp.weixin.qq.com/s?__biz=MzkwOTIxNDQ3OA==&mid=2247534096&idx=1&sn=4c33b99f37124ec29f9567755af66200&source=41#wechat_redirect
 
 
 
 # 多磁盘存储
+
+![image-20210415110724132](clickhouse.assets/image-20210415110724132.png)
 
 https://www.jianshu.com/p/72b0c9bd3967 
 
@@ -44,6 +46,42 @@ https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree
   
 
 ```
+
+
+
+# 6亿数据秒级查询，ClickHouse太快了！
+
+https://blog.csdn.net/g6U8W7p06dCO99fQ3/article/details/115274415
+
+
+
+# 监控
+
+通过clickhouse sql监控
+
+-  https://grafana.com/grafana/dashboards/2515
+
+prometheus  exporter 监控
+
+- https://grafana.com/grafana/dashboards/882
+
+- https://grafana.com/grafana/dashboards/14192
+
+
+
+# HDFS engine
+
+https://blog.csdn.net/u012551524/article/details/109188434
+
+参考: https://github.com/ClickHouse/ClickHouse/issues/8159
+
+```sh
+clickhouse hdfs engine('URI')  
+中的URI不识别大小写
+我们的growingFS被转成 growingfs, 经测试将hdfs-client.xml中的growingFS批量替换成小写growingfs 有效可用
+```
+
+
 
 # **参考文档**
 
