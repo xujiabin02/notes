@@ -48,7 +48,7 @@ HMaster在做定期清理的时候首先会检查zookeeper中/hbase/replication/
 
 可以从截图中看到，原来1.6T的oldWALs，被hmaster清理掉了：
 
-![img](hbase.assets/SouthEast-20210407091223831.jpeg)
+![img](img_hbase/SouthEast-20210407091223831.jpeg)
 
 ————————————————
 版权声明：本文为CSDN博主「小猫爱吃鱼^_^」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。

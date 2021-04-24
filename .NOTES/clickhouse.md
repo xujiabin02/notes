@@ -42,7 +42,56 @@ https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree
     - 不同存储间
     - 在线转离线数据
     - 降低存储成本
+Hive到Clickhosue的数据
 
+- 同步
+- 迁移
+
+
+
+缓存保护Clickhouse查询
+
+- 主动缓存
+- 被动缓存
+
+
+
+是否使用分布式:
+
+- zookeeper瓶颈大量日志问题
+
+- 集群同步压力
+- 分布式查询压力
+
+
+
+Clickhosue缩容扩容问题
+
+- 数据自动平衡问题
+
+  - https://tech.youzan.com/clickhouse-zai-you-zan-de-shi-jian-zhi-lu/
+
+  - ```
+    七、ClickHouse 在有赞的未来和展望
+    7.1 ClickHouse 的痛点
+    扩容/缩容后数据无法自动平衡，只能通过低效的数据重新导入的方式来进行人工平衡。
+    尽管我们开发了一套工具基于 clickhouse-copier 来帮助运维进行这个操作，从而加速整个过程，降低人工操作的错误率。但是被迁移的表在迁移过程中仍然需要停止写入的。
+    ```
+
+  - gio解决方案: 工具在本地导入临时表转成正式表
+
+- UAT环境=> 单节点？
+- 生产环境=> 分布式?
+
+
+
+多磁盘存储
+
+
+
+
+
+历史分区的清理
   
 
 ```
@@ -82,6 +131,10 @@ clickhouse hdfs engine('URI')
 ```
 
 
+
+```
+
+```
 
 # **参考文档**
 

@@ -87,3 +87,6 @@ roles/
     fooapp/               # ""
 ```
 
+ansible-vault
+
+https://github.com/tomoh1r/ansible-vault/wiki/sample
