@@ -36,9 +36,7 @@ HMaster在做定期清理的时候首先会检查zookeeper中/hbase/replication/
 
 (1) 进到zookeeper的节点下，删除相关节点，如截图所示
 
-
-
-![img](hbase.assets/SouthEast.jpeg)
+![img](img_hbase/SouthEast.jpeg)
 
 (2) 确保hbase-site.xml中的属性hbase.replication=false和属性hbase.backup.enable=false 如果是true就改成false，如果没有那两个属性则添加上去后重启整个hbase集群。
 
