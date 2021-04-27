@@ -2,7 +2,7 @@
 
 [centos7](https://www.bestyii.com/?tag=centos7) [运维](https://www.bestyii.com/?node=ops) · [best](https://www.bestyii.com/member/best/show) · 于 1年前 发布 · 817 次阅读
 
-[![img](linux%E6%B8%85%E7%90%86message.assets/50_qPE5ga-I-VDHxA1op8nhdnYqty26SVVP.jpg)](https://www.bestyii.com/member/best/show)
+https://www.bestyii.com/member/best/show
 
 
 

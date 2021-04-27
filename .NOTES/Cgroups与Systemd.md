@@ -15,7 +15,7 @@ Cgroups 是 linux 内核提供的一种机制，如果你还不了解 cgroups，
 
 在系统的开机阶段，systemd 会把支持的 controllers (subsystem 子系统)挂载到默认的 /sys/fs/cgroup/ 目录下面：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823130743557-1997390453.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823130743557-1997390453.png)
 
 除了 systemd 目录外，其它目录都是对应的 subsystem。
 /sys/fs/cgroup/systemd 目录是 systemd 维护的自己使用的非 subsystem 的 cgroups 层级结构。这玩意儿是 systemd 自己使用的，换句话说就是，并不允许其它的程序动这个目录下的内容。其实 /sys/fs/cgroup/systemd 目录对应的 cgroups 层级结构就是 systemd 用来使用 cgoups 中 feature A 的。
@@ -34,7 +34,7 @@ Cgroups 是 linux 内核提供的一种机制，如果你还不了解 cgroups，
 
 我们可以通过 systemd-cgls 命令来查看 cgroups 的层级结构：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131017742-1678068928.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131017742-1678068928.png)
 
 service、scope 和 slice unit 被直接映射到 cgroup 树中的对象。当这些 unit 被激活时，它们会直接一一映射到由 unit 名建立的 cgroup 路径中。例如，cron.service 属于 system.slice，会直接映射到 cgroup system.slice/cron.service/ 中。
 注意，所有的用户会话、虚拟机和容器进程会被自动放置在一个单独的 scope 单元中。
@@ -46,7 +46,7 @@ service、scope 和 slice unit 被直接映射到 cgroup 树中的对象。当�
 * **user.slice**：所有用户会话的默认位置
 * **machine.slice**：所有虚拟机和 Linux 容器的默认位置
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131113206-221768286.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131113206-221768286.png)
 
 ## 创建临时的 cgroup
 
@@ -57,15 +57,15 @@ service、scope 和 slice unit 被直接映射到 cgroup 树中的对象。当�
 $ sudo systemd-run --unit=toptest --slice=test top -b
 ```
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131159461-1892745094.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131159461-1892745094.png)
 
 然后查看一下 test.slice 的状态：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131228961-1237320192.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131228961-1237320192.png)
 
 创建了一个 test.slice/toptest.service cgroup 层级关系。再看看 toptest.service 的状态：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131304063-341445145.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131304063-341445145.png)
 
 top 命令被包装成一个 service 运行在后台了！
 
@@ -75,7 +75,7 @@ top 命令被包装成一个 service 运行在后台了！
 $ vim /proc/2850/cgroup           # 2850 为 top 进程的 PID
 ```
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131342379-1555108521.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131342379-1555108521.png)
 
 比如我们限制 toptest.service 的 CPUShares 为 600，可用内存的上限为 550M：
 
@@ -85,7 +85,7 @@ $ sudo systemctl set-property toptest.service CPUShares=600 MemoryLimit=500M
 
 再次检查 top 进程的 cgroup 信息：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131411569-937500515.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131411569-937500515.png)
 
 在 CPU 和 memory 子系统中都出现了 toptest.service 的名字。同时去查看 **/sys/fs/cgroup/memory/test.slice** 和 **/sys/fs/cgroup/cpu/test.slice** 目录，这两个目录下都多出了一个 toptest.service 目录。我们设置的 CPUShares=600 MemoryLimit=500M 被分别写入了这些目录下的对应文件中。
 
@@ -99,7 +99,7 @@ $ sudo systemctl set-property toptest.service CPUShares=600 MemoryLimit=500M
 $ sudo vim  /lib/systemd/system/cron.service
 ```
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131520767-1889089953.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131520767-1889089953.png)
 
 添加红框中的行，然后重新加载配置文件并重启 cron.service：
 
@@ -124,7 +124,7 @@ $ sudo systemctl set-property cron.service CPUShares=700
 
 类似于 top 命令，systemd-cgtop 命令显示 cgoups 的实时资源消耗情况：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/952033-20180823131633738-438950908.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/952033-20180823131633738-438950908.png)
 
 通过它我们就可以分析应用使用资源的情况。
 
@@ -356,7 +356,7 @@ stress: FAIL: [30150] (451) failed run completed in 0s
 
 现在可以看到 stress 进程很快被 kill 掉了，回到第一个 shell 窗口，会输出以下信息：
 
-![img](Cgroups%E4%B8%8ESystemd.assets/20200723163244.png)
+![img](.img_Cgroups%E4%B8%8ESystemd/20200723163244.png)
 
 由此可见 cgroup 对内存的限制奏效了，stress 进程的内存使用量超出了限制，触发了 oom-killer，进而杀死进程。
 
@@ -383,3 +383,4 @@ $ ll
  4 -r--r--r-- 1 root root  1267 6月  14 02:29 net_cls.txt
  4 -r--r--r-- 1 root root  2513 6月  14 02:29 net_prio.txt
 ```
+
