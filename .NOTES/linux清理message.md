@@ -27,8 +27,9 @@ lsattr /var/log/messages
 
 确实存在那就去掉他，
 
-```
-sudo  chattr  -a  /var/log/messages
+```sh
+sudo chattr -a  /var/log/messages
+sudo chattr -i /var/log/messages
 ```
 
 继续执行清理日志命令，顺利完成。

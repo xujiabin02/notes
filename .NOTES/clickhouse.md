@@ -24,14 +24,16 @@ https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree
 
 
 
+# 概述
+
+# 20万亿\1秒\Yandex\SIMD
+
 
 
 ```yml
 多层存储:
   c: 多数据盘,区分存储类型
-  a:
-    - 根据类型将热数据和冷数据分开
-    - 多盘提升IOPS
+  a: [根据类型将热数据和冷数据分开, 多盘提升IOPS]
 冷热\数据移动\move factor:
   c: 设置阈值移动热数据到冷存储，配置文件里的卷顺序很重要，数据会优先写入第一个卷
   a:
@@ -42,40 +44,27 @@ https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/mergetree
     - 不同存储间
     - 在线转离线数据
     - 降低存储成本
-Hive到Clickhosue的数据
+下钻:
+ c: 从高层次到低层次的明细数据
+ a: 比如从省下钻到市
+上卷:
+ c: 从低层次向高层次汇聚 
+ a: 例如从市汇聚到省
+切片:
+ c: 观察数据立方体的一层
+ a: 将一个设为固定，观察表现的数据
+切块:
+ c: 与切片类似,区别在于多层固定
+ a: 将单个固定值变成多个值固定，观察数据表现
+旋转: 
+ c: 旋转立方体的一个面
+ a: 等同于行列转换(置换)
+OLAP:
+ c: 多维分析
+ a: ClickHouse
 
-- 同步
-- 迁移
-
-
-
-缓存保护Clickhouse查询
-
-- 主动缓存
-- 被动缓存
-
-
-
-是否使用分布式:
-
-- zookeeper瓶颈大量日志问题
-
-- 集群同步压力
-- 分布式查询压力
-
-
-
-Clickhosue缩容扩容问题
-
-- 数据自动平衡问题
-
-  - https://tech.youzan.com/clickhouse-zai-you-zan-de-shi-jian-zhi-lu/
-
-  - ```
-    七、ClickHouse 在有赞的未来和展望
-    7.1 ClickHouse 的痛点
-    扩容/缩容后数据无法自动平衡，只能通过低效的数据重新导入的方式来进行人工平衡。
-    尽管我们开发了一套工具基于 clickhouse-copier 来帮助运维进行这个操作，从而加速整个过程，降低人工操作的错误率。但是被迁移的表在迁移过程中仍然需要停止写入的。
+ 
+ 
 ```
 
   - gio解决方案: 工具在本地导入临时表转成正式表
@@ -130,11 +119,61 @@ clickhouse hdfs engine('URI')
 我们的growingFS被转成 growingfs, 经测试将hdfs-client.xml中的growingFS批量替换成小写growingfs 有效可用
 ```
 
+Hive到Clickhosue的数据
 
+- 同步
+- 迁移
+
+
+
+缓存保护Clickhouse查询
+
+- 主动缓存
+- 被动缓存
+
+
+
+是否使用分布式:
+
+- zookeeper瓶颈大量日志问题
+
+- 集群同步压力
+- 分布式查询压力
+
+
+
+Clickhosue缩容扩容问题
+
+- 数据自动平衡问题
+
+  - https://tech.youzan.com/clickhouse-zai-you-zan-de-shi-jian-zhi-lu/
+
+  - ```
+    七、ClickHouse 在有赞的未来和展望
+    7.1 ClickHouse 的痛点
+    扩容/缩容后数据无法自动平衡，只能通过低效的数据重新导入的方式来进行人工平衡。
+    尽管我们开发了一套工具基于 clickhouse-copier 来帮助运维进行这个操作，从而加速整个过程，降低人工操作的错误率。但是被迁移的表在迁移过程中仍然需要停止写入的。
+
+# 实践、场景
+
+ClickHouse在Bilibili用户行为分析的实践
+https://mp.weixin.qq.com/s/zQzZfZaTkr1ILBJjEqrgfw
+
+
+
+# 《原理解析与实践》
+
+http://reader.obook.vip/books/mobile/ec/ecf2de9deb2c5374ceeec8b12d5c1d8c/text00045.html
 
 ```
 
 ```
+
+
+
+# ---
+
+
 
 # **参考文档**
 

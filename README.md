@@ -12,6 +12,7 @@
 ###### [linux清理message](.NOTES/linux清理message.md)
 ###### [nextcloud](.NOTES/nextcloud.md)
 ###### [pyhon3](.NOTES/pyhon3.x:第三方库简介.md)
+###### [包管理vendor_mod](.NOTES/包管理vendor_mod.md)
 ###### [深度睡眠](.NOTES/深度睡眠.md)
 ###### [代码大全2学习](.NOTES/代码大全2学习.md)
 ###### [分布式配置管理](.NOTES/分布式配置管理.md)
