@@ -1,0 +1,2 @@
+slot \ taskmanager \ jobmanager
+

@@ -7,7 +7,7 @@ echo "###### [$title](.NOTES/$i)" >> ../README.md
 done
 cd ..
 git add .
-git commit -m "TOC"
+git commit -m "$*"
 git push -u origin
 git push -u gitee
 #echo 'gaa && gcam "TOC" && gp'
