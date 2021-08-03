@@ -297,9 +297,9 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 | Mustaceh                                                     |                                            |                     |
 | 应用 & 组件实例https://www.vue3js.cn/docs/zh/guide/instance.html | https://codepen.io/team/Vue/pen/KKpRVpx    | 2021-07-15 09:48:43 |
 | ![实例的生命周期](.img_vue_ts/lifecycle.png)                 |                                            |                     |
-| 模板语法https://www.vue3js.cn/docs/zh/guide/template-syntax.html#%E6%8F%92%E5%80%BC |                                            |                     |
-| data property https://www.vue3js.cn/docs/zh/guide/data-methods.html#data-property |                                            |                     |
-| 方法 https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95 |                                            |                     |
+| [模板语法](https://www.vue3js.cn/docs/zh/guide/template-syntax.html#%E6%8F%92%E5%80%BC) |                                            |                     |
+| [data property](https://www.vue3js.cn/docs/zh/guide/data-methods.html#data-property) |                                            |                     |
+| [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                            |                     |
 | [生命周期勾子](https://www.vue3js.cn/docs/zh/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90) => [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                            |                     |
 | [防抖和节流](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81) |                                            |                     |
 | [计算属性和侦听器](https://www.vue3js.cn/docs/zh/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7) | [笔记](.detail_vue_ts/计算属性与侦听器.md) |                     |
