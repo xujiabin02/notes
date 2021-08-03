@@ -87,6 +87,115 @@ roles/
     fooapp/               # ""
 ```
 
-ansible-vault
+# ansible-vault
 
 https://github.com/tomoh1r/ansible-vault/wiki/sample
+
+https://github.com/jhaals/ansible-vault
+
+
+
+# 常用builtin
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html
+
+
+
+# KMS
+
+https://growingio.feishu.cn/docs/doccnpgUZAhEVAePkmRvSXJcaWc#
+
+
+
+# ansible连接客户端selinux问题
+
+文章来自 本末丶 's Blog // 道路千万条。。。
+
+* [Home](http://blog.leanote.com/benmo)
+*  
+
+* [About Me](http://blog.leanote.com/single/benmo/About-Me)
+*  
+
+* [Tags](http://blog.leanote.com/tags/benmo)
+*  
+
+* [Archives](http://blog.leanote.com/archives/benmo)
+
+我们在新增服务器后通常会执行以下操作来手动关闭客户端的selinux
+
+```
+sed -i 's/=enforcing/=disabled/' /etc/selinux/configsetenforce 0
+```
+
+在我们不重启客户端的情况下，服务器的selinux处于'Permissive'状态，不影响我们我实际操作。
+
+ 
+
+此时我们用ansible测试到客户机的连通性
+
+```
+# ansible node04 -m ping -u root -kSSH password: node04 | SUCCESS => {    "changed": false,    "ping": "pong"}
+```
+
+看似一切正常，但我们使用部分模块操作时，却发现selinux检查并不通过：
+
+```
+ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 | FAILED! => {    "changed": false,    "checksum": "a3bf6211a787d7a51122a2ff406ddd72b67c6701",    "msg": "Aborting, target uses selinux but python bindings (libselinux-python) aren't installed!"}
+```
+
+ 
+
+在不重启客户端的情况下，我们需要按照提示安装'libselinux-python'才能操作客户端，但是，此时不能通过yum/shell模块去操作，因为yum/shell模块依赖python,会得到如上一样的报错反馈，所以此时，我们使用不依赖python的raw去安装。
+
+```
+# ansible node04 -m raw -a 'yum -y install libselinux-python' -k -onode04 | CHANGED | rc=0 | (stdout) 已加载插件：fastestmirror\r\nLoading mirror speeds from cached hostfile\r\n * base: mirrors.aliyun.com\r\n * epel: mirrors.tongji.edu.cn\r\n * extras: mirrors.163.com\r\n * updates: mirrors.sohu.com\r\n正在解决依赖关系\r\n--> 正在检查事务\r\n---> 软件包 libselinux-python.x86_64.0.2.5-12.el7 将被 安装\r\n--> 解决依赖关系完成\r\n\r\n依赖关系解决\r\n\r\n================================================================================\r\n Package                   架构           版本               源            大小\r\n================================================================================\r\n正在安装:\r\n libselinux-python         x86_64         2.5-12.el7         base         235 k\r\n\r\n事务概要\r\n================================================================================\r\n安装  1 软件包\r\n\r\n总下载量：235 k\r\n安装大小：589 k\r\nDownloading packages:\r\n\rlibselinux-python-2.5-12.el7.x86_64.rpm                    | 235 kB   00:00     \r\nRunning transaction check\r\nRunning transaction test\r\nTransaction test succeeded\r\nRunning transaction\r\n\r  正在安装    : libselinux-python-2.5-12.el7 [                            ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [##                          ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [#####                       ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########                    ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [###########                 ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [#############               ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [################            ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [###################         ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [######################      ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########################    ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########################### ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7.x86_64                         1/1 \r\n\r  验证中      : libselinux-python-2.5-12.el7.x86_64                         1/1 \r\n\r\n已安装:\r\n  libselinux-python.x86_64 0:2.5-12.el7
+```
+
+ 
+
+之后，我们再次执行之前的copy操作，可以正常进行，且可以看到它多设置了一个secontext的上下文
+
+```
+# ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 | SUCCESS => {    "changed": true,    "checksum": "57bbe08bca53bc6cb8c3ad4855730a64f158068e",    "dest": "/tmp/app-info.log",    "gid": 0,    "group": "root",    "md5sum": "9e04f215d41cf64fbf4280643c8e6f50",    "mode": "0644",    "owner": "root",    "secontext": "unconfined_u:object_r:user_home_t:s0",    "size": 23070,    "src": "/home/pengjk/.ansible/tmp/ansible-tmp-1529043022.9829628-60924778876197/source",    "state": "file",    "uid": 0}
+```
+
+ 
+
+另外，还有一种情况是，我们的客户机无法上网，也没有内部yum源，在运行的服务器也不能随便重启，此时我们只能通过修改源码来解决。
+
+1).首先我们进入到ansible源码目录，通过报错提示关键字'libselinux-python',找出源代码文件'module_utils/basic.py'
+
+```sh
+### 我是linux Minit，CentOS7在/usr/lib/python2.7/site-packages/ansible下# cd /usr/local/lib/python3.5/dist-packages/ansible# grep '(libselinux-python)' -RBinary file module_utils/__pycache__/basic.cpython-35.pyc matchesmodule_utils/basic.py:                    self.fail_json(msg="Aborting, target uses selinux but python bindings (libselinux-python) aren't installed!")
+```
+
+ 
+
+2).vim打开'module_utils/basic.py'，搜索'libselinux-python'关键字，在1007行左右
+
+```sh
+1001     def selinux_enabled(self):1002         if not HAVE_SELINUX:1003             seenabled = self.get_bin_path('selinuxenabled')1004             if seenabled is not None:1005                 (rc, out, err) = self.run_command(seenabled)1006                 if rc == 0:1007                     self.fail_json(msg="Aborting, target uses selinux but python bindings (libselinux-python) aren't installed!")1008             return False1009         if selinux.is_selinux_enabled() == 1:1010             return True1011         else:1012             return False
+```
+
+ 
+
+我们可以看到，之所以手动关闭不生效是因为，ansible使用'selinuxenabled'命令的返回值来判断selinux是否开启，为了满足我们的需求，我们需要修改如下。
+
+```sh
+### 即：当getenforce 0的结果为'Disabled','Permissive'的任意一个，都认为selinux已经关闭### 注意: 更新或者重新安装后，修改的配置会被还原！1001     def selinux_enabled(self):1002         if not HAVE_SELINUX:1003             #seenabled = self.get_bin_path('selinuxenabled')1004             seenabled = self.get_bin_path('getenforce')1005             if seenabled is not None:1006                 (rc, out, err) = self.run_command(seenabled)1007                 #if rc == 0:1008                 if out not in ['Disabled','Permissive']:1009                     self.fail_json(msg="Aborting, target uses selinux but python bindings (libselinux-python) aren't installed!")1010             return False1011         if selinux.is_selinux_enabled() == 1:1012             return True1013         else:1014             return False
+```
+
+ 
+
+3).我们再次执行copy操作，可以正常进行，且发现没有'secontext'的上下文描述
+
+```sh
+# ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 | SUCCESS => {    "changed": true,    "checksum": "7d5a15ba26b69709981698de261e06592bb283d5",    "dest": "/tmp/app-info.log",    "gid": 0,    "group": "root",    "md5sum": "ba709129a47ddfc61cc8ff2373846e31",    "mode": "0644",    "owner": "root",    "size": 103806,    "src": "/home/pengjk/.ansible/tmp/ansible-tmp-1529045191.0324137-179005958155180/source",    "state": "file",    "uid": 0}
+```
+
+# [并行和异步](http://www.ansible.com.cn/docs/playbooks_async.html)
+
+
+
+# ---

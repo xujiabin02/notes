@@ -171,6 +171,12 @@ http://reader.obook.vip/books/mobile/ec/ecf2de9deb2c5374ceeec8b12d5c1d8c/text000
 
 
 
+## ClickHouse之DBA运维宝典
+
+https://mp.weixin.qq.com/s/ENdKSSmnIzVP2Ve7wb6wlQ
+
+
+
 # ---
 
 
