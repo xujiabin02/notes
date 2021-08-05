@@ -198,4 +198,17 @@ ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 |
 
 
 
+[gosshtool](https://github.com/kggg/gosshtool)
+
+
+
+# 速度
+
+```ini
+[defaults]
+callback_whitelist = profile_tasks
+```
+
+
+
 # ---

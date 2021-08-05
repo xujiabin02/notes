@@ -4,6 +4,8 @@ https://mp.weixin.qq.com/s?__biz=MzkwOTIxNDQ3OA==&mid=2247534096&idx=1&sn=4c33b9
 
 
 
+![image-20210805172926755](.img_clickhouse/image-20210805172926755.png)
+
 # 多磁盘存储
 
 ![image-20210415110724132](.img_clickhouse/image-20210415110724132.png)

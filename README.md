@@ -3,6 +3,7 @@
 ###### [JAVA_GC](.NOTES/JAVA_GC.md)
 ###### [Sentinel](.NOTES/Sentinel.md)
 ###### [airflow](.NOTES/airflow.md)
+###### [alfred](.NOTES/alfred.md)
 ###### [ansible](.NOTES/ansible.md)
 ###### [clickhouse](.NOTES/clickhouse.md)
 ###### [devops](.NOTES/devops.md)
