@@ -270,7 +270,11 @@ app.mount('#app')
 
 #    vue3 动画特效教程 [技术胖](https://jspang.com/detailed?id=71#toc21)
 
-技术胖 https://jspang.com/detailed?id=68  23集
+技术胖 https://jspang.com/detailed?id=68  
+
+[技术胖vue3+ts](https://jspang.com/detailed?id=64) 23集
+
+[typescript](https://jspang.com/detailed?id=63)
 
 官方 https://www.vue3js.cn/docs/zh/guide/introduction.html#%E5%A3%B0%E6%98%8E%E5%BC%8F%E6%B8%B2%E6%9F%93   45小节
 
@@ -305,10 +309,13 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 | [生命周期勾子](https://www.vue3js.cn/docs/zh/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90) => [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                            |                     |
 | [防抖和节流](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81) |                                            |                     |
 | [计算属性和侦听器](https://www.vue3js.cn/docs/zh/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7) | [笔记](.detail_vue_ts/计算属性与侦听器.md) |                     |
+| [绑定HTML Class](https://www.vue3js.cn/docs/zh/guide/class-and-style.html#%E7%BB%91%E5%AE%9A-html-class) |                                            |                     |
+| [条件渲染](https://www.vue3js.cn/docs/zh/guide/conditional.html#v-if) |                                            |                     |
+| [列表渲染](https://www.vue3js.cn/docs/zh/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E5%AF%B9%E5%BA%94%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0) |                                            |                     |
 
 
 
-# 书签尾部
+#  书签尾部
 
 
 
