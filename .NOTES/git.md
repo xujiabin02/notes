@@ -29,3 +29,151 @@ tasks:
       msg: "{{ artifacts.files }}"
 ```
 
+
+
+# Git 工具 - 搜索
+
+## 搜索
+
+无论仓库里的代码量有多少，你经常需要查找一个函数是在哪里调用或者定义的，或者显示一个方法的变更历史。 Git 提供了两个有用的工具来快速地从它的数据库中浏览代码和提交。 我们来简单的看一下。
+
+### Git Grep
+
+Git 提供了一个 `grep` 命令，你可以很方便地从提交历史、工作目录、甚至索引中查找一个字符串或者正则表达式。 我们用 Git 本身源代码的查找作为例子。
+
+默认情况下 `git grep` 会查找你工作目录的文件。 第一种变体是，你可以传递 `-n` 或 `--line-number` 选项数来输出 Git 找到的匹配行的行号。
+
+```console
+$ git grep -n gmtime_r
+compat/gmtime.c:3:#undef gmtime_r
+compat/gmtime.c:8:      return git_gmtime_r(timep, &result);
+compat/gmtime.c:11:struct tm *git_gmtime_r(const time_t *timep, struct tm *result)
+compat/gmtime.c:16:     ret = gmtime_r(timep, result);
+compat/mingw.c:826:struct tm *gmtime_r(const time_t *timep, struct tm *result)
+compat/mingw.h:206:struct tm *gmtime_r(const time_t *timep, struct tm *result);
+date.c:482:             if (gmtime_r(&now, &now_tm))
+date.c:545:             if (gmtime_r(&time, tm)) {
+date.c:758:             /* gmtime_r() in match_digit() may have clobbered it */
+git-compat-util.h:1138:struct tm *git_gmtime_r(const time_t *, struct tm *);
+git-compat-util.h:1140:#define gmtime_r git_gmtime_r
+```
+
+除了上面的基本搜索命令外，`git grep` 还支持大量其它有趣的选项。
+
+例如，若不想打印所有匹配的项，你可以使用 `-c` 或 `--count` 选项来让 `git grep` 输出概述的信息， 其中仅包括那些包含匹配字符串的文件，以及每个文件中包含了多少个匹配。
+
+```console
+$ git grep --count gmtime_r
+compat/gmtime.c:4
+compat/mingw.c:1
+compat/mingw.h:1
+date.c:3
+git-compat-util.h:2
+```
+
+如果你还关心搜索字符串的 **上下文**，那么可以传入 `-p` 或 `--show-function` 选项来显示每一个匹配的字符串所在的方法或函数：
+
+```console
+$ git grep -p gmtime_r *.c
+date.c=static int match_multi_number(timestamp_t num, char c, const char *date,
+date.c:         if (gmtime_r(&now, &now_tm))
+date.c=static int match_digit(const char *date, struct tm *tm, int *offset, int *tm_gmt)
+date.c:         if (gmtime_r(&time, tm)) {
+date.c=int parse_date_basic(const char *date, timestamp_t *timestamp, int *offset)
+date.c:         /* gmtime_r() in match_digit() may have clobbered it */
+```
+
+如你所见，date.c 文件中的 `match_multi_number` 和 `match_digit` 两个函数都调用了 `gmtime_r` 例程 （第三个显示的匹配只是注释中的字符串）。
+
+你还可以使用 `--and` 标志来查看复杂的字符串组合，它确保了多个匹配出现在同一文本行中。 比如，我们要查看在旧版本 1.8.0 的 Git 代码库中定义了常量名包含 “LINK” 或者 “BUF_MAX” 这两个字符串的行 （这里也用到了 `--break` 和 `--heading` 选项来使输出更加容易阅读）。
+
+```console
+$ git grep --break --heading \
+    -n -e '#define' --and \( -e LINK -e BUF_MAX \) v1.8.0
+v1.8.0:builtin/index-pack.c
+62:#define FLAG_LINK (1u<<20)
+
+v1.8.0:cache.h
+73:#define S_IFGITLINK  0160000
+74:#define S_ISGITLINK(m)       (((m) & S_IFMT) == S_IFGITLINK)
+
+v1.8.0:environment.c
+54:#define OBJECT_CREATION_MODE OBJECT_CREATION_USES_HARDLINKS
+
+v1.8.0:strbuf.c
+326:#define STRBUF_MAXLINK (2*PATH_MAX)
+
+v1.8.0:symlinks.c
+53:#define FL_SYMLINK  (1 << 2)
+
+v1.8.0:zlib.c
+30:/* #define ZLIB_BUF_MAX ((uInt)-1) */
+31:#define ZLIB_BUF_MAX ((uInt) 1024 * 1024 * 1024) /* 1GB */
+```
+
+相比于一些常用的搜索命令比如 `grep` 和 `ack`，`git grep` 命令有一些的优点。 第一就是速度非常快，第二是你不仅仅可以可以搜索工作目录，还可以搜索任意的 Git 树。 在上一个例子中，我们在一个旧版本的 Git 源代码中查找，而不是当前检出的版本。
+
+### Git 日志搜索
+
+或许你不想知道某一项在 **哪里** ，而是想知道是什么 **时候** 存在或者引入的。 `git log` 命令有许多强大的工具可以通过提交信息甚至是 diff 的内容来找到某个特定的提交。
+
+例如，如果我们想找到 `ZLIB_BUF_MAX` 常量是什么时候引入的，我们可以使用 `-S` 选项 （在 Git 中俗称“鹤嘴锄（pickaxe）”选项）来显示新增和删除该字符串的提交。
+
+```console
+$ git log -S ZLIB_BUF_MAX --oneline
+e01503b zlib: allow feeding more than 4GB in one go
+ef49a7a zlib: zlib can only process 4GB at a time
+```
+
+如果我们查看这些提交的 diff，我们可以看到在 `ef49a7a` 这个提交引入了常量，并且在 `e01503b` 这个提交中被修改了。
+
+如果你希望得到更精确的结果，你可以使用 `-G` 选项来使用正则表达式搜索。
+
+#### 行日志搜索
+
+行日志搜索是另一个相当高级并且有用的日志搜索功能。 在 `git log` 后加上 `-L` 选项即可调用，它可以展示代码中一行或者一个函数的历史。
+
+例如，假设我们想查看 `zlib.c` 文件中`git_deflate_bound` 函数的每一次变更， 我们可以执行 `git log -L :git_deflate_bound:zlib.c`。 Git 会尝试找出这个函数的范围，然后查找历史记录，并且显示从函数创建之后一系列变更对应的补丁。
+
+```console
+$ git log -L :git_deflate_bound:zlib.c
+commit ef49a7a0126d64359c974b4b3b71d7ad42ee3bca
+Author: Junio C Hamano <gitster@pobox.com>
+Date:   Fri Jun 10 11:52:15 2011 -0700
+
+    zlib: zlib can only process 4GB at a time
+
+diff --git a/zlib.c b/zlib.c
+--- a/zlib.c
++++ b/zlib.c
+@@ -85,5 +130,5 @@
+-unsigned long git_deflate_bound(z_streamp strm, unsigned long size)
++unsigned long git_deflate_bound(git_zstream *strm, unsigned long size)
+ {
+-       return deflateBound(strm, size);
++       return deflateBound(&strm->z, size);
+ }
+
+
+commit 225a6f1068f71723a910e8565db4e252b3ca21fa
+Author: Junio C Hamano <gitster@pobox.com>
+Date:   Fri Jun 10 11:18:17 2011 -0700
+
+    zlib: wrap deflateBound() too
+
+diff --git a/zlib.c b/zlib.c
+--- a/zlib.c
++++ b/zlib.c
+@@ -81,0 +85,5 @@
++unsigned long git_deflate_bound(z_streamp strm, unsigned long size)
++{
++       return deflateBound(strm, size);
++}
++
+```
+
+如果 Git 无法计算出如何匹配你代码中的函数或者方法，你可以提供一个正则表达式。 例如，这个命令和上面的是等同的：`git log -L '/unsigned long git_deflate_bound/',/^}/:zlib.c`。 你也可以提供单行或者一个范围的行号来获得相同的输出。	
+
+
+
+[PS](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E6%90%9C%E7%B4%A2)
