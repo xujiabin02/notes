@@ -274,9 +274,11 @@ app.mount('#app')
 
 [技术胖vue3+ts](https://jspang.com/detailed?id=64) 23集
 
-[typescript](https://jspang.com/detailed?id=63)
+[技术胖typescript](https://jspang.com/detailed?id=63)
 
-官方 https://www.vue3js.cn/docs/zh/guide/introduction.html#%E5%A3%B0%E6%98%8E%E5%BC%8F%E6%B8%B2%E6%9F%93   45小节
+[offically docs typescript](https://typescript.bootcss.com/)
+
+官方 https://www.vue3js.cn/docs/zh/guide/introduction.html#%E5%A3%B0%E6%98%8E%E5%BC%8F%E6%B8%B2%E6%9F%93   45小节 (或者本地起docs源码,看英文版)
 
 https://v3.cn.vuejs.org/guide/introduction.html#vue-js-%E6%98%AF%E4%BB%80%E4%B9%88
 
@@ -299,8 +301,8 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 
 | 学习进度                                                     |                                            |                     |
 | ------------------------------------------------------------ | ------------------------------------------ | ------------------- |
-| Dom                                                          |                                            |                     |
-| Mustaceh                                                     |                                            |                     |
+| Dom                                                          | [short_hands](.detail_vue_ts/short_hands)  |                     |
+| Musta                                                        |                                            |                     |
 | 应用 & 组件实例https://www.vue3js.cn/docs/zh/guide/instance.html | https://codepen.io/team/Vue/pen/KKpRVpx    | 2021-07-15 09:48:43 |
 | ![实例的生命周期](.img_vue_ts/lifecycle.png)                 |                                            |                     |
 | [模板语法](https://www.vue3js.cn/docs/zh/guide/template-syntax.html#%E6%8F%92%E5%80%BC) |                                            |                     |
@@ -312,6 +314,12 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 | [绑定HTML Class](https://www.vue3js.cn/docs/zh/guide/class-and-style.html#%E7%BB%91%E5%AE%9A-html-class) |                                            |                     |
 | [条件渲染](https://www.vue3js.cn/docs/zh/guide/conditional.html#v-if) |                                            |                     |
 | [列表渲染](https://www.vue3js.cn/docs/zh/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E5%AF%B9%E5%BA%94%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0) | [笔记](.detail_vue_ts/列表渲染.md)         |                     |
+| [Event_Handle](http://localhost:8080/guide/events.html#listening-to-events) | [笔记](.detail_vue_ts/event_handing)       |                     |
+| [form_Input_binding](http://localhost:8080/guide/forms.html#basic-usage) |                                            |                     |
+| [Components](http://localhost:8080/guide/component-basics.html#base-example) | [笔记](.detail_vue_ts/components)          |                     |
+| [typescript](https://www.typescriptlang.org/docs/handbook/2/generics.html) |                                            |                     |
+| [变量声明](https://typescript.bootcss.com/variable-declarations.html) | [变量](.detail_vue_ts/变量)                |                     |
+|                                                              |                                            |                     |
 
 
 

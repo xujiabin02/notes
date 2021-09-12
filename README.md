@@ -17,7 +17,7 @@
 ###### [linux清理message](.NOTES/linux清理message.md)
 ###### [nextcloud](.NOTES/nextcloud.md)
 ###### [pex](.NOTES/pex.md)
-###### [pyhon3](.NOTES/pyhon3.x:第三方库简介.md)
+###### [python学习](.NOTES/python学习.md)
 ###### [regex](.NOTES/regex.md)
 ###### [tornado](.NOTES/tornado.md)
 ###### [vue_ts](.NOTES/vue_ts.md)
