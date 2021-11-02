@@ -6,6 +6,14 @@
 
 
 
+# v-model
+
+```vue
+<input v-model="searchText"
+```
+
+
+
 
 
 ```html

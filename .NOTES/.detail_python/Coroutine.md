@@ -35,6 +35,8 @@ print(f'Time: {now() - start}')
 
 # <3.6加协程
 
+## 写法一
+
 ```python
 import time
 import asyncio
@@ -65,6 +67,20 @@ loop.run_until_complete(asyncio.wait(tasks))
 print(f'Time: {now() - start}')
 
 ```
+
+
+
+
+
+## 写法二
+
+> ```python
+> 
+> ```
+>
+> 
+
+
 
 
 

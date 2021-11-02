@@ -99,7 +99,7 @@ https://github.com/jhaals/ansible-vault
 
 https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html
 
-
+[goto](# 排序)
 
 # KMS
 
@@ -151,8 +151,6 @@ ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 |
 ```
 # ansible node04 -m raw -a 'yum -y install libselinux-python' -k -onode04 | CHANGED | rc=0 | (stdout) 已加载插件：fastestmirror\r\nLoading mirror speeds from cached hostfile\r\n * base: mirrors.aliyun.com\r\n * epel: mirrors.tongji.edu.cn\r\n * extras: mirrors.163.com\r\n * updates: mirrors.sohu.com\r\n正在解决依赖关系\r\n--> 正在检查事务\r\n---> 软件包 libselinux-python.x86_64.0.2.5-12.el7 将被 安装\r\n--> 解决依赖关系完成\r\n\r\n依赖关系解决\r\n\r\n================================================================================\r\n Package                   架构           版本               源            大小\r\n================================================================================\r\n正在安装:\r\n libselinux-python         x86_64         2.5-12.el7         base         235 k\r\n\r\n事务概要\r\n================================================================================\r\n安装  1 软件包\r\n\r\n总下载量：235 k\r\n安装大小：589 k\r\nDownloading packages:\r\n\rlibselinux-python-2.5-12.el7.x86_64.rpm                    | 235 kB   00:00     \r\nRunning transaction check\r\nRunning transaction test\r\nTransaction test succeeded\r\nRunning transaction\r\n\r  正在安装    : libselinux-python-2.5-12.el7 [                            ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [##                          ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [#####                       ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########                    ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [###########                 ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [#############               ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [################            ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [###################         ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [######################      ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########################    ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7 [########################### ] 1/1\r  正在安装    : libselinux-python-2.5-12.el7.x86_64                         1/1 \r\n\r  验证中      : libselinux-python-2.5-12.el7.x86_64                         1/1 \r\n\r\n已安装:\r\n  libselinux-python.x86_64 0:2.5-12.el7
 ```
-
- 
 
 之后，我们再次执行之前的copy操作，可以正常进行，且可以看到它多设置了一个secontext的上下文
 
@@ -209,6 +207,83 @@ ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 |
 callback_whitelist = profile_tasks
 ```
 
+# 排序
+
+|          |                   |          |
+| -------- | ----------------- | -------- |
+| 冒泡排序 | [写法](#冒泡算法) | 稳定排序 |
+| 选择排序 | [code](#选择排序) |          |
+| 插入排序 | [code](#插入排序) |          |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 冒泡算法
+
+```go
+func bubbleSort(listPao []int) []int {
+	//冒泡排序
+	num := 0
+	for i:=len(listPao)-1;i>0;i-- {
+		for j:=0;j<i;j++{
+			if listPao[j] > listPao[j+1]{
+				num = listPao[j]
+				listPao[j] = listPao[j+1]
+				listPao[j+1] = num
+			}
+		}
+	}
+	return listPao
+
+}
+```
+
+## 选择排序
+
+
+
+## 插入排序
+
+演示
+
+![img](.img_ansible/v2-91b76e8e4dab9b0cad9a017d7dd431e2_b.webp)
+
+```java
+public static void insertionSort(int[] arr){
+    for (int i=1; i<arr.length; ++i){
+        int value = arr[i];
+        int position=i;
+        while (position>0 && arr[position-1]>value){
+            arr[position] = arr[position-1];
+            position--;
+        }
+        arr[position] = value;
+    }//loop i
+}
+```
+
 
 
 # ---
+

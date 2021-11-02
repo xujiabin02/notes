@@ -150,6 +150,21 @@ const service = axios.create({
 
 4.最后在打包成功之后，config,js文件不会被打包，依然存在static文件夹下，如果需要修改只需要用记事本打开文件修改地址就OK了，而且该方法也不会影响开发模式。
 
+# 打包关闭filenameHashing
+
+
+
+>  vue.config.js
+>
+> ```js
+> module.exports = {
+>   filenameHashing: false,
+> }
+> 
+> ```
+>
+> 
+
 
 
 ## WebSocket
@@ -299,29 +314,139 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 
 # 学习书签
 
-| 学习进度                                                     |                                            |                     |
-| ------------------------------------------------------------ | ------------------------------------------ | ------------------- |
-| Dom                                                          | [short_hands](.detail_vue_ts/short_hands)  |                     |
-| Musta                                                        |                                            |                     |
-| 应用 & 组件实例https://www.vue3js.cn/docs/zh/guide/instance.html | https://codepen.io/team/Vue/pen/KKpRVpx    | 2021-07-15 09:48:43 |
-| ![实例的生命周期](.img_vue_ts/lifecycle.png)                 |                                            |                     |
-| [模板语法](https://www.vue3js.cn/docs/zh/guide/template-syntax.html#%E6%8F%92%E5%80%BC) |                                            |                     |
-| [data property](https://www.vue3js.cn/docs/zh/guide/data-methods.html#data-property) |                                            |                     |
-| [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                            |                     |
-| [生命周期勾子](https://www.vue3js.cn/docs/zh/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90) => [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                            |                     |
-| [防抖和节流](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81) |                                            |                     |
-| [计算属性和侦听器](https://www.vue3js.cn/docs/zh/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7) | [笔记](.detail_vue_ts/计算属性与侦听器.md) |                     |
-| [绑定HTML Class](https://www.vue3js.cn/docs/zh/guide/class-and-style.html#%E7%BB%91%E5%AE%9A-html-class) |                                            |                     |
-| [条件渲染](https://www.vue3js.cn/docs/zh/guide/conditional.html#v-if) |                                            |                     |
-| [列表渲染](https://www.vue3js.cn/docs/zh/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E5%AF%B9%E5%BA%94%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0) | [笔记](.detail_vue_ts/列表渲染.md)         |                     |
-| [Event_Handle](http://localhost:8080/guide/events.html#listening-to-events) | [笔记](.detail_vue_ts/event_handing)       |                     |
-| [form_Input_binding](http://localhost:8080/guide/forms.html#basic-usage) |                                            |                     |
-| [Components](http://localhost:8080/guide/component-basics.html#base-example) | [笔记](.detail_vue_ts/components)          |                     |
-| [typescript](https://www.typescriptlang.org/docs/handbook/2/generics.html) |                                            |                     |
-| [变量声明](https://typescript.bootcss.com/variable-declarations.html) | [变量](.detail_vue_ts/变量)                |                     |
-|                                                              |                                            |                     |
+| 学习进度                                                     |                                                              |                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------- |
+| Dom                                                          | [short_hands](.detail_vue_ts/short_hands)                    |                     |
+| Musta                                                        |                                                              |                     |
+| 应用 & 组件实例https://www.vue3js.cn/docs/zh/guide/instance.html | https://codepen.io/team/Vue/pen/KKpRVpx                      | 2021-07-15 09:48:43 |
+| ![实例的生命周期](.img_vue_ts/lifecycle.png)                 | ![img](.img_vue_ts/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzczNDQ5MA==,size_16,color_FFFFFF,t_70.png) |                     |
+| [模板语法](https://www.vue3js.cn/docs/zh/guide/template-syntax.html#%E6%8F%92%E5%80%BC) |                                                              |                     |
+| [data property](https://www.vue3js.cn/docs/zh/guide/data-methods.html#data-property) |                                                              |                     |
+| [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                                              |                     |
+| [生命周期勾子](https://v3.cn.vuejs.org/guide/composition-api-lifecycle-hooks.html) => [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                                              |                     |
+| [防抖和节流](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81) |                                                              |                     |
+| [计算属性和侦听器](https://www.vue3js.cn/docs/zh/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7) | [笔记](.detail_vue_ts/计算属性与侦听器.md)                   |                     |
+| [绑定HTML Class](https://www.vue3js.cn/docs/zh/guide/class-and-style.html#%E7%BB%91%E5%AE%9A-html-class) |                                                              |                     |
+| [条件渲染](https://www.vue3js.cn/docs/zh/guide/conditional.html#v-if) |                                                              |                     |
+| [列表渲染](https://www.vue3js.cn/docs/zh/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E5%AF%B9%E5%BA%94%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0) | [笔记](.detail_vue_ts/列表渲染.md)                           |                     |
+| [Event_Handle](http://localhost:8080/guide/events.html#listening-to-events) | [笔记](.detail_vue_ts/event_handing)                         |                     |
+| [form_Input_binding](http://localhost:8080/guide/forms.html#basic-usage) |                                                              |                     |
+| [Components](http://localhost:8080/guide/component-basics.html#base-example) | [笔记](.detail_vue_ts/components)                            |                     |
+| [typescript](https://www.typescriptlang.org/docs/handbook/2/generics.html) |                                                              |                     |
+| [变量声明](https://typescript.bootcss.com/variable-declarations.html) | [变量](.detail_vue_ts/变量)                                  |                     |
+| [生命周期勾子](https://v3.cn.vuejs.org/guide/composition-api-lifecycle-hooks.html) |                                                              |                     |
+| [refs](https://v3.cn.vuejs.org/guide/reactivity-fundamentals.html#%E5%A3%B0%E6%98%8E%E5%93%8D%E5%BA%94%E5%BC%8F%E7%8A%B6%E6%80%81) |                                                              |                     |
+| [深入理解typescript](https://jkchao.github.io/typescript-book-chinese/) |                                                              |                     |
+| export,import                                                | [笔记](.detail_vue_ts/export)                                |                     |
+| [namespace](https://jkchao.github.io/typescript-book-chinese/project/namespaces.html) | [note](.detail_vue_ts/namespace)                             |                     |
+| 泛型 <T>                                                     | `function reverse<T>(items: T[]): T[]{}`                     |                     |
+| 联合类型 \|                                                  | `(command: string[] | string)`                               |                     |
+|                                                              |                                                              |                     |
 
 
+
+
+
+# Vue3 + TS [最佳实践](https://juejin.cn/post/7001897686567747598)
+
+
+
+# el-icon
+
+Element Plus 团队表示正在将原有组件内的 Font Icon 向 SVG Icon 迁移，正式版本Font Icon将被弃用，于是目标是对代码进行对应的更新，Font Icon换成SVG Icon。
+
+
+
+> 文档： Icon 图标 | Element Plus (element-plus.org)  (2021.10.12更新替换连接地址，element-plus文档网址变动了)
+>
+> 注意：当前图标只适用于vue3。
+>
+> 首先更新 element-plus版本，指定安装@1.0.2-beta.69（2021.8.5时的最新版本）。安装图标包，npm install @element-plus/icons。
+
+
+
+`npm install element-plus@1.0.2-beta.69`
+
+`npm install @element-plus/icons`
+
+ 文档中表示，使用el-icon需要全局注册组件或者在要用到的组件中单独注册。看了一下源码，发现无统一导出，只能一个个注册。[ 已更新 el-icon 统一导入及注册方式，见最下方2021.10.12更新 ]
+
+
+
+组件中注册：
+
+```typescript
+//组件script
+import { Fold } from '@element-plus/icons'
+import { Edit } from '@element-plus/icons'
+export default {
+    components: {
+      Fold,
+      Edit
+    }
+}
+```
+
+
+
+全局注册
+
+```typescript
+//main.js
+import { Expand } from '@element-plus/icons'
+
+const app=createApp(App)
+app.component('expand', Expand)
+app.mount('#app')
+```
+
+
+
+**经过实测:**
+
+```vue
+<template>
+          <el-icon class="el-icon--upload" :size="150">
+            <upload-filled/>
+          </el-icon>
+</template>
+<script lang="ts">
+import {Options, Vue} from 'vue-class-component';
+import {UploadFilled} from '@element-plus/icons'
+@Options({
+    components: {
+        UploadFilled,
+        ReleasePublish
+    }
+})
+```
+
+**2021.10.12更新：el-icon 统一导入及注册方式**
+
+用 import * as 统一模块对象 from '路径' 方式导入，并使用 for in 循环注册。代码如下：
+
+```typescript
+//main.js
+// 统一导入 el-icon 图标
+import * as ElIconModules from '@element-plus/icons'
+// 导入转换图标名称的函数
+import { transElIconName } from './utils/utils.js'
+...
+// 统一注册el-icon图标
+for(let iconName in ElIconModules){
+  app.component(transElIconName(iconName), ElIconModules[iconName])
+}
+// utils/utils.js
+// 将el-icon的组件名称AbbbCddd转化为i-abbb-cddd形式
+// 此前用switch做给组件名时因关键字重复报错, 所以格式统一加了前缀 
+// 例: Switch转换为i-switch, ArrowDownBold转换为i-arrow-down-bold
+
+export function transElIconName(iconName){
+  return 'i'+iconName.replace(/[A-Z]/g), (match)=>'-'+match.toLowerCase())
+}
+```
+
+注：此时使用的 @element-plus/icons 版本为0.0.11（2021.10.12时的最新版本）。
 
 #  书签尾部
 

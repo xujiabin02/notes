@@ -1728,7 +1728,84 @@ Python 實現的算法和設計模式。
 | ------------------ | ---------------------------------------------------- | ------------------------------------------------ |
 | 协程               | 调度由用户控制的轻量级线程,                          | tornado/ [code样例](.detail_python/Coroutine.md) |
 | 线程               | 是进程的一个实体                                     | 多线程                                           |
-| GIL                | 全局排互斥锁,多线程同一时间内拥有GIL的线程才会执行   | 只能用一核(资源隔离?),解决方案: 多进程           |
+| GIL                | 全局互斥锁,多线程同一时间内拥有GIL的线程才会执行     | 只能用一核(资源隔离?),解决方案: 多进程+协程      |
 | 协程和多线程的区别 | 多线程内核切换开销较大, 协程是栈和上下文切换开销很小 | tornado                                          |
-|                    |                                                      |                                                  |
+| 并发               | 在一个时间段,处理多个任务,单核也可以并发             |                                                  |
+| 并行               | 同一时刻多个任务执行,必须有多核                      |                                                  |
 
+
+
+# 代码复用性
+
+
+
+# 排序
+
+```python
+from natsort import natsorted
+versions = ["1.1.2", "1.0.0", "1.3.3", "1.0.12", "1.0.2"]
+natsorted(versions)
+print versions
+# 输出
+['1.0.0', '1.0.2', '1.0.12', '1.1.2', '1.3.3']
+```
+
+对于完整的版本字符串, `natsort`也可以很好地完成排序:
+
+```python
+versions = ['version-1.9', 'version-2.0', 'version-1.11', 'version-1.10']
+n = natsorted(versions)
+print(n)
+# 输出
+['version-1.9', 'version-1.10', 'version-1.11', 'version-2.0']
+```
+
+# 上下文管理 contextmanager
+
+
+
+创建上下文管理器实际就是创建一个类, 添加\_\_enter\_\_ 和 \__exit__ 方法, 看看如何实现open的上下文管理功能:
+
+```python
+class OpenContext(object):
+    def __init__(self, filename, mode):
+        self.fp = open(filename, mode)
+    def __enter__(self):
+        return self.fp
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.fp.close()
+with OpenContext('/tmp/a', 'a') as f:
+  f.write('hello world')
+```
+
+
+
+python标准库提供了易用的contextlib, 我们不必再创建类以及2个方法
+
+```python
+from contextlib import contextmanager
+
+
+@contextmanager
+def make_open_context(filename, mode):
+    fp = open(filename, mode)
+    try:
+        yield fp
+    finally:
+        fp.close()
+
+
+with make_open_context('/tmp/a', 'a') as f:
+    f.write('hello')
+
+```
+
+https://www.zhihu.com/question/23760468
+
+
+
+# 闭包
+
+
+
+# [装饰器](https://www.cnblogs.com/alexkn/p/4663185.html)
