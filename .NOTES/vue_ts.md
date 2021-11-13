@@ -301,6 +301,12 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 
 
 
+https://github.com/KieSun/all-of-frontend
+
+[# 近 20 人爆肝数周，写给初中级前端的万字高级进阶指南](https://juejin.cn/post/7017645909483716615)
+
+
+
 目标:   =>  VUE3+ts 
 
 1. 能够搭建 devops运维平台
@@ -314,7 +320,7 @@ google https://www.google.com/search?q=vue3+%E8%AF%AD%E6%B3%95&oq=vue3+%E8%AF%AD
 
 # 学习书签
 
-| 学习进度                                                     |                                                              |                     |
+| Word                                                         | Content                                                      | Application         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------- |
 | Dom                                                          | [short_hands](.detail_vue_ts/short_hands)                    |                     |
 | Musta                                                        |                                                              |                     |
@@ -447,6 +453,142 @@ export function transElIconName(iconName){
 ```
 
 注：此时使用的 @element-plus/icons 版本为0.0.11（2021.10.12时的最新版本）。
+
+
+
+# aws-boto3
+
+# Boto3 访问 S3 的基本用法
+
+[![Angry Bugs](.img_vue_ts/71084089289f9820f529a9457a93db02_xs.jpg)](https://www.zhihu.com/people/kongyifei)
+
+[Angry Bugs](https://www.zhihu.com/people/kongyifei)
+
+5 人赞同了该文章
+
+以前我以为文档坑爹只有一种方式，那就是没有文档。最近在用 boto3, 才让我认识到了文档的另一种坑爹方式：太多。具体来说是这样的：Boto3 中有两种 API, 低级和高级。其中低级 API 是和 AWS 的 HTTP 接口一一对应的，通过 boto3.client("xxx") 暴露。高级接口是面向对象的，更加易于使用，通过 boto3.resource("xxx") 暴露，美中不足是不一定覆盖了所有的 API.
+
+坑爹的 AWS 文档中，经常混用 resource 和 client 两套接口，也没有任何提示，文档的首页除了简单的提了一句有两套 API 外再没有单独的介绍了。在没写这篇文章之前，我的脑子里都是乱的，总觉得 S3(Simple Storage Service) 的这个狗屁接口哪里配得上 Simple 这个词，一会儿是 list_object, 一会儿是 list_object_v2 的。高级 API 是很简单易用的，然而这样一个简单的 API 被深深地埋在了一大堆的低级 API 中，网上的文章也是一会儿 boto3.client, 一会儿 boto3.resource. 除了有人特意提问两者的区别，很难看到有人说这俩到底是啥。
+
+吐槽完毕。
+
+最近总是用到 S3, 在这里记录一下 Boto3 的简单用法了。Boto3 是整个 AWS 的 SDK, 而不只是包括 S3. 还可以用来访问 SQS, EC2 等等。
+
+如果没有特殊需求的话，建议使用高级 API. 本文一下就记录一些 boto3.resource("s3") 的例子。
+
+```python
+import boto3
+
+s3 = boto3.resource("s3")
+
+# 创建一个 bucket
+bucket = s3.create_bucket(Bucket="my-bucket")
+
+# 获得所有的 bucket, boto 会自动处理 API 的翻页等信息。
+for bucket in s3.buckets.all():
+    print(bucket.name)
+
+# 过滤 bucket, 同样返回一个 bucket_iterator
+s3.buckets.fitler()
+
+# 生成一个 Bucket 资源对象
+bucket = s3.Bucket("my-bucket")
+bucket.name  # bucket 的名字
+bucket.delete()  # 删除 bucket
+
+# 删除一些对象
+bucket.delete_objects(
+    Delete={
+        'Objects': [
+            {
+                'Key': 'string',
+                'VersionId': 'string'
+            },
+        ],
+        'Quiet': True|False
+    },
+)
+# 返回结果
+{
+    'Deleted': [
+        {
+            'Key': 'string',
+            'VersionId': 'string',
+            'DeleteMarker': True|False,
+            'DeleteMarkerVersionId': 'string'
+        },
+    ],
+    'RequestCharged': 'requester',
+    'Errors': [
+        {
+            'Key': 'string',
+            'VersionId': 'string',
+            'Code': 'string',
+            'Message': 'string'
+        },
+    ]
+}
+
+# 下载文件
+bucket.download_file(Key, Filename, ExtraArgs=None, Callback=None, Config=None)
+
+# 下载到文件对象，可能会自动开启多线程下载
+with open('filename', 'wb') as data:
+    bucket.download_fileobj('mykey', data)
+
+# 上传文件
+object = bucket.put_object(Body=b"data"|file, ContentMD5="", Key="xxx")
+
+# 这个方法会自动开启多线程上传
+with open('filename', 'rb') as f:
+    bucket.upload_fileobj(f, 'mykey')
+
+# 列出所有对象
+bucket.objects.all()
+
+# 过滤并返回对象
+objects = bucket.objects.filter(
+    Delimiter='string',
+    EncodingType='url',
+    Marker='string',
+    MaxKeys=123,
+    Prefix='string',
+    RequestPayer='requester',
+    ExpectedBucketOwner='string'
+)
+
+# 创建一个对象
+obj = bucket.Object("xxx")
+# 或者
+obj = s3.Object("my-bucket", "key")
+
+obj.bucket_name
+obj.key
+
+# 删除对象
+obj.delete()
+# 下载对象
+obj.download_file(path)
+# 自动多线程下载
+with open('filename', 'wb') as data:
+    obj.download_fileobj(data)
+# 获取文件内容
+rsp = obj.get()
+body = rsp["Body"].read()  # 文件内容
+obj.put(Body=b"xxx"|file, ContentMD5="")
+
+# 上传文件
+obj.upload_file(filename)
+# 自动多线程上传
+obj.upload_fileobj(fileobj)
+```
+
+如果想进一步了解，建议直接点开参考文献 2, 阅读下 resouce 相关接口的文档，其他的 client 接口完全可以不看。
+
+## 参考
+
+1. [https://stackoverflow.com/questions/42809096/difference-in-boto3-between-resource-client-and-session](https://link.zhihu.com/?target=https%3A//stackoverflow.com/questions/42809096/difference-in-boto3-between-resource-client-and-session)
+2. [https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#service-resource](https://link.zhihu.com/?target=https%3A//boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html%23service-resource)
 
 #  书签尾部
 
