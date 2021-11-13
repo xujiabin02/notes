@@ -4,7 +4,6 @@
 ###### [airflow](.NOTES/airflow.md)
 ###### [alfred](.NOTES/alfred.md)
 ###### [ansible](.NOTES/ansible.md)
-###### [arc-jdbc-1](.NOTES/arc-jdbc-1.1.3.jar)
 ###### [clickhouse](.NOTES/clickhouse.md)
 ###### [devops](.NOTES/devops.md)
 ###### [ex](.NOTES/ex.py)
