@@ -7,7 +7,6 @@
 ###### [clickhouse](.NOTES/clickhouse.md)
 ###### [devops](.NOTES/devops.md)
 ###### [docker](.NOTES/docker.md)
-###### [ex](.NOTES/ex.py)
 ###### [flink](.NOTES/flink.md)
 ###### [git](.NOTES/git.md)
 ###### [golang](.NOTES/golang.md)
