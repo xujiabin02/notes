@@ -13,7 +13,7 @@ systemctl stop rsyslog
 大家想必都遇到系统盘满了，导致服务不正常的情况。 今天就遇到这种事。 系统日志占了40多G，当然这是一个意外导致有很多垃圾日志。 果断清理日志
 
 ```sh
-# > /var/log/messages
+> /var/log/messages
 -bash: /var/log/messages: Operation not permitted
 ```
 

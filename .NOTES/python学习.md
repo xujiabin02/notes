@@ -8,6 +8,19 @@
 
 
 
+# 编译
+
+
+
+```shell
+export LC_CTYPE=en_US.UTF-8
+```
+
+```shell
+./configure --prefix=/usr/local/python3 --with-openssl=/usr/local/openssl
+
+```
+
 
 
 ## 環境管理
@@ -1801,6 +1814,114 @@ with make_open_context('/tmp/a', 'a') as f:
 ```
 
 https://www.zhihu.com/question/23760468
+
+
+
+# selenium内网proxy修改headers
+
+https://www.codeleading.com/article/40472897677/
+
+
+
+内网proxy修改headers
+
+测试修改headers附加token
+
+```python
+import requests
+
+token = "7b835e16-6a2b-4831-8f49-2510c11394b5"
+headers = {
+    "Authorization": token,
+}
+# url = "http://106.75.47.159/projects/WlGk4Daj/analysis/retention"
+url = "http://uat-gdp.growingio.com/hosts_test"
+r = requests.Session()
+r.headers.update(headers)
+b=r.get(url=url)
+print(b.content)
+print(str(b.content, encoding='utf-8'))
+```
+
+
+
+安装[browsermob-proxy-2.1.4-bin.zip](https://github.com/lightbody/browsermob-proxy)
+
+启动8080
+
+```python
+from browsermobproxy import Server
+server = Server("/data/tmp/browsermob-proxy-2.1.4/bin/browsermob-proxy")
+server.start()
+```
+
+启动11011端口
+
+```sh
+curl -X POST -d 'port=11011' localhost:8080/proxy
+```
+
+
+
+headers附带token注册11011端口
+
+```python
+token = "7b835e16-6a2b-4831-8f49-2510c11394b5"
+headers = {
+    "Authorization": token,
+}
+#wHeaders = {'Content-type': 'application/json'}
+r = requests.post("http://localhost:8080/proxy/11011/headers", json=headers)
+#, headers=wHeaders)
+print(r.headers)
+print(r.content)
+print(r)
+```
+
+
+
+```python
+from selenium import webdriver  # Enter browser settings
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+
+chrome_options = webdriver.ChromeOptions()  # Set up Chinese
+chrome_options.add_argument('headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('disable-dev-shm-usage')
+
+PROXY = "http://10.10.100.247:11011"
+proxy = Proxy()
+proxy.proxy_type = ProxyType.MANUAL
+proxy.http_proxy = PROXY
+proxy.ssl_proxy = PROXY
+cap = webdriver.DesiredCapabilities.CHROME
+proxy.add_to_capabilities(cap)
+
+browser = webdriver.Chrome(options=chrome_options, desired_capabilities=cap)
+
+browser.get("http://10.10.29.124/hosts_test")
+
+print(browser.title)
+print(browser.get_cookies())
+print(browser.page_source)
+
+browser.close()
+
+```
+
+
+
+请求成功!!
+
+![image-20211124142818784](.img_python%E5%AD%A6%E4%B9%A0/image-20211124142818784.png)
+
+
+
+测试proxy功能
+
+![image-20211124142908982](.img_python%E5%AD%A6%E4%B9%A0/image-20211124142908982.png)
+
+
 
 
 

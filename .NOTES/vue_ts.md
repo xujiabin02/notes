@@ -1,10 +1,6 @@
-读书规划
 
 
 
-# Vue note
-
-学习笔记
 
 ## router
 
@@ -173,15 +169,15 @@ const service = axios.create({
 
  项目信息管理
 
-* [ ] ### hosts
+* [x] ### hosts
 
-* [ ] ### topology
+* [x] ### topology
 
-* [ ] ### hardware resource info
+* [x] ### hardware resource info
 
-* [ ] ### project info:  project id,key/pg con info/redis passwword/api info/auth info
+* [x] ### project info:  project id,key/pg con info/redis passwword/api info/auth info
 
-* [ ] ### 项目版本管理、切换  时间线记录
+* [x] ### 项目版本管理、切换  时间线记录
 
 ## 服务管理
 
@@ -196,6 +192,8 @@ const service = axios.create({
 
 
 
+
+# 资讯
 
 | word            | main                                                         | applications                                                 |
 | --------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -331,9 +329,9 @@ https://github.com/KieSun/all-of-frontend
 | [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                                              |                     |
 | [生命周期勾子](https://v3.cn.vuejs.org/guide/composition-api-lifecycle-hooks.html) => [方法](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E6%96%B9%E6%B3%95) |                                                              |                     |
 | [防抖和节流](https://www.vue3js.cn/docs/zh/guide/data-methods.html#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81) |                                                              |                     |
-| [计算属性和侦听器](https://www.vue3js.cn/docs/zh/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7) | [笔记](.detail_vue_ts/计算属性与侦听器.md)                   |                     |
+| [计算属性和侦听器](https://v3.cn.vuejs.org/guide/computed.html) | [笔记](.detail_vue_ts/计算属性与侦听器.md)                   |                     |
 | [绑定HTML Class](https://www.vue3js.cn/docs/zh/guide/class-and-style.html#%E7%BB%91%E5%AE%9A-html-class) |                                                              |                     |
-| [条件渲染](https://www.vue3js.cn/docs/zh/guide/conditional.html#v-if) |                                                              |                     |
+| [条件渲染](https://v3.cn.vuejs.org/guide/conditional.html#v-show) | [笔记](.img_vue_ts/conditional)                              |                     |
 | [列表渲染](https://www.vue3js.cn/docs/zh/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E5%AF%B9%E5%BA%94%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0) | [笔记](.detail_vue_ts/列表渲染.md)                           |                     |
 | [Event_Handle](http://localhost:8080/guide/events.html#listening-to-events) | [笔记](.detail_vue_ts/event_handing)                         |                     |
 | [form_Input_binding](http://localhost:8080/guide/forms.html#basic-usage) |                                                              |                     |
@@ -456,11 +454,28 @@ export function transElIconName(iconName){
 
 
 
+# vue3-1项目复盘
+
+|                                |                                           |              |
+| ------------------------------ | ----------------------------------------- | ------------ |
+| ts interface                   | 定义数据结构                              |              |
+| vue component                  | 组件拆分,模块化, 变量域独立               |              |
+| 组件内部响应式渲染             |                                           |              |
+| icons引用,vue 需要多个地方声明 | vue 需要多个地方声明                      | 好看的logo   |
+| vue修改title                   | [笔记](.detail_vue_ts/title_vue)          | 指           |
+| 串行                           | [笔记](.detail_vue_ts/async_await)        | 顺序执行任务 |
+| style div class                | [style_class](.detail_vue_ts/style_class) |              |
+| webssh                         | 缺                                        |              |
+| websocket                      | 缺                                        |              |
+|                                |                                           |              |
+
 # aws-boto3
 
-# Boto3 访问 S3 的基本用法
 
-[![Angry Bugs](.img_vue_ts/71084089289f9820f529a9457a93db02_xs.jpg)](https://www.zhihu.com/people/kongyifei)
+
+## Boto3 访问 S3 的基本用法
+
+https://www.zhihu.com/people/kongyifei
 
 [Angry Bugs](https://www.zhihu.com/people/kongyifei)
 
