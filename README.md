@@ -4,6 +4,7 @@
 ###### [airflow](.NOTES/airflow.md)
 ###### [alfred](.NOTES/alfred.md)
 ###### [ansible](.NOTES/ansible.md)
+###### [centos](.NOTES/centos.md)
 ###### [clickhouse](.NOTES/clickhouse.md)
 ###### [devops](.NOTES/devops.md)
 ###### [docker](.NOTES/docker.md)

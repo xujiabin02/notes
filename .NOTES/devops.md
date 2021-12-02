@@ -16,3 +16,15 @@ https://github.com/pingcap/tiup/blob/master/doc/dev/README.md
 
 与devops有些联系，但还不合用我们现在的需求
 
+
+
+# 自动化测试tox
+
+
+
+[基础设施及代码](https://martinfowler.com/bliki/InfrastructureAsCode.html)
+
+
+
+[11.Ansible你快点：Ansible执行过程分析、异步、效率优化improve](.img_ansible/improve)
+

@@ -200,6 +200,18 @@ ansible node04 -m copy -a 'src=app-info.log dest=/tmp/' -kSSH password: node04 |
 
 
 
+11.11 第三方策略插件：[Mitogen for Ansible](https://mitogen.networkgenomics.com/ansible_detailed.html#installation)
+
+
+
+```
+$ wget 'https://networkgenomics.com/try/mitogen-0.2.9.tar.gz'
+$ mkdir -p ~/.ansible/plugins
+$ tar xf mitogen-0.2.9.tar.gz -C ~/.ansible/plugins/
+```
+
+
+
 # 速度
 
 ```ini
@@ -216,6 +228,18 @@ callback_whitelist = profile_tasks
 | 插入排序 | [code](#插入排序) |          |
 
 
+
+
+
+# ansible-playbook的branch的实现
+
+
+
+```yml
+- name: "if else"
+  include_tasks: "test{{ item }}.yml"
+  with_items: "{{ my_list }}"
+```
 
 
 
