@@ -101,6 +101,36 @@ https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html
 
 [goto](# 排序)
 
+
+
+# 内置变量
+
+## ansible-playbook内置变量
+
+(https://www.jianshu.com/u/e714de66d8fd)
+
+[绅士喵m](https://www.jianshu.com/u/e714de66d8fd)关注
+
+2019.08.27 17:08:27字数 460阅读 2,516
+
+我们可以使用ansible-playbook的内置变量实现主机相关的逻辑判断。本篇介绍7个常用的内置变量：
+
+## 1.gourps和group_names
+
+groups是一个全局变量，它会打印出Inventory文件里面的所有主机以及主机组信息，它返回的是一个JSON字符串，我们可以直接把它当作一个变量，使用{{ groups }}格式调用。当然也可以使用{{ groups['all'] }}引用其中一个的数据。变量会打印当前主机所在的groups名称，如果没有定义会返回ungrouped，它返回的组名是一个list列表。
+
+## 2.hostvars
+
+hostvars是用来调用指定的主机变量，需要传入主机信息，返回结果也是一个JSON字符串，同样，也可以直接引用JSON字符串内的指定信息。
+
+## 3.inventory_hostname和inventory_hostname_short
+
+inventory_hostname返回的是Inventory文件里面定义的主机名，inventory_hostname_short返回的是Inventory文件里面定义的主机名的第一部分。
+
+## 4.play_hosts和inventory_dir
+
+play_hosts变量时用来返回当前playbook运行的主机信息，返回格式是主机list结构，inventory_dir变量时返回当前playbook使用的Inventory目录。
+
 # KMS
 
 https://growingio.feishu.cn/docs/doccnpgUZAhEVAePkmRvSXJcaWc#
