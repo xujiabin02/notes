@@ -30,3 +30,16 @@ https://github.com/pingcap/tiup/blob/master/doc/dev/README.md
 
 
 
+# DevOps软件架构师行动指南-读书笔记整理
+
+|          |                            |      |
+| -------- | -------------------------- | ---- |
+| devops   | 一组过程、方法与系统的统称 |      |
+| pipeline |                            |      |
+|          |                            |      |
+
+# [持续集成中的问题整理](.img_devops/CI)
+
+
+
+交付 移植
