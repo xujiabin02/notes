@@ -306,3 +306,28 @@ server {
     }
 ```
 
+# 多server_name的顺序问题
+
+
+
+```
+server {
+	listen	80;
+	server_name testserver1 127.0.0.1;
+	location {
+		...
+	}
+}
+server {
+	listen	80;
+	server_name testserver2 127.0.0.1;
+	location {
+		...
+	}
+}
+
+```
+
+Nginx读取配置文件的时候是按照文件名顺序进行读取的，优先读取第一个文件名下的虚拟主机（IP端口相同）。
+如server1.conf，server2.conf，那优先加载的配置是server1.conf下面的配置。
+
