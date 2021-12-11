@@ -275,13 +275,29 @@ callback_whitelist = profile_tasks
 
 
 
+拼出dict
 
+```yaml
+- set_fact:
+    genders: "{{ genders|default({}) | combine( {item.item.name: item.stdout} ) }}"
+  with_items: "{{ people.results }}"
+```
 
+接出列表
 
+```yml
+- name: Register changed title
+  set_fact:
+    grafana_changed_title_list: "{{ grafana_changed_title_list|default([]) + [ (lookup('file', item.dest)|from_json).title ] }}"
+  when: item.changed
+  with_items: "{{ push_changed.results }}"
+```
 
+读json文件
 
-
-
+```yml
+version_file: "{{ lookup('file','/home/shasha/devOps/tests/packageFile.json') | from_json }}"
+```
 
 
 
