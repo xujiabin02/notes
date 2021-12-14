@@ -600,6 +600,20 @@ obj.upload_fileobj(fileobj)
 
 如果想进一步了解，建议直接点开参考文献 2, 阅读下 resouce 相关接口的文档，其他的 client 接口完全可以不看。
 
+# xterm.js
+
+https://segmentfault.com/a/1190000018712469
+
+https://github.com/yudai/gotty
+
+https://juejin.cn/post/6986543907689463822
+
+https://xtermjs.org/docs/api/terminal/classes/terminal/#loadaddon
+
+https://www.jianshu.com/p/db8a860b286c
+
+https://bengbu-yuezhang.github.io/2019/03/10/xterm/
+
 ## 参考
 
 1. [https://stackoverflow.com/questions/42809096/difference-in-boto3-between-resource-client-and-session](https://link.zhihu.com/?target=https%3A//stackoverflow.com/questions/42809096/difference-in-boto3-between-resource-client-and-session)
