@@ -1,5 +1,5 @@
 ###### [Cgroups与Systemd](.NOTES/Cgroups与Systemd.md)
-###### [JAVA_GC](.NOTES/JAVA_GC.md)
+###### [JAVA](.NOTES/JAVA.md)
 ###### [Sentinel](.NOTES/Sentinel.md)
 ###### [airflow](.NOTES/airflow.md)
 ###### [ansible](.NOTES/ansible.md)

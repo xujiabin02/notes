@@ -96,3 +96,7 @@ gc优化
     hfile.block.cache.size 0.3                 regionserver的读缓存占用heap的30%
 ```
 
+
+
+[JAVA教学](https://www.bilibili.com/video/BV1np4y1C7Yf)
+
