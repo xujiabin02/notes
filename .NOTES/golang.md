@@ -169,17 +169,122 @@ func main(){
 
 
 
+# 朝花夕拾
+
+|      |      |      |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
+# 扫目录
+
+```go
+package main
+
+import (
+    "fmt"
+    "io/ioutil"
+    "log"
+)
+
+func main() {
+    files, err := ioutil.ReadDir(".")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    for _, file := range files {
+        fmt.Println(file.Name())
+    }
+}
+```
+
 # 指针
 
 
 
-# Struct
+#  可选参数 ∆
+
+options
+
+# recover
+
+recover只有发生在panic之后调用才会生效, 放在同goroutine下的defer比较合理
+
+# Struct and tags
 
 
 
 **结构体中的成员变量，只有首字母大写，才能在其定义的 package 以外访问。而在同一个 package 内，就不会有此限制。**
 
 **package以外的访问都需要将package内成员和变量名大写**
+
+
+
+```go
+type User struct {
+    Name          string    `json:"name"`
+    Password      string    `json:"password"`
+    PreferredFish []string  `json:"preferredFish,omitempty"`
+    CreatedAt     time.Time `json:"createdAt"`
+}
+```
+
+```go
+type User struct {
+    Name      string    `json:"name"`
+    Password  string    `json:"-"`
+    CreatedAt time.Time `json:"createdAt"`
+}
+```
+
+```go
+type TopField struct {
+	TestField `json:",omitempty,inline"`
+	TestA     string `json:"test_a"`
+	TestB     string `json:"test_b"`
+}
+```
+
+# reflect
+
+Go:反射之用字符串函数名调用函数
+
+
+
+
+
+```go
+
+package main
+ 
+import (
+	"fmt"
+	"reflect"
+)
+ 
+type Animal struct {
+}
+ 
+func (m *Animal) Eat() {
+	fmt.Println("Eat")
+}
+func main() {
+	animal := Animal{}
+	value := reflect.ValueOf(&animal)
+	f := value.MethodByName("Eat") //通过反射获取它对应的函数，然后通过call来调用
+	f.Call([]reflect.Value{})
+
+```
+
+
+
+# interface
+
+struct实现interface 接口, 可以让 &struct 传入 以interface接口作为参数 的func
+
+
 
 
 

@@ -11,3 +11,10 @@ docker export  --output=vue3-ts-python36.tar  c7
 cat vue3-ts-python36.tar|docker import - c8
 ```
 
+
+
+```bash
+hr:centos7 hr$ docker port 4966d35fe0a3
+22/tcp -> 0.0.0.0:10022
+```
+
