@@ -113,11 +113,16 @@ https://blog.csdn.net/u012551524/article/details/109188434
 
 参考: https://github.com/ClickHouse/ClickHouse/issues/8159
 
-​```sh
+
+```
+
+```sh
 clickhouse hdfs engine('URI')  
 中的URI不识别大小写
 我们的growingFS被转成 growingfs, 经测试将hdfs-client.xml中的growingFS批量替换成小写growingfs 有效可用
 ```
+
+
 
 Hive到Clickhosue的数据
 
@@ -155,6 +160,7 @@ Clickhosue缩容扩容问题
     7.1 ClickHouse 的痛点
     扩容/缩容后数据无法自动平衡，只能通过低效的数据重新导入的方式来进行人工平衡。
     尽管我们开发了一套工具基于 clickhouse-copier 来帮助运维进行这个操作，从而加速整个过程，降低人工操作的错误率。但是被迁移的表在迁移过程中仍然需要停止写入的。
+    ```
 
 # 实践、场景
 
