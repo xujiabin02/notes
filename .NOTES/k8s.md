@@ -2,84 +2,84 @@
 | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------- |
 | Jenkins,Artifactory&kubernetes                               |                                                              |                                              |
 | docker和虚拟机对比                                           |                                                              |                                              |
-| 秒级交付                                                     | \|开发效率                                                   | \|提升部署频率                               |
+| 秒级交付                                                     | 开发效率                                                     | 提升部署频率                                 |
 | 2016 OCI开源                                                 |                                                              |                                              |
 | 2018 k8s                                                     |                                                              |                                              |
-| Moby,Docker CE, Docker EE                                    | moby                                                         | \|tools                                      |
-| \|k8s: CE                                                    |                                                              |                                              |
+| Moby,Docker CE, Docker EE                                    | moby                                                         | tools                                        |
+| k8s: CE                                                      |                                                              |                                              |
 | docker底层                                                   | OCI                                                          |                                              |
-| \|runC                                                       | 物理层交互                                                   |                                              |
-| \|containerd                                                 |                                                              |                                              |
-| 疑问:                                                        | \|如何同时存在2个pid=1的进程                                 |                                              |
-| \|限定cpu,内存?                                              |                                                              |                                              |
-| \|A,B容器的隔离                                              |                                                              |                                              |
-| \|*: Namespace,Control Groups(Cgroup),Union Filesystem()     | NameSpace                                                    | \|uts                                        |
-| \|ipc                                                        | 进程间通信                                                   |                                              |
-| \|pid                                                        |                                                              |                                              |
-| \|network                                                    |                                                              |                                              |
-| \|mnt                                                        |                                                              |                                              |
-| \|user                                                       |                                                              |                                              |
+| runC                                                         | 物理层交互                                                   |                                              |
+| containerd                                                   |                                                              |                                              |
+| 疑问:                                                        | 如何同时存在2个pid=1的进程                                   |                                              |
+| 限定cpu,内存?                                                |                                                              |                                              |
+| A,B容器的隔离                                                |                                                              |                                              |
+| *: Namespace,Control Groups(Cgroup),Union Filesystem()       | NameSpace                                                    | uts                                          |
+| ipc                                                          | 进程间通信                                                   |                                              |
+| pid                                                          |                                                              |                                              |
+| network                                                      |                                                              |                                              |
+| mnt                                                          |                                                              |                                              |
+| user                                                         |                                                              |                                              |
 | 底层原理:Clone() pid=1                                       | Cgroups                                                      | C语言                                        |
-| \|对cpu,mem,net限制通过cgroups实现                           |                                                              |                                              |
-| \|cpu时钟分配                                                |                                                              |                                              |
-| \|task绑定group分配相应资源                                  |                                                              |                                              |
-| \|250m, 1/4 Cpu                                              |                                                              |                                              |
-| \|CPU 100%                                                   | while:;do:;done &                                            | 阻塞,cgroup可限制到20%                       |
-| \|\|cd /sys/fs/cgroup/cpu;mkdir cgroups_test;echo 200000> /sys/fs/cgroup/cpu/cgroups_test/cpu.cfs_quota_us;echo 27358 > task | \|1.13                                                       |                                              |
-| \|\|docker run -it --cpus=".5 ubuntu /bin/bash               |                                                              |                                              |
-| \|1.12                                                       |                                                              |                                              |
-| \|\|docker run -it --cpu-period=100000 --cpu-quota=50000 ubuntu /bin/bash |                                                              |                                              |
+| 对cpu,mem,net限制通过cgroups实现                             |                                                              |                                              |
+| cpu时钟分配                                                  |                                                              |                                              |
+| task绑定group分配相应资源                                    |                                                              |                                              |
+| 250m, 1/4 Cpu                                                |                                                              |                                              |
+| CPU 100%                                                     | while:;do:;done &                                            | 阻塞,cgroup可限制到20%                       |
+| cd /sys/fs/cgroup/cpu;mkdir cgroups_test;echo 200000> /sys/fs/cgroup/cpu/cgroups_test/cpu.cfs_quota_us;echo 27358 > task | 1.13                                                         |                                              |
+| docker run -it --cpus=".5 ubuntu /bin/bash                   |                                                              |                                              |
+| 1.12                                                         |                                                              |                                              |
+| docker run -it --cpu-period=100000 --cpu-quota=50000 ubuntu /bin/bash |                                                              |                                              |
 | github.com                                                   | opencontainers/runc                                          |                                              |
-| \|clone                                                      |                                                              |                                              |
-| \|make install                                               |                                                              |                                              |
-| \|mkdir /root/mycontainer && cd                              |                                                              |                                              |
-| \|mkdir rootfs                                               |                                                              |                                              |
-| \|docker export $(docker create busybox)                     | tar -C rootfs -xvf --                                        |                                              |
-| \|run spec(generate spec.json)                               |                                                              |                                              |
-| \|runc run mycontainerid                                     |                                                              |                                              |
-| \|runc list                                                  |                                                              |                                              |
+| clone                                                        |                                                              |                                              |
+| make install                                                 |                                                              |                                              |
+| mkdir /root/mycontainer && cd                                |                                                              |                                              |
+| mkdir rootfs                                                 |                                                              |                                              |
+| docker export $(docker create busybox)                       | tar -C rootfs -xvf --                                        |                                              |
+| run spec(generate spec.json)                                 |                                                              |                                              |
+| runc run mycontainerid                                       |                                                              |                                              |
+| runc list                                                    |                                                              |                                              |
 | Unionfs                                                      | rootfs解决系统文件隔离,那么每次都要重复创建rootfs吗          |                                              |
-| \|Layer                                                      | 分层,千层饼机制                                              |                                              |
-| \|用法                                                       | mount -t unionfs -o dirs=/home/fd1,/tmp/fd2 \ > none /mnt/merged-folder |                                              |
-| \|\|-o 目录, none 不挂载驱动, megerd-folder目录包含 fd1,fd2  |                                                              |                                              |
-| \|docker info 查看aufs                                       |                                                              |                                              |
-| \|v1: 链式存储结构                                           |                                                              |                                              |
-| \|v2:                                                        |                                                              |                                              |
-| \|manifest                                                   |                                                              |                                              |
-| \|.tar 形式文件存储                                          |                                                              |                                              |
-| \|.json                                                      |                                                              |                                              |
+| Layer                                                        | 分层,千层饼机制                                              |                                              |
+| 用法                                                         | mount -t unionfs -o dirs=/home/fd1,/tmp/fd2  > none /mnt/merged-folder |                                              |
+| -o 目录, none 不挂载驱动, megerd-folder目录包含 fd1,fd2      |                                                              |                                              |
+| docker info 查看aufs                                         |                                                              |                                              |
+| v1: 链式存储结构                                             |                                                              |                                              |
+| v2:                                                          |                                                              |                                              |
+| manifest                                                     |                                                              |                                              |
+| .tar 形式文件存储                                            |                                                              |                                              |
+| .json                                                        |                                                              |                                              |
 | Artifactory                                                  | 管理情况完全                                                 |                                              |
-| \|可以查看每一层的操作 *                                     |                                                              |                                              |
-| Container Network Model(CNM:xxx xxx Model) Drivers           | \|CNM对冲突有仲裁能力, 与CNI区别                             |                                              |
+| 可以查看每一层的操作 *                                       |                                                              |                                              |
+| Container Network Model(CNM:xxx xxx Model) Drivers           | CNM对冲突有仲裁能力, 与CNI区别                               |                                              |
 | k8s(CNI:xxx xxx Interface)                                   | 只有2个方法,创建和销毁                                       |                                              |
-| \|CNI简单好实现, 与CNM区别                                   |                                                              |                                              |
+| CNI简单好实现, 与CNM区别                                     |                                                              |                                              |
 | Network Namespace                                            | Network Interface,Loopbak Device,Route ,Iptables             |                                              |
-| \|思考:容器间如何通信                                        | brighe网桥                                                   |                                              |
-| \|云环境下如何通信                                           | flunel,vlan,大2层网络(overlay),Calico                        |                                              |
-| \|\|大2层网络实现: Mac in UDP                                |                                                              |                                              |
-| \|\|\|封装内网IP和外网IP到UDP包                              |                                                              |                                              |
-| \|\|Calico                                                   |                                                              |                                              |
-| \|\|\|route Reflector                                        |                                                              |                                              |
+| 思考:容器间如何通信                                          | brighe网桥                                                   |                                              |
+| 云环境下如何通信                                             | flunel,vlan,大2层网络(overlay),Calico                        |                                              |
+| 大2层网络实现: Mac in UDP                                    |                                                              |                                              |
+| 封装内网IP和外网IP到UDP包                                    |                                                              |                                              |
+| Calico                                                       |                                                              |                                              |
+| route Reflector                                              |                                                              |                                              |
 | Dockerfile                                                   | BUILD,Both,RUN                                               |                                              |
-| \|ONBUILD命令如何使用                                        |                                                              |                                              |
-| \|FROM 镜像源                                                |                                                              |                                              |
-| \|MAINTAINER 标签                                            |                                                              |                                              |
-| \|EXPOSE                                                     |                                                              |                                              |
-| \|不建议sshd,直接通过docker接口进入容器,免除安全隐患         | 安全?                                                        |                                              |
-| \|可以用来描述一个镜像                                       |                                                              |                                              |
-| \|Container Commit                                           |                                                              |                                              |
-| Dockerfile结构很重要                                         | \|Layers层数                                                 | 一条命令一个layer, 合并多个命令              |
-| \|每层的大小                                                 |                                                              |                                              |
-| \|每层的变化                                                 |                                                              |                                              |
-| \|安全                                                       | 定义默认用户,not root                                        |                                              |
-| \|\|root可操作宿主机?                                        |                                                              |                                              |
-| \|\|contain的隔离和安全性                                    |                                                              |                                              |
-| \|\|虚拟机上的docker                                         |                                                              |                                              |
-| 流水线反模式一                                               | \|Docker多次构建不做升级                                     | 你发布的不是你测试的                         |
-| \|一次构建                                                   |                                                              |                                              |
-| \|应用和配置分离                                             |                                                              |                                              |
-| \|三库分离                                                   | 防误删库                                                     |                                              |
-| \|构建效率低,构建资源消耗大                                  |                                                              |                                              |
+| ONBUILD命令如何使用                                          |                                                              |                                              |
+| FROM 镜像源                                                  |                                                              |                                              |
+| MAINTAINER 标签                                              |                                                              |                                              |
+| EXPOSE                                                       |                                                              |                                              |
+| 不建议sshd,直接通过docker接口进入容器,免除安全隐患           | 安全?                                                        |                                              |
+| 可以用来描述一个镜像                                         |                                                              |                                              |
+| Container Commit                                             |                                                              |                                              |
+| Dockerfile结构很重要                                         | Layers层数                                                   | 一条命令一个layer, 合并多个命令              |
+| 每层的大小                                                   |                                                              |                                              |
+| 每层的变化                                                   |                                                              |                                              |
+| 安全                                                         | 定义默认用户,not root                                        |                                              |
+| root可操作宿主机?                                            |                                                              |                                              |
+| contain的隔离和安全性                                        |                                                              |                                              |
+| 虚拟机上的docker                                             |                                                              |                                              |
+| 流水线反模式一                                               | Docker多次构建不做升级                                       | 你发布的不是你测试的                         |
+| 一次构建                                                     |                                                              |                                              |
+| 应用和配置分离                                               |                                                              |                                              |
+| 三库分离                                                     | 防误删库                                                     |                                              |
+| 构建效率低,构建资源消耗大                                    |                                                              |                                              |
 | 流水线反模式二                                               | 质量关卡                                                     |                                              |
 | 自动化测试                                                   | Source code version control                                  |                                              |
 | Optimum branching                                            |                                                              |                                              |
@@ -127,13 +127,18 @@
 |                                                              | preferred(软)                                                |                                              |
 |                                                              | 正则和语法表达式                                             |                                              |
 |                                                              | 例: podaffinity(pod和pod交互频繁,调度在同一台主机上)         |                                              |
-| k8s日志\事件\监控                                            | events                                                       | get events                                   |
+| k8s日志事件监控                                              | events                                                       | get events                                   |
 | logs                                                         |                                                              | heapster(早期),metrics Server                |
 | metrics server                                               | top                                                          |                                              |
 | nodeport,loadbalance,ingress                                 | ingress                                                      | nginx(4,7层),haproxy,traefik                 |
 | RBAC(role-based access control)权限管理                      |                                                              | Rights                                       |
 | Role                                                         |                                                              | prometheus 使用passwd或token调用 k8s监控数据 |
 | prometheus 使用passwd或token调用 k8s监控数据                 |                                                              |                                              |
+| [namespace<!--上-->](https://moelove.info/2021/12/10/%E6%90%9E%E6%87%82%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84%E5%9F%BA%E7%9F%B3-namespace-%E4%B8%8A/) |                                                              |                                              |
+| 容器                                                         | 资源隔离和限制,依赖是cgroup, namespace技术                   | docker,container容器化技术                   |
+| namespace                                                    | [namespace_type](.detail_k8s/namespace_type)                 |                                              |
+| namespace类型                                                |                                                              |                                              |
+| [namespace<!--下-->](https://moelove.info/2021/12/13/%E6%90%9E%E6%87%82%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84%E5%9F%BA%E7%9F%B3-namespace-%E4%B8%8B/) |                                                              |                                              |
 
 
 
