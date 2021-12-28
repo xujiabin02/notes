@@ -104,7 +104,7 @@ gc优化
 
 
 
-**利用 Java Agent 动态修补 Log4j2 漏洞**
+# 利用 Java Agent 动态修补 Log4j2 漏洞
 
 ## 1、前言
 
@@ -243,10 +243,10 @@ ByteBuddyAgent.attach(jarFile, pid);
 
 ## 4、参考
 
-1、https://research.nccgroup.com/2021/12/12/log4j-jndi-be-gone-a-simple-mitigation-for-cve-2021-44228/
-2、https://www.jianshu.com/p/fe1448bf7d31
-3、https://segmentfault.com/a/1190000016601560
-4、https://stackoverflow.com/questions/55029961/bytebuddy-attach-to-a-local-running-process
+1. https://research.nccgroup.com/2021/12/12/log4j-jndi-be-gone-a-simple-mitigation-for-cve-2021-44228/
+2. https://www.jianshu.com/p/fe1448bf7d31
+3. https://segmentfault.com/a/1190000016601560
+4. https://stackoverflow.com/questions/55029961/bytebuddy-attach-to-a-local-running-process
 
 
 
