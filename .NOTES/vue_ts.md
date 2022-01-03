@@ -214,6 +214,23 @@ const service = axios.create({
 
 
 
+
+
+# vue[对比](https://www.bilibili.com/video/BV1kE411v7rw/?spm_id_from=333.788.recommend_more_video.0)
+
+|          | angular                                  | react                           | vue              |
+| -------- | ---------------------------------------- | ------------------------------- | ---------------- |
+| 编程范式 | 需要考虑作用域                           | 写组件, 拼合成应用              | 对初学者友好     |
+| 历史     | angularJS                                | \>16版本,顺滑升级, 提倡function | Vue3.0           |
+| 背景     | google支持                               | Facebook                        | 龙雨溪,阿里      |
+| 模板     | 基于模板                                 | jsx,没有解析,较快               | 基于模板解析     |
+| 组件     | 指令                                     | class方式, 现在兼容function     | 属性控制效果     |
+| 开发生态 | 全家桶                                   | 只提供基本框架,需要在生态中寻找 | 也有生态         |
+| 手机端   | flutter, 稍差, 学习成本较高,但是表现顺滑 | React Native, 有生态弥补坑      | Weex, 移动端稍差 |
+|          |                                          |                                 |                  |
+
+
+
 # Vue 3.0 + typescript + element-plus
 
 
