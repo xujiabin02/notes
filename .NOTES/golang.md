@@ -230,6 +230,8 @@ recover只有发生在panic之后调用才会生效, 放在同goroutine下的def
 
 **package以外的访问都需要将package内成员和变量名大写**
 
+struct[结构转换开发工具](https://www.golangs.cn/)
+
 
 
 ```go
@@ -256,6 +258,19 @@ type TopField struct {
 	TestB     string `json:"test_b"`
 }
 ```
+
+yml
+
+```go
+type AnsibleVars struct {
+	AnsibleSSHHost           string `yaml:"ansible_ssh_host,omitempty"`
+	AnsibleSSHPass           string `yaml:"ansible_ssh_pass,omitempty"`
+	AnsibleSSHUser           string `yaml:"ansible_ssh_user"`
+	AnsibleSSHPrivateKeyFile string `yaml:"ansible_ssh_private_key_file"`
+}
+```
+
+
 
 # reflect
 

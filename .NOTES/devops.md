@@ -119,9 +119,79 @@ https://zhuanlan.zhihu.com/p/373551077
 
 
 
-GO
+# 数据库变更的持续交付
+
+| 数据库变更的持续交付                                         | CI/CD |      |
+| ------------------------------------------------------------ | ----- | ---- |
+| [针对数据库变更的持续集成与交付](针对数据库变更的持续集成与交付) |       |      |
+| [数据库变更部署自动化秘诀](数据库变更部署自动化秘诀.md)      |       |      |
+|                                                              |       |      |
+
+
+
+## 变更规范
+
+
+
+|                                                              |      |      |
+| ------------------------------------------------------------ | ---- | ---- |
+| sql中不能有drop                                              |      |      |
+| 在migrate中备份表名 ``"{table}_{current_version}"``, 然后写一个回滚sql文件把表名改回来 |      |      |
+|                                                              |      |      |
 
 
 
 
 
+## 工具准备
+
+|                    |      |      |
+| ------------------ | ---- | ---- |
+| 一个开发同学一个库 |      |      |
+|                    |      |      |
+|                    |      |      |
+
+
+
+
+
+
+
+##  migrate as code
+
+|                                                |      |      |
+| ---------------------------------------------- | ---- | ---- |
+| https://github.com/playframework/playframework |      |      |
+|                                                |      |      |
+|                                                |      |      |
+
+
+
+
+
+# dba tool
+
+**Webhooks and insecure internal web services** **all tiers** **self-managed**
+
+1. On the top bar, select Menu > Admin.
+2. On the left sidebar, select Settings > Network.
+3. Expand the Outbound requests section:
+4. Select Allow requests to the local network from web hooks and services.
+
+
+
+[![Menu Admin 1](https://computingforgeeks.com/wp-content/uploads/2021/08/Menu-Admin-1-1024x415.png?ezimgfmt=rs:696x282/rscb23/ng:webp/ngcb23)](https://computingforgeeks.com/wp-content/uploads/2021/08/Menu-Admin-1-1024x415.png?ezimgfmt=rs:696x282/rscb23/ng:webp/ngcb23)
+
+On the new page, hover over or click “***Settings\***” then hit “***Network\***“.
+
+[![Settings Network 1](https://computingforgeeks.com/wp-content/uploads/2021/08/Settings-Network-1-1024x472.png?ezimgfmt=rs:696x321/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+When the new page loads, look for “***Outbound requests\***“. On the far right of this field, click on “***Expand\***“.
+
+[![Outbound requests expand](https://computingforgeeks.com/wp-content/uploads/2021/08/Outbound-requests-expand-1024x359.png?ezimgfmt=rs:696x244/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+Once Outbound requests field is expanded, you will see a field against a radio button that reads, “*Allow requests to the local network from web hooks and services*“. Click on the radio button to enable it as shared in the illustration below.
+
+[![Outbound Requests ip details filled](https://computingforgeeks.com/wp-content/uploads/2021/08/Outbound-Requests-ip-details-filled-1024x452.png?ezimgfmt=rs:696x307/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+![image-20220118193925548](.img_devops/image-20220118193925548.png)
