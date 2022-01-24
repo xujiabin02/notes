@@ -178,3 +178,39 @@ diff --git a/zlib.c b/zlib.c
 
 [PS](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E6%90%9C%E7%B4%A2)
 
+
+
+# git 如何所有分支里边搜索代码片段
+
+git grep "are you ok" $(git rev-list --all)`
+
+\1. 谷歌大法好：
+https://www.google.com/search?q=git+grep+all+branches&oq=git+grep+all&aqs=chrome.0.0i20i263i512j0i512l3j69i57j0i512j0i22i30l4.3117j0j7&sourceid=chrome&ie=UTF-8
+
+\2. 面对 stackoverflow 编程：
+https://stackoverflow.com/questions/15292391/is-it-possible-to-perform-a-grep-search-in-all-the-branches-of-a-git-project
+
+
+
+
+
+```sh
+搜索所有的 commit 的 code diff(最快)
+
+git log -p --all -S 'search string'
+git log -p --all -G 'match regular expression'
+
+搜索所有 local branch
+
+git branch | tr -d \* | sed '/->/d' | xargs git grep <regexp>
+
+搜索所有的 commit
+
+git grep -F "keyword" $(git rev-list --all)
+git grep <regexp> $(git rev-list --all)
+git rev-list --all | (while read rev; do git grep -e <regexp> $rev; done)
+
+```
+
+你这个需求用 github 网友的 pickaxe-diff 是最简洁舒适的 结合了 pickaxe-all 但是又不会 print 所有 log -p 无关的 diff  具体参考这里： https://gist.github.com/phil-blain/2a1cf81a0030001d33158e44a35ceda6 显示 Gist 代码 #limiting-diff-output
+

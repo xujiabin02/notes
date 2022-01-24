@@ -1,4 +1,20 @@
+# python vs Golang
+
+|      |      |      |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
+
+
+
+
+
+
 - defer()定義延遲調用，無論函數是否出錯，它都確保結束前被調用。
+
+
 
 
 
@@ -514,4 +530,12 @@ func (s *MyStruct) SetName2(name string) {
 # Rust 和 Go
 
 
+
+
+
+# error的处理
+
+```go
+err = yaml.Unmarshal(yamlFile, &resultMap)
+```
 
