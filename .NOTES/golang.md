@@ -539,3 +539,27 @@ func (s *MyStruct) SetName2(name string) {
 err = yaml.Unmarshal(yamlFile, &resultMap)
 ```
 
+
+
+
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+```
+
+
+
+```mermaid
+stateDiagram
+    [*] --> s1
+    s1 --> s2
+    s2 --> s4
+    s2 --> s3
+    s3 --> s4
+    s4 --> [*]
+    s3 --> [*]
+```
+
