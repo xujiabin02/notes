@@ -214,3 +214,30 @@ git rev-list --all | (while read rev; do git grep -e <regexp> $rev; done)
 
 你这个需求用 github 网友的 pickaxe-diff 是最简洁舒适的 结合了 pickaxe-all 但是又不会 print 所有 log -p 无关的 diff  具体参考这里： https://gist.github.com/phil-blain/2a1cf81a0030001d33158e44a35ceda6 显示 Gist 代码 #limiting-diff-output
 
+
+
+
+
+
+
+```yml
+推送代码: ggpush
+推送tags: gpoat
+
+```
+
+
+
+### gomod命令小结
+
+| **命令**             | **说明**                                                     |
+| :------------------- | :----------------------------------------------------------- |
+| `go mod download`    | 下载 go.mod 文件中指明的所有依赖                             |
+| `go mod tidy`        | 整理现有的依赖，删除未使用的依赖                             |
+| `go mod graph`       | 查看现有的依赖结构                                           |
+| `go mod init`        | 生成 go.mod 文件 (Go 1.13 中唯一一个可以生成 go.mod 文件的子命令) |
+| `go mod edit`        | 编辑 go.mod 文件                                             |
+| `go mod vendor`      | 导出现有的所有依赖 (事实上 Go modules 正在淡化 Vendor 的概念) |
+| `go mod verify`      | 校验一个模块是否被篡改过                                     |
+| `go clean -modcache` | 清理所有已缓存的模块版本数据                                 |
+| `go mod`             | 查看所有 go mod的使用命令                                    |

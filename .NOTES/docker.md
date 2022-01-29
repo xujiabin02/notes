@@ -32,3 +32,11 @@ hr:centos7 hr$ docker port 4966d35fe0a3
  docker inspect m1 | python3 -c 'import json,sys;print(json.load(sys.stdin)[0]["HostConfig"]["RestartPolicy"]["Name"])'
 ```
 
+
+
+
+
+```sh
+docker run -d --name portainer1.2.1 -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+```
+
