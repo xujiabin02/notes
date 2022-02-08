@@ -241,3 +241,65 @@ git rev-list --all | (while read rev; do git grep -e <regexp> $rev; done)
 | `go mod verify`      | 校验一个模块是否被篡改过                                     |
 | `go clean -modcache` | 清理所有已缓存的模块版本数据                                 |
 | `go mod`             | 查看所有 go mod的使用命令                                    |
+
+
+
+# gitlab-runner
+
+
+
+```sh
+$ sudo gitlab-runner register
+Runtime platform                                    arch=amd64 os=linux pid=1757391 revision=ece86343 version=13.5.0
+Running in system-mode.
+
+Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):
+https://gitlab.example.com/
+Please enter the gitlab-ci token for this runner:
+8LX6mbaPGYxxxxxxxxxx
+Please enter the gitlab-ci description for this runner:
+[hostname]: runner2
+Please enter the gitlab-ci tags for this runner (comma separated):
+
+Registering runner... succeeded                     runner=8LX6xxxx
+Please enter the executor: parallels, shell, ssh, virtualbox, kubernetes, custom, docker, docker-ssh, docker+machine, docker-ssh+machine:
+shell
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+```
+
+
+
+# 使用代码仓库管理 GitLab CI 变量
+
+
+
+
+
+
+
+> rules
+>
+> #### Complex rule clauses
+>
+> To conjoin `if`, `changes`, and `exists` clauses with an `AND`, use them in the same rule.
+>
+> In the following example:
+>
+> * If the `Dockerfile` file or any file in `/docker/scripts` has changed, and `$VAR` == "string value", then the job runs manually
+> * Otherwise, the job isn't included in the pipeline.
+>
+> ```yml
+> docker build:
+>   script: docker build -t my-image:$CI_COMMIT_REF_SLUG .
+>   rules:
+>     - if: '$VAR == "string value"'
+>       changes:  # Include the job and set to when:manual if any of the follow paths match a modified file.
+>         - Dockerfile
+>         - docker/scripts/*
+>       when: manual
+>       # - "when: never" would be redundant here. It is implied any time rules are listed.
+> 	
+> ```
+>
+> 
+

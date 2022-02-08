@@ -196,3 +196,26 @@ Once Outbound requests field is expanded, you will see a field against a radio b
 
 ![image-20220118193925548](.img_devops/image-20220118193925548.png)
 
+
+
+
+
+
+
+
+
+```mermaid
+sequenceDiagram
+participant P1 as 1.29
+participant P2 as 1.30
+participant DVC as Latest
+alt is OK
+P1->>DVC: upgrade
+else is Exception
+DVC-->>P1: Rollback
+end
+
+P2->>DVC: upgrade
+DVC-->>P2: Exception, Rollback
+```
+
