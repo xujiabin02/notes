@@ -248,7 +248,7 @@ If you are just running it from the command line, set the environment variables 
 
 
 
-```
+```sh
 N8N_BASIC_AUTH_ACTIVE=true
 N8N_BASIC_AUTH_USER=<USER>
 N8N_BASIC_AUTH_PASSWORD=<PASSWORD>
