@@ -30,3 +30,31 @@ yum install --downloadonly --downloaddir=/tmp/ cri-tools-1.0.0_beta.1-0
 
 
 
+# 8.4  yum 源
+
+```sh
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^baseurl=http://mirrors.cloud.aliyuncs.com/\$contentdir/\$releasever|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/centos/8/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+
+sudo yum makecache
+
+```
+
+
+
+# netstat / ss
+
+
+
+
+
+```
+
+```
+
+
+
+
+

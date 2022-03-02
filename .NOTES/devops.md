@@ -18,6 +18,14 @@ https://github.com/pingcap/tiup/blob/master/doc/dev/README.md
 
 
 
+[bytebase](https://github.com/bytebase/bytebase)
+
+```
+ docker run -d --init --name bytebase --restart always --publish 18080:18080 --volume ~/.bytebase/data:/var/opt/bytebase bytebase/bytebase:0.11.0 --data /var/opt/bytebase --host http://172.16.200.108 --port 18080
+```
+
+
+
 # 自动化测试tox
 
 
@@ -217,5 +225,32 @@ end
 
 P2->>DVC: upgrade
 DVC-->>P2: Exception, Rollback
+```
+
+
+
+
+
+# n8n
+
+
+
+```sh
+npm install n8n -g
+nohup n8n start &
+```
+
+
+
+## 基础认证
+
+If you are just running it from the command line, set the environment variables before starting n8n.
+
+
+
+```
+N8N_BASIC_AUTH_ACTIVE=true
+N8N_BASIC_AUTH_USER=<USER>
+N8N_BASIC_AUTH_PASSWORD=<PASSWORD>
 ```
 

@@ -392,7 +392,17 @@ struct实现interface 接口, 可以让 &struct 传入 以interface接口作为�
 
 
 
+```sh
 go env -w GOPROXY=https://goproxy.cn,direct
+```
+
+
+
+```sh
+GOPROXY=https://goproxy.io,direct
+```
+
+
 
 # 折腾破解
 
@@ -659,6 +669,10 @@ go.sum
 
 
 
+
+
+
+
 ```mermaid
 pie
     title Key elements in Product X
@@ -681,3 +695,43 @@ Alice->Bob: Hello Bob, how are you?
 Note right of Bob: Bob thinks
 Bob-->Alice: I am good thanks!
 ```
+
+
+
+## 简介Cobra
+
+[cobra](https://link.juejin.cn?target=http%3A%2F%2Fgithub.com%2Fspf13%2Fcobra)是一个命令行程序库，可以用来编写命令行程序。同时，它也提供了一个脚手架， 用于生成基于 cobra 的应用程序框架。非常多知名的开源项目使用了 cobra 库构建命令行，如[Kubernetes](https://link.juejin.cn?target=http%3A%2F%2Fkubernetes.io%2F)、[Hugo](https://link.juejin.cn?target=http%3A%2F%2Fgohugo.io%2F)、[etcd](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fcoreos%2Fetcd)等等等等。 本文介绍 cobra 库的基本使用和一些有趣的特性。
+
+## 
+
+作者：傻梦兽
+链接：https://juejin.cn/post/7057178581897740319
+来源：稀土掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+
+
+# 中级go
+
+
+
+[傻梦兽![lv-2](.img_golang/f597b88d22ce5370bd94495780459040.svg)](https://juejin.cn/user/2066737588876983)
+
+并发编程肯定要精通…，然后要会linux和一些运维工作，devops有部分是go来编写的。 我司要求就这么点吧，还有会grpc有些业务java处理复杂的事情go实现简单的话丢给go处理完数据，再就回去java那边处理，网络通信处理也要懂 也没什么了
+
+
+
+
+
+
+
+
+
+
+
+# yaml to json
+
+
+

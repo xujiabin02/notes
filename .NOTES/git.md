@@ -218,6 +218,12 @@ git rev-list --all | (while read rev; do git grep -e <regexp> $rev; done)
 
 
 
+# tag
+
+```sh
+git tag -a v1.4 -m "my version 1.4"
+```
+
 
 
 ```yml
@@ -302,4 +308,120 @@ Runner registered successfully. Feel free to start it, but if it's running alrea
 > ```
 >
 > 
+
+
+
+
+
+# Docker容器日志清理
+
+ Docker容器日志清理
+
+ 原创
+
+[品鉴初心](https://blog.51cto.com/wutengfei)2019-02-16 15:52:13博主文章分类：[Docker实战文档](https://blog.51cto.com/wutengfei/category20)©著作权
+
+*文章标签*[docker](https://blog.51cto.com/topic/docker.html)[docker日志清理](https://blog.51cto.com/topic/docker-log-cleanup-1.html)[/var/lib/docker](https://blog.51cto.com/topic/varlibdocker.html)[linux](https://blog.51cto.com/topic/linux-2.html)[Docker](https://blog.51cto.com/topic/docker.html)*文章分类*[Docker](https://blog.51cto.com/nav/docker)[云计算](https://blog.51cto.com/nav/cloud)*阅读数*7066
+
+# 前言
+
+最近发现公司Gitlab服务器磁盘满了，经排查发现是docker容器日志占用了几十个G容量，那么这些日志怎么去查看和清理呢？
+
+本节主要讲到的知识点如下：
+
+* （1）Docker容器日志路径
+* （2）如何清理Docker容器日志
+* （3）如何从根本上解决Docker容器日志占用空间问题
+
+# Docker容器日志路径
+
+在linux上，容器日志一般存放在/var/lib/docker/containers/container_id/下面，以json.log结尾的文件（业务日志）。如下：
+
+![Docker容器日志清理_docker](https://ws2.sinaimg.cn/large/006tKfTcgy1g08as7pq6jj31vu04q424.jpg)
+
+# 如何清理Docker容器日志
+
+使用命令：
+
+```html
+cat /dev/null  >  *-json.log 
+```
+
+当然你也可以使用`rm -rf`方式删除日志。但是对于正在运行的docker容器而言，你执行`rm -rf`命令后，通过df -h会发现磁盘空间并没有释放。
+
+原因是在Linux或者Unix系统中，通过rm -rf或者文件管理器删除文件，将会从文件系统的目录结构上解除链接（unlink）。如果文件是被打开的（有一个进程正在使用），那么进程将仍然可以读取该文件，磁盘空间也一直被占用。
+
+当然你也可以通过rm -rf删除后重启docker。
+
+上面两种清除 docker 日志的方式，只是临时上将磁盘空间释放出来了，但是，这样清理之后，随着时间的推移，容器日志总有一天还会积累的很大。下面我们就从根本上解决这个问题～
+
+# 如何从根本上解决Docker容器日志占用空间问题
+
+* （1）方法一：设置一个容器服务的日志大小上限
+
+我们要从根本上解决问题，一种方法是限制容器服务的日志大小上限。这个通过配置容器docker-compose的max-size选项来实现，如下：
+
+```html
+nginx: 
+  image: nginx:1.12.1 
+  restart: always 
+  logging: 
+    driver: “json-file” 
+    options: 
+      max-size: “5g” 
+
+```
+
+重启nginx容器之后，其日志文件的大小就被限制在5GB，再也不用担心了。
+
+* （2）方法二：全局设置
+
+新建/etc/docker/daemon.json，若有就不用新建了。添加log-dirver和log-opts参数，样例如下：
+
+```html
+# vim /etc/docker/daemon.json
+
+{
+  "log-driver":"json-file",
+  "log-opts": {"max-size":"500m", "max-file":"3"}
+}
+
+```
+
+说明⚠️：
+
+设置的日志大小，只对新建的容器有效。
+
+`max-size=500m`，意味着一个容器日志大小上限是500M
+
+`max-file=3`，意味着一个容器有三个日志，分别是id+.json、id+1.json、id+2.json
+
+```html
+// 重启docker守护进程
+
+# systemctl daemon-reload
+
+# systemctl restart docker
+
+```
+
+> **参考文档**
+>
+>  Docker[容器日志查看与清理](https://blog.csdn.net/yjk13703623757/article/details/80283729)
+
+
+
+
+
+## 提权
+
+可以直接使用 Docker 官方镜像仓库中的 docker:dind 镜像, 但是在运行时， 需要指定 `--privileged` 选项
+
+
+
+https://zhuanlan.zhihu.com/p/41330476
+
+
+
+
 

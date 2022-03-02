@@ -32,6 +32,7 @@
 ###### [typora](.NOTES/typora.md)
 ###### [vue_ts](.NOTES/vue_ts.md)
 ###### [web_service](.NOTES/web_service)
+###### [基因](.NOTES/基因.md)
 ###### [教育](.NOTES/教育.md)
 ###### [测试](.NOTES/测试.md)
 ###### [包管理vendor_mod](.NOTES/包管理vendor_mod.md)

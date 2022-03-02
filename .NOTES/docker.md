@@ -2,6 +2,40 @@
 
 
 
+# docker安装 
+
+centos 7 以上
+
+```sh
+yum install -y yum-utils device-mapper-persistent-data lvm2
+
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+yum install docker-ce -y
+
+yum install bridge-utils -y
+
+sudo brctl addbr docker0
+
+sudo ip addr add 10.49.0.1/24 dev docker0
+
+# vi /etc/docker/daemon.json
+
+# {"bip":"10.49.0.1/24"}
+
+sudo ip link set dev docker0 up
+
+sudo ip addr show docker0
+
+sudo groupadd docker
+
+sudo usermod -aG docker appuser
+
+mkdir /app/docker && ln -s /app/docker /var/lib/docker && chown -R appuser:appuser /app/docker
+
+sudo systemctl restart docker
+```
+
 
 
 ```sh
@@ -19,6 +53,8 @@ hr:centos7 hr$ docker port 4966d35fe0a3
 ```
 
 # docker swarm
+
+官方网站：[https://docs.docker.com/engine/swarm/](https://links.jianshu.com/go?to=https%3A%2F%2Fdocs.docker.com%2Fengine%2Fswarm%2F)
 
 ![img](.img_docker/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjUzMzg1Ng==,size_16,color_FFFFFF,t_70.png)
 
@@ -72,7 +108,7 @@ $ git clone https://github.com/jpetazzo/pipework.git $ sudo cp pipework/pipework
 
 pipework不仅可以使用Linux bridge连接Docker容器，还可以与OpenVswitch结合，实现Docker容器的VLAN划分。
 
-```
+```sh
  1 #主机A的IP地址为:192.168.187.147
  2 #在主机A上创建4个Docker容器，test1、test2、test3、test4  3 
  4 docker run -itd --name test1 --net=none busybox sh  5 docker run -itd --name test2 --net=none busybox sh  6 docker run -itd --name test3 --net=none busybox sh  7 docker run -itd --name test4 --net=none busybox sh  8 
@@ -87,7 +123,7 @@ pipework不仅可以使用Linux bridge连接Docker容器，还可以与OpenVswit
 
 这个功能其实是由于OpenVSwitch本身支持VLAN功能，在将veth pair的一端加入ovs0网桥时，指定了tag。底层的操作是
 
-```
+```sh
 ovs-vsctl add-port ovs0 veth* tag=100
 ```
 
@@ -124,3 +160,514 @@ ovs-vsctl add-port ovs0 veth* tag=100
 ```
 
 2）如果不划分vlan的话，是可以跨主机通信的。
+
+
+
+
+
+# 敏感数据及密码
+
+docker secret 
+
+gitlab-ci private variable
+
+
+
+# 如何将Docker镜像从1.43G瘦身到22.4MB
+
+张亚龙 译 [Go招聘](javascript:void(0);) *2021-09-18 14:47*
+
+收录于话题#Go译文18个
+
+如果你正在做Web开发相关工作，那么你可能已经知道容器化的概念，以及知道它强大的功能等等。
+
+
+
+但在使用Docker时，镜像大小至关重要。我们从create-react-app（https://reactjs.org/docs/create-a-new-react-app.html）获得的样板项目通常都超过1.43 GB。
+
+
+
+今天，我们将容器化一个ReactJS应用程序，并学习一些关于如何减少镜像大小并提高性能的技巧。
+
+
+
+我们将以ReactJS为例，但它适用于任何类型的NodeJS应用程序。
+
+
+
+步骤1：创建项目
+
+
+
+1、借助脚手架通过命令行模式创建React项目
+
+```
+npx create-react-app docker-image-test
+```
+
+
+
+2、命令执行成功后将生成一个基础React应用程序架构
+
+
+
+3、我们可以进入项目目录安装依赖并运行项目
+
+```
+cd docker-image-test
+yarn install
+yarn start
+```
+
+
+
+4、通过访问http://localhost:3000可以访问已经启动的应用程序
+
+
+
+![图片](.img_docker/640-20220225105337188.png)
+
+
+
+步骤2：构建第一个镜像
+
+
+
+1、在项目的根目录中创建一个名为Dockerfile的文件，并粘贴以下代码：
+
+```
+FROM node:12
+
+WORKDIR /app
+
+COPY package.json ./
+
+RUN yarn install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["yarn", "start"]
+```
+
+
+
+2、注意，这里我们从Docker仓库获得基础镜像Node:12，然后安装依赖项并运行基本命令。（我们不会在这里讨论Docker命令的细节）
+
+
+
+3、现在可以通过终端为容器构建镜像
+
+```
+docker build -t docker-image-test .
+```
+
+
+
+4、Docker构建镜像完成之后，你可以使用此命令查看已经构建的镜像：
+
+```
+docker images
+```
+
+在查询结果列表的顶部，是我们新创建的图像，在最右边，我们可以看到图像的大小。目前是1.43GB。
+
+
+
+![图片](.img_docker/640.png)
+
+
+
+5、我们使用以下命令运行镜像
+
+```
+docker run --rm -it -p 3000:3000/tcp docker-image-test:latest
+```
+
+打开浏览器并且刷新页面验证其可以正常运行。
+
+
+
+步骤3：修改基础镜像
+
+
+
+1、先前的配置中我们用node:12作为基础镜像。但是传统的Node镜像是基于Ubuntu的，对于我们简单的React应用程序来说这大可不必。
+
+
+
+2、从DockerHub（官方Docker镜像注册表）中我们可以看到，基于alpine-based的Node镜像比基于Ubuntu的镜像小得多，而且它们的依赖程度非常低。
+
+
+
+3、下面显示了这些基本图像的大小比较
+
+
+
+![图片](.img_docker/640-20220225105337015.png)
+
+
+
+现在我们将使用node:12-alpine作为我们的基础镜像，看看会发生什么。
+
+```
+FROM node:12-alpine
+
+WORKDIR /app
+
+COPY package.json ./
+
+RUN yarn install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["yarn", "start"]
+```
+
+然后我们以此构建我们的镜像，并与之前做对比。
+
+
+
+![图片](.img_docker/640-20220225105336942.png)
+
+
+
+哇！我们的镜像大小减少到只有580MB，这是一个很大的进步。但还能做得更好吗？
+
+
+
+步骤4：多级构建
+
+
+
+1、在之前的配置中，我们会将所有源代码也复制到工作目录中。
+
+
+
+2、但这大可不必，因为从发布和运行来看我们只需要构建好的运行目录即可。因此，现在我们将引入多级构建的概念，以减少不必要的代码和依赖于我们的最终镜像。
+
+
+
+3、配置是这样的：
+
+```
+# STAGE 1
+
+FROM node:12-alpine AS build
+
+WORKDIR /app
+
+COPY package.json ./
+
+RUN yarn  install
+
+COPY . /app
+
+RUN yarn build
+
+
+# STAGE 2
+
+FROM node:12-alpine
+
+WORKDIR /app
+
+RUN npm install -g webserver.local
+
+COPY --from=build /app/build ./build
+
+EXPOSE 3000
+
+CMD webserver.local -d ./build
+```
+
+
+
+4、在第一阶段，安装依赖项并构建我们的项目
+
+
+
+5、在第二阶段，我们复制上一阶段构建产物目录，并使用它来运行应用程序。
+
+
+
+6、这样我们在最终的镜像中就不会有不必要的依赖和代码。
+
+
+
+接下来，构建镜像成功后并从列表中查看镜像
+
+
+
+![图片](.img_docker/640-20220225105337116.png)
+
+
+
+现在我们的镜像大小只有97.5MB。这简直太棒了。
+
+
+
+步骤5：使用Nginx
+
+
+
+1、我们正在使用Node服务器运行ReactJS应用程序的静态资源，但这不是静态资源运行的最佳选择。
+
+
+
+2、我们尝试使用Nginx这类更高效、更轻量级的服务器来运行资源应用程序，也可以尽可能提高其性能，并且减少镜像的量。
+
+
+
+3、我们最终的Docker配置文件看起来像这样
+
+```
+# STAGE 1
+
+FROM node:12-alpine AS build
+
+WORKDIR /app
+
+COPY package.json ./
+
+RUN yarn  install
+
+COPY . /app
+
+RUN yarn build
+
+# STAGE 2
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+
+
+4、我们正在改变Docker配置的第二阶段，以使用Nginx来服务我们的应用程序。
+
+
+
+5、然后使用当前配置构建镜像。
+
+
+
+![图片](.img_docker/640-20220225105337097.png)
+
+
+
+6、镜像大小减少到只有22.4MB！
+
+
+
+7、同时，我们正在使用一个性能更好的服务器来服务我们出色的应用程序。
+
+
+
+8、我们可以使用以下命令验证应用程序是否仍在工作。
+
+```
+docker run --rm  -it -p 3000:80/tcp docker-image-test:latest
+```
+
+
+
+9、注意，我们将容器的80端口暴露给外部，因为默认情况下，Nginx将在容器内部的80端口上可用。
+
+
+
+所以这些是一些简单的技巧，你可以应用到你的任何NodeJS项目，以大幅减少镜像大小。
+
+
+
+现在，您的容器确实更加便携和高效了。
+
+
+
+原文链接：https://javascript.plainenglish.io/how-i-reduced-docker-image-size-from-1-43-gb-to-22-4-mb-84058d70574b
+
+
+
+来自：https://cloud.51cto.com/art/202108/679717.htm
+
+
+
+
+
+# 在 Go 中使用 dockertest 进行集成测试
+
+原创 程序员ug [幽鬼](javascript:void(0);) *2021-11-29 11:30*
+
+收录于话题#golang56个
+
+争做团队核心程序员，关注「幽鬼」
+
+![图片](.img_docker/640.jpeg)
+
+进行集成测试（或系统测试）通常意味着让数据库填充数据，像 redis、elasticsearch 等，通常，我们的软件与之交互的任何基础设施都可以工作。
+
+最常见的方法是复制我们的生产基础设施，其实用容器来实现还是比较容易的，比如 docker 容器。
+
+我们可以为需要复制的每个服务设置和运行一个容器，我们可以使用 docker-compose 对其进行编排并创建一些 makefile 或只是一个简单的脚本来准备基础设施并运行集成测试。
+
+如果你的测试是独立的（它们应该是独立的），你必须找到在测试之间“重新启动”基础设施服务的方法，这可能很难通过分离的基础设施设置和测试来实现（基础设施是在脚本中设置的，而测试在 Go 文件中）
+
+## 01 dockertest
+
+如果你使用的是 Go，则可以使用 dockertest，一个可以管理和编排 Go 测试文件中的容器的库。
+
+从 Go 文件管理测试基础设施容器，允许我们控制在每个测试中需要的服务（例如，某些包正在使用数据库而不是 Redis，为这个测试运行 Redis 没有意义）
+
+### 安装 dockertest
+
+要安装 dockertest，只需运行：
+
+```sh
+go get -u github.com/ory/dockertest/v3
+```
+
+### 使用 dockertest
+
+使用 dockertest 设置基础设施的最简单方法是在测试文件的`TestMain` 函数中添加设置代码。
+
+`TestMain` 是在包中运行测试之前调用的函数，更多信息参考这里。
+
+这是如何使用 dockertest 设置 MySQL 服务的示例：
+
+```
+package mypackage_test
+
+import (
+ "database/sql"
+ "fmt"
+ "log"
+ "os"
+ "testing"
+
+ _ "github.com/go-sql-driver/mysql"
+ "github.com/ory/dockertest/v3"
+)
+
+var db *sql.DB
+
+func TestMain(m *testing.M) {
+ // uses a sensible default on windows (tcp/http) and linux/osx (socket)
+ pool, err := dockertest.NewPool("")
+ if err != nil {
+  log.Fatalf("Could not connect to docker: %s", err)
+ }
+
+ // pulls an image, creates a container based on it and runs it
+ resource, err := pool.Run("mysql", "5.7", []string{"MYSQL_ROOT_PASSWORD=secret"})
+ if err != nil {
+  log.Fatalf("Could not start resource: %s", err)
+ }
+
+ // exponential backoff-retry, because the application in the container might not be ready to accept connections yet
+ if err := pool.Retry(func() error {
+  var err error
+  db, err = sql.Open("mysql", fmt.Sprintf("root:secret@(localhost:%s)/mysql", resource.GetPort("3306/tcp")))
+  if err != nil {
+   return err
+  }
+  return db.Ping()
+ }); err != nil {
+  log.Fatalf("Could not connect to docker: %s", err)
+ }
+
+  // RESERVED FOR DATABASE MIGRATIONS
+ code := m.Run()
+ 
+ // You can't defer this because os.Exit doesn't care for defer
+ if err := pool.Purge(resource); err != nil {
+  log.Fatalf("Could not purge resource: %s", err)
+ }
+ 
+ os.Exit(code)
+}
+```
+
+### 填充数据库
+
+现在我们有工作的数据库服务，但这个数据库是空的。dockertest 正在为容器使用通用 MySQL 映像，并且没有与我们的应用程序相关的任何内容。
+
+之前写了一篇关于 数据库迁移，在那篇文章中，我谈到了 *go-migrate*，一个运行数据库迁移的工具，那篇文章，我专注于作为 CLI 工具使用，现在将在我们的 Go 代码中使用它。
+
+我们将先前编写的代码 `// RESERVED FOR DATABASE MIGRATIONS` 添加到此代码中：
+
+```
+m, err := migrate.NewWithDatabaseInstance("file://<path-to-migration-folder>, "mysql", driver)
+if err != nil {
+    log.Fatalf("Error running migrations: %s", err)
+}
+err = m.Up()
+if err != nil {
+    log.Fatal(err.Error())
+}
+```
+
+然后在 dockertest up 数据库后，迁移工具填充数据库，我们的集成测试可以使用数据库中的相同数据运行。
+
+如果应用程序有多个包（这是常见情况），我会将服务的设置代码放在一个独立文件中，该文件在每个包中调用：
+
+```
+// it_utils.go
+package it_utils
+
+func IntegrationTestSetup() (*dockertest.Pool, *[]dockertestResource {
+  // Setup the services
+  //return the pool and the resources
+}
+
+func IntegrationTestTeardown(pool *dockertest.Pool, resources []*dockertest.Resource) {
+ for _, resource := range resources {
+  if err := pool.Purge(resource); err != nil {
+   fmt.Printf("Could not purge resource: %s\n", err)
+  }
+ }
+}
+```
+
+那么在每个包的测试中我们只需要添加如下代码：
+
+```
+package my_package
+
+func TestMyTests (t *testing.T) {
+    if testing.Short() {
+  t.Skip()
+ }
+ pool, resources := itutils.IntegrationTestSetup()
+ defer itutils.IntegrationTestTeardown(pool, resources)
+ 
+ t.Run("your test", func(t *testing.T) {
+ ...
+ }
+}
+
+func TestOtherTests (t *testing.T) {
+    if testing.Short() {
+  t.Skip()
+ }
+ pool, resources := itutils.IntegrationTestSetup()
+ defer itutils.IntegrationTestTeardown(pool, resources)
+ 
+ t.Run("your other test", func(t *testing.T) {
+ ...
+ }
+}
+```
+
+以这种方式在每个测试块上执行此操作，服务在新容器中运行，从而使测试完全独立。
+
+作为最后一个提示，我建议将集成测试放在不同的包中以避免循环导入。
+
+原文链接：https://sergiocarracedo.es/integration-tests-in-golang-with-dockertest/
