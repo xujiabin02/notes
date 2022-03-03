@@ -2,7 +2,7 @@
 
 
 
-# docker安装 
+# docker安装
 
 centos 7 以上
 

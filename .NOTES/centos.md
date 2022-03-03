@@ -88,3 +88,42 @@ sudo yum makecache
 
 
 
+
+
+
+
+#   unbound variable
+
+
+
+when
+
+```sh
+set -ue
+if [ -n "$pasdwcfsf" ]
+then
+  echo OK
+fi
+```
+
+Very close to what you posted, actually. You can use something called [Bash parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) to accomplish this.
+
+To get the assigned value, or `default` if it's missing:
+
+```sh
+FOO="${VARIABLE:-default}"  # If variable not set or null, use default.
+# If VARIABLE was unset or null, it still is after this (no assignment done).
+```
+
+Or to assign `default` to `VARIABLE` at the same time:
+
+```sh
+FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
+```
+
+
+
+^PS:  [Default shell variables value](https://bash.cyberciti.biz/guide/Default_shell_variables_value)
+
+
+
