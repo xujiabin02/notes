@@ -250,7 +250,35 @@ If you are just running it from the command line, set the environment variables 
 
 ```sh
 N8N_BASIC_AUTH_ACTIVE=true
-N8N_BASIC_AUTH_USER=<USER>
-N8N_BASIC_AUTH_PASSWORD=<PASSWORD>
+N8N_BASIC_AUTH_USER=USER
+N8N_BASIC_AUTH_PASSWORD=PASSWORD
+```
+
+
+
+
+
+# eureka 返回json
+
+
+
+
+
+
+Spring Boot在调用Eureka REST    接口返回格式为xml格式,想改为json格式
+
+解决办法
+请求头部改为    Accept: text/html, application/xhtml+xml, application/json;q=0.9, */*;q=0.8
+
+
+
+
+
+```http
+GET /eureka/apps?Accept=text%2Fhtml,%20application%2Fxhtml%2Bxml,%20application%2Fjson%3Bq%3D0.9,%20*%2F*%3Bq%3D0.8 HTTP/1.1
+Accept: text/html, application/xhtml+xml, application/json;q=0.9, */*;q=0.8
+Host: 172.16.200.101:8082
+Connection: close
+User-Agent: Paw/3.3.0 (Macintosh; OS X/10.14.6) GCDHTTPRequest
 ```
 

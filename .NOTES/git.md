@@ -232,6 +232,28 @@ git tag -a v1.4 -m "my version 1.4"
 
 ```
 
+## 删除tag
+
+git  删除本地标签：
+
+
+
+```css
+git tag -d 标签名  
+
+例如：git tag -d v3.1.0
+```
+
+git  删除远程标签：
+
+
+
+```ruby
+git push origin :refs/tags/标签名  
+
+例如：git push origin :refs/tags/v3.1.0
+```
+
 
 
 ### gomod命令小结

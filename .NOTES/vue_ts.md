@@ -640,6 +640,17 @@ https://bengbu-yuezhang.github.io/2019/03/10/xterm/
 
 
 
+# build 速度问题
+
+```sh
+npm config set cache 目录地址
+安装的依赖默认是从npm官网仓库下载，官网下载一般比较慢，我们可以手动配置npm的下载源
+npm config set registry https://registry.npm.taobao.org
+国内源有被挂马记录, 建议做离线源,从官方同步
+```
+
+
+
 
 
 

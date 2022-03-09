@@ -671,3 +671,35 @@ func TestOtherTests (t *testing.T) {
 作为最后一个提示，我建议将集成测试放在不同的包中以避免循环导入。
 
 原文链接：https://sergiocarracedo.es/integration-tests-in-golang-with-dockertest/
+
+
+
+
+
+# bytebase
+
+```sh
+docker run -d --init --name bytebase --restart always --publish 18080:8080 --volume ~/.bytebase/data:/var/opt/bytebase bytebase/bytebase:0.11.0 --data /var/opt/bytebase --host http://172.16.200.82 --port 18080
+```
+
+
+
+# rancher
+
+
+
+
+
+```sh
+
+
+docker run --name m1 -p 63306:3306 -e MYSQL_ROOT_PASSWORD=Xinlue@2022 -d mysql:8.0
+
+docker run   -d --name=rancher-master --privileged   --restart=unless-stopped   -p 18081:80 -p 44444:443  \
+-v /home/infra/rancher/cni:/var/lib/cni \
+-v /home/infra/rancher/log:/var/log \
+-v /home/infra/rancher/kubelet:/var/lib/kubelet \
+-v /home/infra/rancher/rancher:/var/lib/rancher \
+   rancher/rancher:v2.6.0
+```
+

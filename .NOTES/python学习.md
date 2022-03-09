@@ -1952,3 +1952,25 @@ browser.close()
 
 
 
+# text/plain
+
+
+
+
+
+```python
+@app.route("/")
+def robots_txt():
+    response = make_response(render_template("readme.txt"))
+    response.headers["Content-type"]="text/plain;charset=UTF-8"
+    return response
+```
+
+
+
+# whl打包成.so
+
+编译后必须在相同Python版本下运行，不能跨版本
+
+
+
