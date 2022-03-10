@@ -18,6 +18,7 @@
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
 - [linux清理message](.NOTES/linux清理message.md)
+- [mysql](.NOTES/mysql.md)
 - [nextcloud](.NOTES/nextcloud.md)
 - [nginx](.NOTES/nginx.md)
 - [pex](.NOTES/pex.md)
