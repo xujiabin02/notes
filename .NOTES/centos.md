@@ -127,3 +127,12 @@ FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
 
 
 
+# 阿里云linux[磁盘扩容](https://help.aliyun.com/document_detail/113316.html)
+
+
+
+```sh
+growpart /dev/vdb 1
+resize2fs /dev/vdb1
+```
+

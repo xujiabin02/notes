@@ -112,3 +112,19 @@ command_type: Query
 ```
 
 **版权声明：**著作权归作者所有。
+
+
+
+
+
+
+
+```
+create table unii_app_info_20220314 like unii_app_info;
+insert into unii_app_info_20220314  select * from  unii_app_info;
+
+ocean_app_info
+create table ocean_app_info_20220314 like ocean_app_info;
+insert into ocean_app_info_20220314  select * from  ocean_app_info;
+```
+
