@@ -29,6 +29,40 @@ sudo ip addr show docker0
 
 sudo groupadd docker
 
+sudo usermod -aG docker unii
+
+mkdir -/app/docker && ln -s /app/docker /var/lib/docker && chown -R unii:unii /app/docker
+
+sudo systemctl restart docker
+```
+
+
+
+
+
+```sh
+yum install -y yum-utils device-mapper-persistent-data lvm2
+
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+yum install docker-ce -y
+
+yum install bridge-utils -y
+
+sudo brctl addbr docker0
+
+sudo ip addr add 10.49.0.1/24 dev docker0
+
+# vi /etc/docker/daemon.json
+
+# {"bip":"10.49.0.1/24"}
+
+sudo ip link set dev docker0 up
+
+sudo ip addr show docker0
+
+sudo groupadd docker
+
 sudo usermod -aG docker appuser
 
 mkdir /app/docker && ln -s /app/docker /var/lib/docker && chown -R appuser:appuser /app/docker
