@@ -277,6 +277,12 @@ git push origin :refs/tags/标签名
 
 
 ```sh
+curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
+```
+
+
+
+```sh
 $ sudo gitlab-runner register
 Runtime platform                                    arch=amd64 os=linux pid=1757391 revision=ece86343 version=13.5.0
 Running in system-mode.
@@ -884,4 +890,32 @@ git cp <commitHash>
 文中列举的应用场景有部分不太恰当，只是想便于同学们理解，最重要的是要理解命令的作用是什么，活学活用才能发挥最大功效。
 
 如果你也有一些实用的 Git 命令也欢迎在评论区分享~
+
+
+
+
+
+# API
+
+
+
+[project](https://gitlab.xinluex.com/help/api/projects.md)
+
+
+
+
+
+总结：
+
+```bash
+客户端主机操作
+1.echo "192.168.0.254 idocker.io" >> /etc/hosts
+2.mkdir -p /etc/docker/certs.d/idocker.io
+3.把192.168.0.254主机上的/etc/nginx/ssl/out/root.crt复制到客户端的/etc/docker/certs.d/idocker.io目录下
+4.客户端使用：
+(1) 登陆：docker login -u admin -p newnode7852 idocker.io
+(2) 打标签：docker tag image:label idocker.io/image:label
+(3) 推送：docker push idocker.io/image:label
+(4) 拉取：docker pull idocker.io/image:label
+```
 

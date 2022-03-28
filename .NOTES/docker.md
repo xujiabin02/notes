@@ -31,7 +31,7 @@ sudo groupadd docker
 
 sudo usermod -aG docker unii
 
-mkdir -/app/docker && ln -s /app/docker /var/lib/docker && chown -R unii:unii /app/docker
+mkdir -p /app/docker && ln -s /app/docker /var/lib/docker && chown -R unii:unii /app/docker
 
 sudo systemctl restart docker
 ```
@@ -1148,4 +1148,438 @@ docker image prune -a
 * 《[Docker中的ENTRYPOINT与CMD](https://note.qidong.name/2017/11/docker-entrypoint-cmd/)》
 * 《[在Docker中安装uWSGI](https://note.qidong.name/2017/06/28/uwsgi-in-docker/)》
 * 《[在Docker中使用python-ldap](https://note.qidong.name/2017/06/28/python-ldap-in-docker/)》
+
+
+
+
+
+
+
+总结：
+
+```bash
+客户端主机操作
+1.echo "192.168.0.254 idocker.io" >> /etc/hosts
+2.mkdir -p /etc/docker/certs.d/idocker.io
+3.把192.168.0.254主机上的/etc/nginx/ssl/out/root.crt复制到客户端的/etc/docker/certs.d/idocker.io目录下
+4.客户端使用：
+(1) 登陆：docker login -u admin -p newnode7852 idocker.io
+(2) 打标签：docker tag image:label idocker.io/image:label
+(3) 推送：docker push idocker.io/image:label
+(4) 拉取：docker pull idocker.io/image:label
+```
+
+# nexus3
+
+## 1，配置
+
+### 1，创建blob存储
+
+登陆之后，先创建一个用于存储镜像的空间。
+
+![img](.img_docker/794174-20200612133020297-980197467-20220328124636594.png)
+
+定义一个name，下边的内容会自动补全。
+![img](.img_docker/794174-20200612133129338-519605832-20220328124636603.png)
+
+然后保存。
+![img](.img_docker/794174-20200612133155921-1433510946-20220328124636571.png)
+
+> 注意：实际生产中使用，建议服务器存储500G或以上。
+
+### 2，创建一个hosted类型的docker仓库
+
+Hosted类型仓库用作我们的私有仓库，替代harbor的功能。
+
+点击步骤如下：
+![img](.img_docker/794174-20200612133323250-1760103448-20220328124636586.png)
+
+而后可见所支持种类之丰富，可见一斑。
+![img](.img_docker/794174-20200612133352316-493084947-20220328124636595.png)
+
+这里我们看到docker类型有三种：
+![img](.img_docker/794174-20200612133449721-498578305-20220328124636593.png)
+
+* `hosted` : 本地存储，即同 docker 官方仓库一样提供本地私服功能。
+* `proxy` : 提供代理其他仓库的类型，如 docker 中央仓库。
+* `group` : 组类型，实质作用是组合多个仓库为一个地址。
+
+先来创建一个hosted类型的私有仓库。
+
+点击 `Repository`下面的`Repositories` – Create repository – `docker(hosted)` :
+
+`Name`: 定义一个名称docker-local
+
+`Online`: 勾选。这个开关可以设置这个Docker repo是在线还是离线。
+
+```undefined
+Repository Connectors
+```
+
+* 下面包含HTTP和HTTPS两种类型的port。
+* 有什么用呢？说明讲得很清楚：
+* 
+* 连接器允许docker客户端直接连接到docker仓库，并实现一些请求操作，如docker pull, docker push, API查询等。但这个连接器并不是一定需要配置的，尤其是我们后面会用group类型的docker仓库来聚合它。
+
+我们把HTTP这里勾选上，然后设置端口为8083。
+
+```undefined
+Allow anonymous docker pull 
+```
+
+不勾选。这样的话就不允许匿名访问了，执行docker pull或 docker push之前，都要先登录：docker login
+
+```undefined
+Docker Registry API Support
+```
+
+Docker registry默认使用的是API v2, 但是为了兼容性，我们可以勾选启用API v1。
+
+```undefined
+Storage
+```
+
+`Blob store`：我们下拉选择前面创建好的专用blob：docker-hub。
+
+```undefined
+Hosted
+```
+
+开发环境，我们运行重复发布，因此Delpoyment policy 我们选择Allow redeploy。
+
+整体配置截图如下：
+![img](.img_docker/794174-20200612134112995-2030978960-20220328124636625.png)
+
+### 3，创建一个proxy类型的docker仓库
+
+proxy类型仓库，可以帮助我们访问不能直接到达的网络，如另一个私有仓库，或者国外的公共仓库，如官方的dockerhub镜像库。
+
+创建一个proxy类型的仓库
+
+`Name`: proxy-docker-hub
+
+`Repository Connectors`: 不设置。
+
+```javascript
+Proxy
+```
+
+`Remote Storage`: docker hub的proxy，这里填写: [https://registry-1.docker.io](http://www.eryajf.net/go?url=https://registry-1.docker.io) 这个是官方默认的一个链接
+
+`Docker Index`： Use Docker Hub
+
+`Storage`：idocker-hub
+
+整体配置截图如下：
+![img](.img_docker/794174-20200612152631213-1799970386-20220328124637003.png)
+![img](.img_docker/794174-20200612134548011-125747934-20220328124636703.png)
+![img](.img_docker/794174-20200612134609608-2133160338-20220328124636736.png)
+
+### 4，创建一个group类型的docker仓库
+
+group类型的docker仓库，是一个聚合类型的仓库。它可以将前面我们创建的3个仓库聚合成一个URL对外提供服务，可以屏蔽后端的差异性，实现类似透明代理的功能。
+
+`name`：docker-group
+
+`Repository Connectors`：启用了一个监听在8082端口的http连接器；
+
+`Storage`：选择专用的blob存储idocker-hub。
+
+`group` : 将左边可选的3个仓库，添加到右边的members下。
+
+整体配置截图如下：
+![img](.img_docker/794174-20200612134819599-898753587-20220328124636733.png)
+![img](.img_docker/794174-20200612134842301-103829952-20220328124636933.png)
+
+最终效果
+![img](.img_docker/794174-20200612134935291-114474621-20220328124636724.png)
+
+到这儿，nexus在docker这一块是部署已经完成了，但是这样并不能很好的使用。因为group仓库并不能推送镜像，因为你推送自己制作的镜像到仓库还得通过本地仓库的端口去推送，很不方便！
+
+有一个解决方法：通过Nginx来判断推镜像还是拉镜像，然后代理到不同端口
+
+## 5，nginx代理方式访问仓库
+
+在部署 Nginx 部分，需要先生成自签名 SSL 证书，因为后面不想在 docker pull 的时候还要带一个端口！这里需要 2 个域名，一个用来展示 nexus 前台，另一个用做 docker 仓库，比如：
+
+* nexus 前台：`repo.ald.com`
+* docker 仓库：`idocker.io`
+
+### 1.安装nginx
+
+```mipsasm
+yum -y install nginx
+```
+
+### 2.生成证书
+
+这里推荐一个一键生成工具，大家可以尝试使用：https://github.com/Fishdrowned/ssl ，使用方法请参考作者说明。
+
+Ps：如果你打算做外网仓库服务，那也可以去申请一个免费SSL证书，我这边是内部oa域名使用，所以只能用自签名证书了。
+
+创建证书方式如下：
+
+```vhdl
+#直接切换到应用目录
+# cd /etc/nginx/conf.d/
+ 
+#下载工具
+# git clone https://github.com/Fishdrowned/ssl.git
+Cloning into 'ssl'...
+remote: Enumerating objects: 106, done.
+remote: Total 106 (delta 0), reused 0 (delta 0), pack-reused 106
+Receiving objects: 100% (106/106), 171.53 KiB | 286.00 KiB/s, done.
+Resolving deltas: 100% (48/48), done.
+ 
+#生成证书
+# cd ssl
+# ./gen.cert.sh idocker.io
+
+Removing dir out
+Creating output structure
+Done
+Generating a 2048 bit RSA private key
+......+++
+......................................................................................................................+++
+writing new private key to 'out/root.key.pem'
+-----
+Generating RSA private key, 2048 bit long modulus
+...............................................................................+++
+.................................+++
+e is 65537 (0x10001)
+Using configuration from ./ca.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CN'
+stateOrProvinceName   :ASN.1 12:'Guangdong'
+localityName          :ASN.1 12:'Guangzhou'
+organizationName      :ASN.1 12:'Fishdrowned'
+organizationalUnitName:ASN.1 12:'idocker.io'
+commonName            :ASN.1 12:'*.idocker.io'
+Certificate is to be certified until Jun 12 04:29:18 2022 GMT (730 days)
+
+Write out database with 1 new entries
+Data Base Updated
+
+Certificates are located in:
+lrwxrwxrwx 1 root root 37 6月  12 12:29 /etc/nginx/conf.d/ssl/out/idocker.io/idocker.io.bundle.crt -> ./20200612-1229/idocker.io.bundle.crt
+lrwxrwxrwx 1 root root 30 6月  12 12:29 /etc/nginx/conf.d/ssl/out/idocker.io/idocker.io.crt -> ./20200612-1229/idocker.io.crt
+lrwxrwxrwx 1 root root 15 6月  12 12:29 /etc/nginx/conf.d/ssl/out/idocker.io/idocker.io.key.pem -> ../cert.key.pem
+lrwxrwxrwx 1 root root 11 6月  12 12:29 /etc/nginx/conf.d/ssl/out/idocker.io/root.crt -> ../root.crt
+```
+
+### 3.配置nginx
+
+```bash
+# ip地址可以换成内网ip
+upstream nexus_docker_get {
+    server 192.168.75.11:8082;
+}
+ 
+upstream nexus_docker_put {
+    server 192.168.75.11:8083;
+}
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name idocker.io;
+    access_log /var/log/nginx/idocker.io.log;
+    # 证书
+    ssl_certificate /etc/nginx/conf.d/ssl/out/idocker.io/idocker.io.crt; # 证书路径根据上面生成的来定
+    ssl_certificate_key /etc/nginx/conf.d/ssl/out/idocker.io/idocker.io.key.pem;
+    ssl_protocols TLSv1.1 TLSv1.2;
+    ssl_ciphers '!aNULL:kECDH+AESGCM:ECDH+AESGCM:RSA+AESGCM:kECDH+AES:ECDH+AES:RSA+AES:';
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    # disable any limits to avoid HTTP 413 for large image uploads
+    client_max_body_size 0;
+    # required to avoid HTTP 411: see Issue #1486 (https://github.com/docker/docker/issues/1486)
+    chunked_transfer_encoding on;
+    # 设置默认使用推送代理
+    set $upstream "nexus_docker_put";
+    # 当请求是GET，也就是拉取镜像的时候，这里改为拉取代理，如此便解决了拉取和推送的端口统一
+    if ( $request_method ~* 'GET') {
+        set $upstream "nexus_docker_get";
+    }
+    # 只有本地仓库才支持搜索，所以将搜索请求转发到本地仓库，否则出现500报错
+    if ($request_uri ~ '/search') {
+        set $upstream "nexus_docker_put"; 
+    }
+    index index.html index.htm index.php;
+    location / {
+        proxy_pass http://$upstream;
+        proxy_set_header Host $host;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        proxy_read_timeout 3600;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto http;
+    }
+}
+```
+
+nginx -t 检查没有问题的话，就可以启动nginx了。
+
+### 4.客户端配置
+
+部署完成之后，我们就可以找一台测试机器进行测试了，不过因为我们刚刚定义的是内部使用的域名，所以需要在测试机器上写hosts解析，并将证书拷贝过去，否则会报不信任的错误。
+
+在上文介绍的一键生成自签名工具中，会生成一个根证书，名称为/etc/nginx/conf.d/ssl/out/idocker.io/root.crt，我们将这个文件上传到客户端服务器的 /etc/docker/certs.d/idocker.io 目录即可（注意目录需要创建，最后的文件夹名称和仓库域名保持一致：idocker.io）。
+
+现在到一台新主机192.168.75.10上测试：
+
+```ruby
+# 主机192.168.75.10上的操作
+echo "192.168.75.11 idocker.io" >> /etc/hosts
+mkdir -p /etc/docker/certs.d/idocker.io
+
+# 然后去nexus主机上，将刚才的证书拷过来
+scp root.crt root@192.168.75.10:/etc/docker/certs.d/idocker.io
+```
+
+接下来，就可以开始真正的使用了。
+
+## 6，正式验证
+
+### 1，pull镜像
+
+```makefile
+[root@master ~]# docker pull redis
+Using default tag: latest
+latest: Pulling from library/redis
+8559a31e96f4: Pull complete 
+85a6a5c53ff0: Pull complete 
+b69876b7abed: Pull complete 
+a72d84b9df6a: Pull complete 
+5ce7b314b19c: Pull complete 
+04c4bfb0b023: Pull complete 
+Digest: sha256:800f2587bf3376cb01e6307afe599ddce9439deafbd4fb8562829da96085c9c5
+Status: Downloaded newer image for redis:latest
+docker.io/library/redis:latest
+```
+
+### 2，登陆私服
+
+> 这个地方也可能在登陆的时候会报错，说证书过期什么的，如下：
+
+```javascript
+Error response from daemon: Get https://idocker.io/v1/users/: x509: certificate has expired or is not yet valid
+```
+
+报这个错的情况下，大概原因只有一个，那就是，两台服务器的时间不一致，只需要将两台服务器时间保持一致即可。
+
+```mipsasm
+yum -y install ntpdate && ntpdate -u cn.pool.ntp.org
+```
+
+分别在两台主机执行之后，发现登陆就成功了。
+
+> 登陆的时候若是提示这个错误：Error response from daemon: login attempt to https://idocker.io/v2/ failed with status: 401 Unauthorized
+> 这是nexus版本问题，需要通过WEB管理端设置权限
+> ![img](.img_docker/794174-20200617174838852-1849728254-20220328124636738.png)
+> ![img](.img_docker/794174-20200617174855734-108039723-20220328124636744.png)
+
+```csharp
+[root@master ~]# docker login -u admin -p admin idocker.io
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+
+### 3,打标签
+
+```bash
+docker tag docker.io/library/redis:latest idocker.io/nginx
+```
+
+### 4,push镜像
+
+```yaml
+[root@master ~]# docker push idocker.io/nginx 
+The push refers to repository [idocker.io/nginx]
+7b9c5be81844: Pushed 
+67c707dbd847: Pushed 
+72d3a7e6fe02: Pushed 
+cdaf0fb0082b: Pushed 
+e6b49c7dcaac: Pushed 
+13cb14c2acd3: Pushed 
+latest: digest: sha256:76ff608805ca40008d6e0f08180d634732d8bf4728b85c18ab9bdbfa0911408d size: 1572
+```
+
+这里上传成功了，再去nexus3里边看看是有上去了。
+![img](.img_docker/794174-20200612145608305-1933423259-20220328124636752.png)
+
+### 5，测试从私服拉镜像
+
+```csharp
+[root@master ~]# docker images
+REPOSITORY                                                                    TAG                 IMAGE ID            CREATED             SIZE
+redis                                                                         latest              235592615444        43 hours ago        104MB
+idocker.io/redis                                                              latest              235592615444        43 hours ago        104MB
+[root@master ~]# docker rmi idocker.io/redis 
+Untagged: idocker.io/redis:latest
+Untagged: idocker.io/redis@sha256:76ff608805ca40008d6e0f08180d634732d8bf4728b85c18ab9bdbfa0911408d
+[root@master ~]# docker images
+REPOSITORY                                                                    TAG                 IMAGE ID            CREATED             SIZE
+redis                                                                         latest              235592615444        43 hours ago        104MB
+[root@master ~]# docker pull idocker.io/redis    
+Using default tag: latest
+latest: Pulling from redis
+Digest: sha256:76ff608805ca40008d6e0f08180d634732d8bf4728b85c18ab9bdbfa0911408d
+Status: Downloaded newer image for idocker.io/redis:latest
+idocker.io/redis:latest
+[root@master ~]# docker images
+REPOSITORY                                                                    TAG                 IMAGE ID            CREATED             SIZE
+redis                                                                         latest              235592615444        43 hours ago        104MB
+idocker.io/redis                                                              latest              235592615444        43 hours ago        104MB
+```
+
+## 7，代理的功能展示
+
+> 当某一个镜像在我们本地仓库没有的时候，就需要从远程仓库拉取了，其他的私有仓库的操作大概都是要从远程拉取，然后在重复如上操作推到本地私有仓库，而nexus因为有了proxy功能，因此，当我们在pull远程镜像的时候，本地就会自动同步下来了.
+
+以拉取gitlab镜像为例：
+
+```yaml
+docker pull idocker.io/gitlab/gitlab-ce
+Using default tag: latest
+Trying to pull repository docker.io/gitlab/gitlab-ce ...
+latest: Pulling from docker.io/gitlab/gitlab-ce
+3b37166ec614: Pull complete
+504facff238f: Pull complete
+ebbcacd28e10: Pull complete
+c7fb3351ecad: Pull complete
+2e3debadcbf7: Pull complete
+8e5e9b12009c: Pull complete
+0720fffe6e22: Pull complete
+2f336a213238: Pull complete
+1656ee3e1127: Pull complete
+25fa5248fd38: Pull complete
+36b8c1d869a0: Pull complete
+Digest: sha256:0dd22880358959d9a9233163147adc4c8f1f5d5af90097ff8dfa383c6be7e25a
+Status: Downloaded newer image for docker.io/gitlab/gitlab-ce:latest
+```
+
+因为本地没有这个镜像，所以从远程仓库拉取，然后去仓库里看看啥情况：
+![img](.img_docker/794174-20200612151838617-2030076581-20220328124636791.png)
+
+![img](.img_docker/794174-20200612151859617-688656201-20220328124636761.png)
+
+![img](.img_docker/794174-20200612151915083-150054462-20220328124636773.png)
+
+经过查看可以发现：
+docker-local里没有，proxy-docker-hub和docker-group里有
+
+> 注意：删除的话只能在docker-local或proxy-docker-hub中删除，当在这两者中执行删除操作后，docker-group里会自动没有的
+
+![img](.img_docker/794174-20200612152308459-753939673-20220328124636785.png)
+
+至此，基本上关于使用nexus3搭建docker私有仓库的知识点。
 

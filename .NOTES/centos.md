@@ -48,18 +48,6 @@ sudo yum makecache
 
 
 
-# netstat / ss
-
-
-
-
-
-```
-
-```
-
-
-
 > CentOS Linux 8 - AppStream                       70  B/s |  38  B     00:00    
 >
 > **Error: Failed to download metadata for repo 'appstream': Cannot prepare internal mirrorlist: No URLs in mirrorlist**
@@ -91,6 +79,18 @@ sudo yum makecache
 
 
 
+
+#
+
+# netstat / ss
+
+
+
+
+
+```
+
+```
 
 #   unbound variable
 
@@ -134,5 +134,57 @@ FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
 ```sh
 growpart /dev/vdb 1
 resize2fs /dev/vdb1
+```
+
+
+
+
+
+# openssh升级[8.9](https://www.cnblogs.com/nihaorz/p/16012216.html)
+
+VNC 连接至主机，执行以下脚本（请提前使用 scp 上传该文件到主机）：
+
+```sh
+#!/bin/bash
+set -e
+
+echo '1. download openssh source code'
+cd /usr/local/src
+rm -rf openssh-8.9p1.tar.gz openssh-8.9p1
+curl -O https://mirrors.aliyun.com/pub/OpenBSD/OpenSSH/portable/openssh-8.9p1.tar.gz
+
+echo '2. install dependency'
+dnf install wget gcc automake autoconf libtool make zlib-devel openssl-devel pam-devel libselinux-devel -y
+
+echo '3. uninstall old version for openssh'
+rpm -e --nodeps `rpm -qa | grep openssh`
+
+echo '4. unpackage openssh source code and configure'
+tar -zxvf openssh-8.9p1.tar.gz
+cd openssh-8.9p1
+./configure --prefix=/usr --sysconfdir=/etc/ssh --with-md5-passwords --with-pam --with-zlib --with-tcp-wrappers --with-ssl-dir=/usr/local/ssl --without-hardening
+
+echo '5. make and install'
+make && make install
+chmod 600 /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_ecdsa_key /etc/ssh/ssh_host_ed25519_key
+cp -a contrib/redhat/sshd.init /etc/init.d/sshd
+chmod u+x /etc/init.d/sshd
+chkconfig --add sshd
+chkconfig sshd on
+
+sed -i 's/#PermitRootLogin prohibit-password/#PermitRootLogin prohibit-password\nPermitRootLogin yes/g' /etc/ssh/sshd_config
+systemctl restart sshd
+echo '6. openssh update success, new version is: '
+echo $(ssh -V)
+
+```
+
+##  回滚
+
+重装
+
+```
+openssh-server
+openssh-client
 ```
 
