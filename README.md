@@ -25,6 +25,7 @@
 - [postgresql](.NOTES/postgresql.md)
 - [pytest](.NOTES/pytest.md)
 - [python学习](.NOTES/python学习.md)
+- [redis](.NOTES/redis.md)
 - [regex](.NOTES/regex.md)
 - [security](.NOTES/security.md)
 - [selenium](.NOTES/selenium.md)
