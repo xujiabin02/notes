@@ -919,3 +919,44 @@ git cp <commitHash>
 (4) 拉取：docker pull idocker.io/image:label
 ```
 
+# jsoniter用法
+
+将
+
+```go
+import "encoding/json"
+json.Marshal(&data)
+```
+
+替换为
+
+```go
+import jsoniter "github.com/json-iterator/go"
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
+json.Marshal(&data)
+```
+
+将
+
+```go
+import "encoding/json"
+json.Unmarshal(input, &data)
+```
+
+替换为
+
+```go
+import jsoniter "github.com/json-iterator/go"
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
+json.Unmarshal(input, &data)
+```
+
+[更多用法点此查看](http://jsoniter.com/migrate-from-go-std.html)
+
+## 参考文档：
+
+* https://jsoniter.com/index.cn.html
+* https://github.com/json-iterator/go
+* http://jsoniter.com/migrate-from-go-std.html

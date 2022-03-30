@@ -936,11 +936,17 @@ docker@swarm-manager:~$  docker node update --availability active swarm-worker1
 
 # 清理Docker的container，image与volume
 
-2017-06-26 12:51:05 +08  字数：**1947** 标签： [Docker](https://note.qidong.name/tags/docker)
 
-Docker的镜像（image）、容器（container）、数据卷（volume）， 都是由daemon托管的。 因此，在需要清理时，也需要使用其自带的手段。
 
-本文介绍一些Docker的清理技巧，以及它们的来源。
+清理image
+
+```sh
+docker images|grep '<none>'
+docker images|grep '<none>'|awk '{if($1=="<none>")print$3}'|xargs docker image rm
+docker images|grep '<none>'|awk '{if($2=="<none>")print$3}'|xargs docker image rm
+```
+
+
 
 ## 清理技巧 [¶](https://note.qidong.name/2017/06/26/docker-clean/#清理技巧)
 
