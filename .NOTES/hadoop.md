@@ -385,7 +385,7 @@ YAML
 
 因为进程的地址空间都是虚拟的，所以 CPU 和操作系统需要记录页面和进程之间的对应关系，操作系统中的页面越多，我们也就需要花费更多的时间在如下所示的五层页表结构中查找虚拟内存对应的物理内存，我们会根据虚拟地址依次访问页表中的目录（Directory）最终查找到对应的物理内存：
 
-![5-level-page-tables](https://img.draveness.me/2020-11-05-16045443026255/5-level-page-tables.png)
+![5-level-page-tables](.img_hadoop/5-level-page-tables.png)
 
 **图 3 - 默认页的五层页表**
 
