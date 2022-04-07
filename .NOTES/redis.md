@@ -1,6 +1,6 @@
 
 
-# Docker环境下安装部署Redis Sentinel
+# Docker环境下安装部署Redis [Sentinel](https://juejin.cn/post/6997458845148659743)
 
 
 
@@ -100,3 +100,47 @@ services:
       TZ: Asia/Shanghai
 ```
 
+
+
+
+
+>  sentinel.conf统一配置
+
+```nginx
+# 所有哨兵端口都一致，因为使用 Docker 桥接网络映射 
+port 26379
+
+# 哨兵设置，所有哨兵皆一致，都指向 Master
+sentinel monitor mymaster 172.25.0.101 6379 2
+sentinel parallel-syncs mymaster 1
+sentinel down-after-milliseconds mymaster 30000
+sentinel failover-timeout mymaster 180000
+
+bind 0.0.0.0
+protected-mode no
+daemonize no
+pidfile /var/run/redis-sentinel.pid
+logfile ""
+dir /tmp
+
+```
+
+
+
+> 查看命令
+
+```sh
+docker exec -it redis-master redis-cli -h 127.0.0.1 -p 6379
+docker exec -it redis-sentinel_1 redis-cli -h 127.0.0.1 -p 26379
+```
+
+
+
+## 迁移步骤
+
+
+
+> 1. 配置文件和数据文件打包拷贝
+> 2. 停止sentinel_3 和 slave_2
+> 3. 新机启动sentinel_3和slave_2
+> 4. 查看数据同步状态

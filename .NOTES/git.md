@@ -280,6 +280,15 @@ git push origin :refs/tags/标签名
 curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
 ```
 
+docker
+
+```sh
+   docker run -d --name gitlab-runner --restart always \
+     -v /app/gitlab-runner/config:/etc/gitlab-runner \
+     -v /var/run/docker.sock:/var/run/docker.sock \
+     gitlab/gitlab-runner:latest
+```
+
 
 
 ```sh
@@ -968,3 +977,29 @@ json.Unmarshal(input, &data)
 
 
 # gitlab artifacts
+
+
+
+
+
+# registry
+
+### Configuring a [runner](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html)
+
+If you have many pipelines that access the same registry, you should set up registry access at the runner level. This allows pipeline authors to have access to a private registry just by running a job on the appropriate runner. It also helps simplify registry changes and credential rotations.
+
+This means that any job on that runner can access the registry with the same privilege, even across projects. If you need to control access to the registry, you need to be sure to control access to the runner.
+
+To add `DOCKER_AUTH_CONFIG` to a runner:
+
+1. Modify the runner’s `config.toml` file as follows:
+
+   ```
+   [[runners]]
+     environment = ["DOCKER_AUTH_CONFIG={\"auths\":{\"registry.example.com:5000\":{\"auth\":\"bXlfdXNlcm5hbWU6bXlfcGFzc3dvcmQ=\"}}}"]
+   ```
+
+   * The double quotes included in the `DOCKER_AUTH_CONFIG` data must be escaped with backslashes. This prevents them from being interpreted as TOML.
+   * The `environment` option is a list. Your runner may have existing entries and you should add this to the list, not replace it.
+
+2. Restart the runner service.
