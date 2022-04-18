@@ -1414,6 +1414,7 @@ server {
     }
     index index.html index.htm index.php;
     location / {
+        if ($http_user_agent ~*  "docker")  { proxy_pass http://nexus_docker_put; }
         proxy_pass http://$upstream;
         proxy_set_header Host $host;
         proxy_connect_timeout 3600;
@@ -1430,7 +1431,15 @@ server {
 
 nginx -t 检查没有问题的话，就可以启动nginx了。
 
-### 4.客户端配置
+> blob unkown
+>
+> ![image-20220412201704566](.img_docker/image-20220412201704566.png)
+>
+> [解决](https://www.orchome.com/1881)
+>
+> ` if ($http_user_agent ~*  "docker")  { proxy_pass http://nexus_docker_put; }`
+
+### 4.客户端配置 
 
 部署完成之后，我们就可以找一台测试机器进行测试了，不过因为我们刚刚定义的是内部使用的域名，所以需要在测试机器上写hosts解析，并将证书拷贝过去，否则会报不信任的错误。
 
@@ -1588,4 +1597,111 @@ docker-local里没有，proxy-docker-hub和docker-group里有
 ![img](.img_docker/794174-20200612152308459-753939673-20220328124636785.png)
 
 至此，基本上关于使用nexus3搭建docker私有仓库的知识点。
+
+# Nginx HTTPS 设置 Nexus 3 和 Docker Registry
+
+[**八荒**](https://www.orchome.com/user/3014/show) 发表于: 2019-09-17  最后更新时间: 2019-09-17 22:43:01 
+
+订阅 [3](https://www.orchome.com/nexus/topusers) 订阅， **3,024** 游览
+
+[nexus 4](https://www.orchome.com/nexus/index)[ 问答区 0](https://www.orchome.com/nexus/issues)[ 最新动态 0](https://www.orchome.com/nexus/news)[ 实用工具 0](https://www.orchome.com/nexus/tools)[ 视频 0](https://www.orchome.com/nexus/video)[ 任务悬赏 ](https://www.orchome.com/nexus/task)
+
+如果nexus3已经安装完成之后，通过nginx进行统一负载，以下是`https`或`http`的例子。
+
+如果您还未搭建nexus3，则看上篇：
+[nexus3搭建docker镜像仓库及google镜像代理](https://www.orchome.com/1879)
+
+## http
+
+```
+upstream nexus_admin { server 127.0.0.1:8081 ; }
+upstream nexus_registry { server 127.0.0.1:8082 ; }
+
+server {
+    listen 80;
+    server_name localhost;
+    add_header X-Frame-Options SAMEORIGIN;
+
+    location / {
+        client_max_body_size 0;
+        chunked_transfer_encoding on;
+        add_header Docker-Distribution-Api-Version: registry/2.0 always;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        if ($http_user_agent ~*  "docker")               { proxy_pass http://nexus_registry; }
+        if ($http_user_agent ~* "Chrome|Mozilla")   { proxy_pass http://nexus_admin; }
+        proxy_set_header   Host             $host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Port $server_port;
+        proxy_redirect off;
+    }
+}
+```
+
+Copy
+
+## https
+
+```
+upstream nexus_admin { server 127.0.0.1:8081 ; }
+upstream nexus_registry { server 127.0.0.1:5001 ; }
+
+server {
+    listen 80;
+    listen 443 ssl ;
+    server_name docker.domain.com;
+    access_log  /dev/null;
+    error_log   /app/logs/nginx/docker.domain.com.error.log;
+    ssl_certificate      server.pem;
+    ssl_certificate_key  server.key;
+    ssl_session_timeout  20m;
+    ssl_protocols  TLSv1  TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers EECDH+AES:EECDH+CHACHA20;
+    add_header X-Frame-Options SAMEORIGIN;
+
+    location / {
+        client_max_body_size 0;
+        chunked_transfer_encoding on;
+        add_header Docker-Distribution-Api-Version: registry/2.0 always;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        if ($http_user_agent ~*  "docker")               { proxy_pass http://nexus_registry; }
+        if ($http_user_agent ~* "Chrome|Mozilla")   { proxy_pass http://nexus_admin; }
+        proxy_set_header   Host             $host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Port $server_port;
+        proxy_redirect off;
+    }
+}
+```
+
+Copy
+
+## docker-compose.yml
+
+```yml
+version: "2"
+
+services:
+  nexus:
+    image: sonatype/nexus3:3.6.0
+    volumes:
+      - "/app/srv/docker/nexus3:/nexus-data"
+    ports:
+      - "8081:8081"
+      - "5001:5001"
+    environment:
+#    - NEXUS_CONTEXT=nexus
+    - JAVA_OPTS=" -Xmx2048m"
+    mem_limit: 2g
+    mem_swappiness: 0
+
+## chown -Rv 200 /app/srv/docker/nexus3
+## admin/admin123
+```
 

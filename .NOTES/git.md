@@ -289,6 +289,10 @@ docker
      gitlab/gitlab-runner:latest
 ```
 
+```
+docker exec -ti gitlab-runner gitlab-runner register
+```
+
 
 
 ```sh

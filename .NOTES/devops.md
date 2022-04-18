@@ -282,3 +282,42 @@ Connection: close
 User-Agent: Paw/3.3.0 (Macintosh; OS X/10.14.6) GCDHTTPRequest
 ```
 
+
+
+# nexus
+
+
+
+
+
+raw repo 上传下载文件
+
+```sh
+# 上传
+curl -v --user 'admin:admin123' --upload-file ./test.png http://localhost:8081/repository/documentation/test.png
+
+```
+
+```sh
+# 下载
+curl -v --user 'admin:admin123' http://localhost:8081/repository/documentation/test.png -O
+```
+
+[raw repo blog](https://blog.csdn.net/qq_34556414/article/details/117926726)
+
+
+
+[raw repo doc](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/raw-repositories)
+
+
+
+
+
+# openvpn
+
+
+
+```
+
+```
+

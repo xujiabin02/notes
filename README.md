@@ -33,6 +33,7 @@
 - [sublime](.NOTES/sublime.md)
 - [tornado](.NOTES/tornado.md)
 - [typora](.NOTES/typora.md)
+- [vim](.NOTES/vim.md)
 - [vue_ts](.NOTES/vue_ts.md)
 - [web_service](.NOTES/web_service)
 - [基因](.NOTES/基因.md)
