@@ -1974,3 +1974,10 @@ def robots_txt():
 
 
 
+
+
+# [BeeWare](https://beeware.org/)
+
+一个 Python 跨平台图形框架，号称只要写一次代码，就能编译出 iOS、Android、Windows、MacOS、Linux、Web 等各种平台的图形界面应用程序。
+
+![image-20220419100642889](.img_python%E5%AD%A6%E4%B9%A0/image-20220419100642889.png)
