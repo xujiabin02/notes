@@ -289,11 +289,25 @@ docker
      gitlab/gitlab-runner:latest
 ```
 
-```
+```sh
 docker exec -ti gitlab-runner gitlab-runner register
 ```
 
+register
 
+```sh
+docker exec -ti gitlab-runner gitlab-runner register --name my-runner --url https://gitlab.xinluex.com --registration-token xx --docker-privileged --docker-volumes /var/run/docker.sock:/var/run/docker.sock --docker-image docker-hub.xinluex.com/unii-centos:8  --env xx --executor docker
+```
+
+unregister
+
+```sh
+docker exec -ti gitlab-runner gitlab-runner unregister --name test-01
+```
+
+
+
+手动register
 
 ```sh
 $ sudo gitlab-runner register
@@ -1007,3 +1021,22 @@ To add `DOCKER_AUTH_CONFIG` to a runner:
    * The `environment` option is a list. Your runner may have existing entries and you should add this to the list, not replace it.
 
 2. Restart the runner service.
+
+
+
+# linux [下记住密码的方法](https://support.huaweicloud.com/usermanual-codehub/devcloud_hlp_00073.html)
+
+
+
+**store**模式：
+
+将凭证用明文的形式存放在磁盘“home”目录下（默认是“~/.git-credentials”），永不过期，除非手动修改在Git服务器上的密码，否则永远不需要再次输入凭证信息。“git-credentials”文件内容如下：
+
+https://username:password@***********.com
+
+保存退出后，执行如下命令即可完成：
+
+```
+git config --global credential.helper store
+```
+
