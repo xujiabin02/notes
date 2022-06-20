@@ -321,3 +321,27 @@ curl -v --user 'admin:admin123' http://localhost:8081/repository/documentation/t
 
 ```
 
+
+
+
+
+# rocketmq
+
+
+
+https://blog.csdn.net/qq_16240085/article/details/119738614
+
+
+
+# 云原生
+
+
+
+# A/B 测试
+
+
+
+# 语义化版本
+
+https://www.cnblogs.com/lane_cn/p/13662071.html
+

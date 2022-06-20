@@ -421,6 +421,8 @@ HugePages 与其他内存页不同，它是由系统工程师预先在操作系�
 
 > REHL 6 引入了透明大页（Transparent Huge Pages、THP），它是一个可以自动创建、管理和使用大页的抽象层，能够为系统管理员和开发者隐藏了大页使用时的复杂性，但是不推荐在数据库以及类似负载中开启。[7](https://draveness.me/whys-the-design-linux-hugepages#fn:7)
 
+
+
 ## 总结
 
 随着单机内存越来越大、服务消耗的内存越来越多，Linux 和其他操作系统都引入了类似 HugePages 的功能，该功能可以从以下两个方面提升数据库等占用大量内存的服务的性能：

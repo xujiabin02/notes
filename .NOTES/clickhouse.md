@@ -164,6 +164,10 @@ Clickhosue缩容扩容问题
     尽管我们开发了一套工具基于 clickhouse-copier 来帮助运维进行这个操作，从而加速整个过程，降低人工操作的错误率。但是被迁移的表在迁移过程中仍然需要停止写入的。
     ```
 
+# mergeTree
+
+[mergeTree](https://mp.weixin.qq.com/s?__biz=MzA4MDIwNTY4MQ==&mid=2247483766&idx=1&sn=1fe4ae88fe2c66a68e24938dbe563132&chksm=9fa68368a8d10a7e5789ac3aba4ec59392857a8a4884a726b637b29a738fe10df28b16157625&scene=21#wechat_redirect)
+
 # 实践、场景
 
 ClickHouse在Bilibili用户行为分析的实践

@@ -1115,6 +1115,25 @@ docker image prune -a
 
 注意：**这是一个危险操作！甚至可以说，这是本文中最危险的操作！** 一般真正有价值的运行数据，都在数据卷中。 （当然也可能挂载到了容器外的文件系统里，那就没关系。） 如果在关键服务停止期间，执行这个操作，很可能会**丢失所有数据**！
 
+# 清理overlay2
+
+```shell
+[root@gitlab-01 ~]# docker system df 
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          486       4         128.9GB   124.3GB (96%)
+Containers      5         2         5.631MB   10.78kB (0%)
+Local Volumes   101       1         34.88GB   34.88GB (100%)
+Build Cache     2337      0         107.8GB   107.8GB
+```
+
+
+
+```sh
+docker builder prune -f
+```
+
+
+
 ## 从文件系统删除 [¶](https://note.qidong.name/2017/06/26/docker-clean/#从文件系统删除)
 
 除配置文件以为，Docker的内容相关文件，基本都放在`/var/lib/docker/`目录下。

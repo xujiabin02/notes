@@ -5,6 +5,7 @@
 - [ansible](.NOTES/ansible.md)
 - [centos](.NOTES/centos.md)
 - [clickhouse](.NOTES/clickhouse.md)
+- [db](.NOTES/db.md)
 - [devops](.NOTES/devops.md)
 - [docker](.NOTES/docker.md)
 - [flink](.NOTES/flink.md)
