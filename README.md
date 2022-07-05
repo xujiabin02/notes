@@ -40,6 +40,7 @@
 - [基因](.NOTES/基因.md)
 - [教育](.NOTES/教育.md)
 - [测试](.NOTES/测试.md)
+- [盈利](.NOTES/盈利.md)
 - [视野](.NOTES/视野.md)
 - [包管理vendor_mod](.NOTES/包管理vendor_mod.md)
 - [健身康复](.NOTES/健身康复.md)

@@ -345,3 +345,15 @@ https://blog.csdn.net/qq_16240085/article/details/119738614
 
 https://www.cnblogs.com/lane_cn/p/13662071.html
 
+
+
+
+
+# k8s
+
+https://github.com/easzlab/kubeas
+
+
+
+
+
