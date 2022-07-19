@@ -749,7 +749,7 @@ worker-2 :) select count() from opensky;
 SELECT count()
 FROM opensky
 
-Query id: d04f42df-d1a4-4d90-ad47-f944b7a32a3d
+Query id: d04f42df-d1a4-4d90-ad47-f944b7a32a3dg
 
 ┌─count()─┐
 │       0 │

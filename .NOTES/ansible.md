@@ -362,3 +362,4 @@ https://www.junmajinlong.com/ansible/9_power_of_jinja2/
 # [最佳实践](https://blog.lfyzjck.com/2020/06/07/ansible-quick-start.html)
 
 ![image-20220401140435327](.img_ansible/image-20220401140435327.png)
+
