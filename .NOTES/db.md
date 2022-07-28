@@ -16,23 +16,9 @@
 
 # [mysql 最大建议行数 2000w, 靠谱吗？](https://my.oschina.net/u/4090830/blog/5559454)
 
-原创
 
-[京东科技开发者](https://my.oschina.net/u/4090830)
-
-[日常记录](https://my.oschina.net/u/4090830?tab=newest&catalogId=6390695)
-
-昨天 17:24
-
-阅读数 211
-
-[![img](.img_db/31180631_12ev.png)](https://www.oschina.net/group/database)
-
-本文被收录于专区
 
 [数据库](https://www.oschina.net/group/database)
-
-[进入专区参与更多专题讨论 ](https://www.oschina.net/group/database)
 
 
 
@@ -51,17 +37,17 @@
 实验一把看看…
 建一张表
 
-```
- 
+```sql
+CREATE TABLE person(
+id int NOT NULL AUTO_INCREMENT PRIMARY KEY comment '主键',
+person_id tinyint not null comment '用户id',
+person_name VARCHAR(200) comment '用户名称',
+gmt_create datetime comment '创建时间',
+gmt_modified datetime comment '修改时间'
+) comment '人员信息表';
 ```
 
-1. `CREATE TABLE person(`
-2. `id int NOT NULL AUTO_INCREMENT PRIMARY KEY comment '主键',`
-3. `person_id tinyint not null comment '用户id',`
-4. `person_name VARCHAR(200) comment '用户名称',`
-5. `gmt_create datetime comment '创建时间',`
-6. `gmt_modified datetime comment '修改时间'`
-7. `) comment '人员信息表';`
+1. 
 
 插入一条数据
 
@@ -74,19 +60,30 @@
 
 运行下面的 sql，连续执行 20 次，就是 2 的 20 次方约等于 100w 的数据；执行 23 次就是 2 的 23 次方约等于 800w , 如此下去即可实现千万测试数据的插入，如果不想翻倍翻倍的增加数据，而是想少量，少量的增加，有个技巧，就是在 SQL 的后面增加 where 条件，如 id > 某一个值去控制增加的数据量即可。
 
-1. `insert into person(id, person_id, person_name, gmt_create, gmt_modified)`
-2.  
-3. `select @i:=@i+1,`
-4.  
-5. `left(rand()*10,10) as person_id,`
-6.  
-7. `concat('user_',@i%2048),`
-8.  
-9. `date_add(gmt_create,interval + @i*cast(rand()*100 as signed) SECOND),`
-10.  
-11. `date_add(date_add(gmt_modified,interval +@i*cast(rand()*100 as signed) SECOND), interval + cast(rand()*1000000 as signed) SECOND)`
-12.  
-13. `from person;`
+```sql
+insert into person(id, person_id, person_name, gmt_create, gmt_modified)
+ 
+select @i:=@i+1,
+
+
+left(rand()*10,10) as person_id,
+ 
+
+concat('user_',@i%2048),
+ 
+
+date_add(gmt_create,interval + @i*cast(rand()*100 as signed) SECOND),
+
+ 
+date_add(date_add(gmt_modified,interval +@i*cast(rand()*100 as signed) SECOND), interval + cast(rand()*1000000 as signed) SECOND)
+
+
+from person;
+```
+
+
+
+
 
 此处需要注意的是，也许你在执行到近 800w 或者 1000w 数据的时候，会报错：The total number of locks exceeds the lock table size，这是由于你的临时表内存设置的不够大，只需要扩大一下设置参数即可。
 
@@ -109,13 +106,22 @@
 
 首先我们先想想数据库单表行数最大多大？
 
-1. `CREATE TABLE person(`
-2. `id int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY comment '主键',`
-3. `person_id tinyint not null comment '用户id',`
-4. `person_name VARCHAR(200) comment '用户名称',`
-5. `gmt_create datetime comment '创建时间',`
-6. `gmt_modified datetime comment '修改时间'`
-7. `) comment '人员信息表';`
+```sql
+CREATE TABLE person(
+
+id int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY comment '主键',
+
+person_id tinyint not null comment '用户id',
+
+person_name VARCHAR(200) comment '用户名称',
+
+gmt_create datetime comment '创建时间',
+
+gmt_modified datetime comment '修改时间'
+
+) comment '人员信息表';
+
+```
 
 看看上面的建表 sql，id 是主键，本身就是唯一的，也就是说主键的大小可以限制表的上限，如果主键声明 int 大小，也就是 32 位，那么支持 2^32-1 ~~21 亿；如果是 bigint，那就是 2^62-1 ？（36893488147419103232），难以想象这个的多大了，一般还没有到这个限制之前，可能数据库已经爆满了！！
 有人统计过，如果建表的时候，自增字段选择无符号的 bigint , 那么自增长最大值是 18446744073709551615，按照一秒新增一条记录的速度，大约什么时候能用完？
