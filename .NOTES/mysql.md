@@ -128,3 +128,25 @@ create table ocean_app_info_20220314 like ocean_app_info;
 insert into ocean_app_info_20220314  select * from  ocean_app_info;
 ```
 
+
+
+```
+docker run --name m1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345678 -d mysql:8.0
+```
+
+mysql5
+
+```mysql
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Haima@2022' WITH GRANT OPTION;
+```
+
+mysql8
+
+
+
+```mysql
+update user set host='%' where user='root';
+grant all privileges on *.* to 'root'@'%' with grant option;
+flush privileges;
+```
+

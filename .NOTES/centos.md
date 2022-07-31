@@ -194,3 +194,16 @@ openssh-client
 docker run --cap-add=NET_ADMIN --privileged=true --device=/dev/net/tun -d --name openvpn centos:8 /sbin/init
 ```
 
+
+
+
+
+# 快捷键
+
+> Ecs + f
+>
+> Ecs + b
+>
+> Ecs + BackSpace
+>
+> Ecs + .
