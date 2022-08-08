@@ -363,3 +363,58 @@ https://www.junmajinlong.com/ansible/9_power_of_jinja2/
 
 ![image-20220401140435327](.img_ansible/image-20220401140435327.png)
 
+
+
+
+
+
+
+建议用这样的命令来执行，这个就不是用root来登录了，而是先用haima用户登录，登录完后 执行 su -，自动输入对应的root的密码
+
+```
+ansible -i xxxx -m ping --become-method=su --become-user=root -K all
+```
+
+
+
+
+
+# lookup
+
+```sh
+ansible-doc -l -t lookup
+```
+
+
+
+
+
+```yml
+- hosts: HY-ZABBIX-SERVER02
+  gather_facts: no
+  tasks:
+    - debug:
+        msg: "{{ lookup('file', '/etc/hosts')}}"
+```
+
+
+
+
+
+#  /etc/hosts
+
+```yml
+- name: Replace a localhost entry searching for a literal string to avoid escaping
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ my_host }}'
+    line: "{{ my_host }} HY-ZABBIX-SERVER"
+    backup: yes
+    owner: root
+    group: root
+    mode: '0644'
+  remote_user: root
+  vars:
+    my_host: "10.30.0.228"
+```
+

@@ -1032,6 +1032,12 @@ struct实现interface 接口, 可以让 &struct 传入 以interface接口作为�
 |                 |                                                              |                                               |
 |                 |                                                              |                                               |
 
+# goroutine
+
+
+
+[doc](https://mp.weixin.qq.com/s/VBn3A9P52HTEttt1gVFxpA)
+
 
 
 # goproxy
