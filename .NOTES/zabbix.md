@@ -25,3 +25,20 @@
 |       |             |      |
 |       |             |      |
 
+
+
+## Trigger with count and regular expression not working
+
+
+
+10-05-2021, 13:35
+
+OK, I found the problem myself - I was missing the "regex" in the operator:
+
+
+
+Code:
+
+```
+{DB:db.checkprocesses["{$DBNAME}","{$DBAGENTPROCESSES}","{$DBUSER}"].count(#30,"CRIT.*",regex)}>=1
+```
