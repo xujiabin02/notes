@@ -207,3 +207,30 @@ docker run --cap-add=NET_ADMIN --privileged=true --device=/dev/net/tun -d --name
 > Ecs + BackSpace
 >
 > Ecs + .
+
+
+
+# vimdiff
+
+
+
+ceshi.vim
+
+```
+:qa!
+```
+
+-s  silent
+
+```sh
+vimdiff -s ceshi.vim -c TOhtml -c "w custom_name.html"
+```
+
+
+
+交互式
+
+```sh
+vimdiff -c TOhtml -c "w custom_name.html"
+```
+
