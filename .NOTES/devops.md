@@ -357,3 +357,176 @@ https://github.com/easzlab/kubeas
 
 
 
+
+
+
+
+# 运维工程师职业生涯天花板 SRE 学习路径
+
+HelloDog [云原生实验室](javascript:void(0);) *2022-08-16 08:30* *发表于浙江*
+
+收录于合集
+
+\#SRE3个
+
+\#DevOps4个
+
+\#运维2个
+
+![图片](.img_devops/640.gif)
+
+> ❝
+>
+> 本文转自 HelloDog 的博客，原文：**https://wsgzao.github.io/post/sre/**，版权归原作者所有。欢迎投稿，投稿请添加微信好友：**cloud-native-yang**
+
+## 前言
+
+之前分享过 DevOps 但一直忘记补 SRE 相关的信息，其实两者本质没有太多区别，都是运维。
+
+* 按运维阶段划分
+
+* * 人肉运维 -> 脚本运维 -> 平台运维 -> 智能运维
+
+* 按技术栈来划分
+
+* * 物理机堆硬件 -> x86 虚拟化 -> 私有云 + 公有云 -> 云原生
+
+本文主要记录一些 SRE 的背景和学习面试资料，方便需要时串起来。
+
+------
+
+## SRE 简介
+
+SRE 从字面意义来看是 Google 技术 VP **Ben Treynor Sloss**[1] 定义的一个岗位，全名叫 Site Reliability Engineering，翻译过来就是网站可靠性工程 (师)。然而在我看来他不仅仅是一份工作，反而是一套服务保障体系。
+
+## 为什么要有 SRE？
+
+为什么会出现 SRE 这个岗位呢？这就要从大名鼎鼎的 **DevOps**[2] 说起了，这个是 Google 高级研发总监 Melody Meckfessel 在 2017 年提出的理论体系，这套体系是**通过构建一些列  DevOps 工具链和标准把研发过程中的各个角色高效整合在一起，高效的产出稳定的交付结果**。这个体系打破了研发与运维的边界，使研发期望的构建更多特性而运维期望的不要引入太多的不稳定性的目标合二为一。
+
+DevOps  解决了高效生产稳定服务的流程，使服务的生产迭代周期进一步的缩短。但是随着各个服务的搭建，越来越多的服务都在持续演进着，然而运维维护服务的工作也就越来越多，线上的不稳定状态也就越来越多。那么如何解决这个问题呢？是由开发人员时刻关注着自己的服务么？那整体架构的稳定性又如何保证呢？
+
+由此就产生了 SRE。SRE 的职责就是负责整体站点（服务）的稳定性。然而保证稳定性一定**不是在出现问题时才解决问题**，而是体系化的方式观测与避免问题。这就是我所理解的 SRE 体系。
+
+* **https://sre.google/**
+* **https://www.googblogs.com/sre-vs-devops-competing-standards-or-close-friends/**
+* **https://sre.google/sre-book/table-of-contents/**
+* **https://linkedin.github.io/school-of-sre/**
+
+## DevOps Roadmap
+
+关于 DevOps Roadmap 之前也分享过，保持终身学习的态度吧
+
+* **https://roadmap.sh/**
+* **https://roadmap.sh/devops**
+
+![图片](.img_devops/640-20220816200357653.png)
+
+## Agile and Scrum
+
+**Agile Product Ownership in a nutshell**[3]
+
+![图片](.img_devops/640-20220816200357703.png)
+
+**Introduction to Scrum - 7 Minutes**[4]
+
+**凤凰项目 - The Phoenix Project**[5]
+
+![图片](.img_devops/640-20220816200357748.png)
+
+## Network TCP/IP and OSI
+
+* **https://community.fs.com/blog/tcpip-vs-osi-whats-the-difference-between-the-two-models.html**
+* **http://www.52im.net/thread-180-1-1.html**
+* **https://zqlxtt.cn/2020/09/23/tcpip-overview/**
+
+![图片](.img_devops/640-20220816200357450.png)
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/qFG6mghhA4bMQ1ibOCbGVe4dDYuugLAUEs3OFmribmsmlaNmB8sAFnPHbAec9Zzib5TsqVS2yee3fP8mGTRM04zsA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+![图片](.img_devops/640-20220816200357693.png)
+
+## System Design
+
+**The System Design Primer**[6]
+
+![图片](.img_devops/640.png)
+
+**What happens when you type google.com into your browser’s address box and press enter?**[7]
+
+## Coding
+
+LeetCode
+
+* **https://leetcode.com/**
+* **https://leetcode.com/discuss/interview-question**
+
+LeetCode solutions in any programming language | 多种编程语言实现 LeetCode、《剑指 Offer（第 2 版）》、《程序员面试金典（第 6 版）》题解
+
+* **https://leetcode.cn/**
+* **https://github.com/doocs/leetcode**
+
+**labuladong 算法小抄**[8]
+
+**代码随想录**[9]
+
+**小浩算法**[10]
+
+## 八股文
+
+> ❝
+>
+> 什么是八股文？八股文不是死东西，八股文本应该指计算机基础知识，考验的是面试者基础能力、广度以及深度，大厂面试不会很重视死八股，往往是很灵活的分析。
+
+**计算机网络常见知识点 & 面试题**[11]
+
+**操作系统常见面试题总结**[12]
+
+**Linux 基础知识总结**[13]
+
+## 职级和薪资范围评估
+
+**https://www.levels.fyi/**
+
+### 引用链接
+
+[1]Ben Treynor Sloss: *https://www.crunchbase.com/person/benjamin-treynor-sloss*[2]DevOps: *https://en.wikipedia.org/wiki/DevOps*[3]Agile Product Ownership in a nutshell: *https://blog.crisp.se/2012/10/25/henrikkniberg/agile-product-ownership-in-a-nutshell*[4]Introduction to Scrum - 7 Minutes: *https://www.youtube.com/watch?v=9TycLR0TqFA*[5]凤凰项目 - The Phoenix Project: *https://www.youtube.com/watch?v=9TycLR0TqFA*[6]The System Design Primer: *https://github.com/donnemartin/system-design-primer*[7]What happens when you type google.com into your browser’s address box and press enter?: *https://4ark.me/post/b6c7c0a2.html*[8]labuladong 算法小抄: *https://github.com/labuladong/fucking-algorithm*[9]代码随想录: *https://www.programmercarl.com/*[10]小浩算法: *https://github.com/geekxh/hello-algorithm*[11]计算机网络常见知识点 & 面试题: *https://javaguide.cn/cs-basics/network/other-network-questions.html*[12]操作系统常见面试题总结: *https://javaguide.cn/cs-basics/operating-system/operating-system-basic-questions-01.html*[13]Linux 基础知识总结: *https://javaguide.cn/cs-basics/operating-system/linux-intro.html*
+
+
+
+![图片](.img_devops/640-20220816200357477.gif)
+
+![图片](.img_devops/640-20220816200357496.png)
+
+
+
+**你可能还喜欢**
+
+点击下方图片即可阅读
+
+[如何让 Alertmanger 发送告警时带上监控面板？2022-08-11![图片](.img_devops/640-20220816200357561.jpeg)](https://mp.weixin.qq.com/s?__biz=MzU1MzY4NzQ1OA==&mid=2247512322&idx=2&sn=d3c8223ce32c3ef9c82db843f247eb13&chksm=fbedf1cfcc9a78d9063f412785066ff0e987f9e97504367d452c02479cfcf7423ddcfb648067&scene=21#wechat_redirect)
+
+[巧用 Prometheus 来扩展 Kubernetes 调度器2022-08-08![图片](.img_devops/640-20220816200357572.jpeg)](https://mp.weixin.qq.com/s?__biz=MzU1MzY4NzQ1OA==&mid=2247512295&idx=2&sn=94ac0c7497df69bb7704946135829037&chksm=fbedf02acc9a793cd71e0795da524255fa1766c15c728c3a477a33212a6f45fb6366f66b3cf1&scene=21#wechat_redirect)
+
+[Argo CD 保姆级入门教程2022-08-03![图片](.img_devops/640.jpeg)](https://mp.weixin.qq.com/s?__biz=MzU1MzY4NzQ1OA==&mid=2247512193&idx=1&sn=da41bb4072870e34bdf338c22bcbc8cc&chksm=fbedf04ccc9a795a08f4b0deb5a8518aa901dc1e8678277d232fff0d05ba1613a3f8d8636ab9&scene=21#wechat_redirect)
+
+[CoreDNS 健康检查详解2022-07-29![图片](.img_devops/640-20220816200357534.jpeg)](https://mp.weixin.qq.com/s?__biz=MzU1MzY4NzQ1OA==&mid=2247512076&idx=1&sn=71ab64e1249deb339db7b003f46a2fb6&chksm=fbedf0c1cc9a79d7cffa5e8da4103921aec8ba83aedff2882a50f8f329f08da1b4b690f344f9&scene=21#wechat_redirect)
+
+
+
+
+
+![图片](.img_devops/640-20220816200357532.gif)
+
+**云原生是一种信仰** **🤘**
+
+![img](.img_devops/0.png)
+
+**云原生实验室**
+
+战略上藐视云原生，战术上重视云原生
+
+135篇原创内容
+
+
+
+公众号

@@ -1731,3 +1731,16 @@ services:
 
 
 # [常见问题](https://mp.weixin.qq.com/s/Kg7BBAMQatTKmHKTikUbJw)
+
+
+
+
+
+#    systemctl 问题
+
+
+
+```sh
+docker run -tid --name centos_1 --privileged=true centos:latest /sbin/init
+```
+
