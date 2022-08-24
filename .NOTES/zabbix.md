@@ -1,3 +1,5 @@
+
+
 # 表结构解析
 
 
@@ -42,3 +44,7 @@ Code:
 ```
 {DB:db.checkprocesses["{$DBNAME}","{$DBAGENTPROCESSES}","{$DBUSER}"].count(#30,"CRIT.*",regex)}>=1
 ```
+
+# 聚合
+
+https://www.zabbix.com/documentation/6.0/en/manual/config/items/itemtypes/calculated/aggregate

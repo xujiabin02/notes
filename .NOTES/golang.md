@@ -2421,3 +2421,46 @@ var (
 
 ```
 
+
+
+# go1.8 兼容性
+
+
+
+# Go 1.18 兼容 1.17
+
+
+
+
+
+Go 的新版本如期而至，然而，问题终于也如期而至：
+
+
+
+```go
+# golang.org/x/sys/unix
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/syscall_darwin.1_13.go:29:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.1_13.go:27:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.1_13.go:40:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:28:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:43:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:59:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:75:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:90:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:105:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:121:3: //go:linkname must refer to declared function or variable
+/Users/x/go/pkg/mod/golang.org/x/sys@v0.0.0-20200930185726-fdedc70b468f/unix/zsyscall_darwin_amd64.go:121:3: too many errors
+```
+
+遇到问题不要慌，Google 一下，答案就在 [Stack Overflow](https://stackoverflow.com/questions/71507321/go-1-18-build-error-on-mac-unix-syscall-darwin-1-13-go253-golinkname-mus) 里。
+
+链接打不开？算了，我直接告诉你吧。
+
+
+
+```csharp
+go get -u golang.org/x/sys
+```
+
+执行完，问题就解决了。
+

@@ -2,6 +2,222 @@
 
 
 
+# vue3 ts create project
+
+## Vue CLI 3 + TypeScript: A Complete Setup Guide
+
+## **Installation**
+
+Vue CLI 3 comes as an NPM package. The first thing you need to make sure is that Node.js and NPM are available on your system. Vue CLI 3 requires at least Node.js version 8.9 (or above) on your system. If you have already installed Node.js you can check the version with the following command:
+
+```
+$ node —version
+```
+
+If you need to install or update Node.js first you can go to https://nodejs.org/ and download the installer for your OS. By installing Node.js the Node.js Package Manager (NPM) is installed automatically.
+
+Vue CLI 3 is a complete re-write. In comparison to the previous version of Vue CLI the package name has changed from `vue-cli` to `@vue/cli`.
+
+It is recommended to first uninstall the old package from your system:
+
+```
+$ npm uninstall vue-cli -g
+```
+
+The installation of Vue CLI 3 is then done via:
+
+```
+$ npm install -g @vue/cli
+```
+
+After having completed the installation successfully you’re able to check for the installed version with:
+
+```
+$ vue --version
+>> @vue/cli 4.5.5
+```
+
+## **Creating a Project using Command Line**
+
+```
+# Create a new project
+$ vue create <project_name>
+```
+
+When prompted, choose ‘Manually select features’.
+
+![img](.img_vue_ts/1*-fwEATMYGdiGFjjDnKUbag.jpeg)
+
+Selecting Manual, you’ll have the following features to select
+
+![img](.img_vue_ts/1*rIMlEeMZPTeiDjJXJ23MrA.jpeg)
+
+Here you can use the up and down arrow key on your keyboard to navigate through the list of features. Use the spacebar to select a feature from the list. After selection hit “Enter”.
+
+![img](.img_vue_ts/1*IKu8lY_89Z4GwLm_sB9MGA.jpeg)
+
+Here you can select the version for VueJS. Similarly, you can select for all presets.
+
+![img](.img_vue_ts/1*aRMcfy-2KA2reSyKRq9TAQ.jpeg)
+
+![img](.img_vue_ts/1*QLE7rhXQOjq53VzwDI8DCw.jpeg)
+
+Here we’re going to select the *ESLint + Prettier* option.
+
+* *ESLint* is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code, with the goal of making code more consistent and avoiding bugs.
+* *Prettier* is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.
+
+![img](.img_vue_ts/1*8miA_ST8WJ0QDtC5NJs2Dg.jpeg)
+
+Here you get to decide which unit testing tool to use.
+
+![img](.img_vue_ts/1*6rxgsBgY4LusvHSiBnA6uw.jpeg)
+
+Here you can choose to have dedicated config files or to place the configuration just inside of package.json. We’re going to decide on dedicated config files.
+
+![img](.img_vue_ts/1*jWY7oslMv8710Y7VHyec5g.jpeg)
+
+Having selected the package manager the new project is created and the corresponding dependencies are downloaded and installed.
+
+![img](.img_vue_ts/1*p6Rl2ulSn9inUsuyPpEg8Q.jpeg)
+
+Finally, you’ll see a success message on the command line confirming that the project has been created.
+
+Now that the Vue.js project is created and configured we’re able to change into the newly created project folder and start the development web server by typing in:
+
+```
+$ cd <project_name>
+$ npm run serve
+```
+
+The application is then available via [http://localhost:8080:](http://localhost:8080/)
+
+![img](.img_vue_ts/1*H9qVLjS2wiMw1gr4VpL9Xg.jpeg)
+
+## Project structure
+
+Your folder structure will look similar to a typical Vue CLI project. **Some files** are specific to TypeScript projects:
+
+```sh
+Project:
+|   babel.config.js
+|   package-lock.json
+|   package.json
+|   README.md
+|   tsconfig.json
+|   .browserslistrc
+|   .gitignore
+|   .eslintrc.js
+|   
++---node_modules 
+|
++---public
+|   |   favicon.ico
+|   |   index.html
+|   |                 
++---src
+    |   App.vue
+    |   main.ts
+    |   shims-vue.d.ts
+    |   
+    +---assets
+    |       logo.png
+    |
+    +---components
+    |       HelloWorld.vue
+    |
+    +---router
+    |       index.ts
+    |
+    +---store
+            index.ts
+    +---views
+            About.vue
+            Home.vue
+```
+
+[**tsconfig.json**](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+Denotes a TypeScript project. Contains compiler options and specifies the location of root files.
+
+[**tslint.json**](https://palantir.github.io/tslint/usage/configuration/)
+Options and rules for Typescript linting, for TSlint.
+
+**main.ts
+**The equivalent of main.js; the entry file for the project.
+
+**shims-vue.d.ts
+**Allows .vue single file components to be imported and used.
+
+## Writing components
+
+We can now write TypeScript in .vue single file components, within the script tags.
+
+```
+<script lang="ts"></script>
+```
+
+Components are written using either [Vue.extend()](https://vuejs.org/v2/guide/typescript.html#Basic-Usage) or the [@Component decorator](https://vuejs.org/v2/guide/typescript.html#Class-Style-Vue-Components). Choose the way that is best suited to your needs.
+
+## Basic usage, with Vue.extend()
+
+Similar to declaring a normal Vue component. Vue.extend() is used so that the code inside can be subject to type inference.
+
+```
+HelloWorld.vue
+<template>
+  <div>
+    <h1>{{ msg }}</h1>
+  </div>
+</template>
+
+<script lang="ts">
+import Vue from 'vue';
+
+export default Vue.extend({
+  name: 'HelloWorld',
+  props: {
+    msg: String,
+  },
+});
+</script>
+
+<style scoped lang="scss">
+</style>
+```
+
+## Class-style, with @Component decorator
+
+Decorators, such as [@Prop, @Watch, @Emit](https://github.com/kaorun343/vue-property-decorator), are used to define the component.
+This is achieved using a combination of two libraries, [vue-class-component](https://github.com/vuejs/vue-class-component) and [vue-property-decorator](https://github.com/kaorun343/vue-property-decorator).
+
+```
+HelloWorld.vue
+<template>
+  <div>
+    <h1>{{ msg }}</h1>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
+@Component
+export default class HelloWorld extends Vue {
+  @Prop() private msg!: string;
+}
+</script>
+
+<style scoped lang="scss">
+</style>
+```
+
+## IDE support for TypeScript
+
+TypeScript support and features are available with these IDEs:
+
+* [Vetur extension](https://github.com/vuejs/vetur) for [Visual Studio Code](https://code.visualstudio.com/)
+* [WebStorm](https://www.jetbrains.com/webstorm/)
+
 ## router
 
 https://www.cnblogs.com/yuyujuan/p/9839705.html
@@ -640,7 +856,7 @@ https://bengbu-yuezhang.github.io/2019/03/10/xterm/
 
 
 
-# build 速度问题
+# build 速度问题 换node源  taobao
 
 ```sh
 npm config set cache 目录地址
