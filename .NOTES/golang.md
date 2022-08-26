@@ -488,7 +488,7 @@ func main() {
  每种语言的反射模型都不同，并且有些语言根本不支持反射。Golang语言实现了反射，反射机制就是在运行时动态的调用对象的方法和属性，官方自带的reflect包就是反射相关的，只要包含这个包就可以使用。
  多插一句，Golang的gRPC也是通过反射实现的。
 
-## interface 和 反射
+## interface 和 [反射](https://mp.weixin.qq.com/s/TmzV2VTfkE8of2_zuKa0gA)
 
 在讲反射之前，先来看看Golang关于类型设计的一些原则
 
