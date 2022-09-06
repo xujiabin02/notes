@@ -1994,3 +1994,33 @@ def robots_txt():
 
 
 
+
+
+
+
+# python2.7  pip 升级21.0 后错误
+
+
+
+```
+Traceback (most recent call last):
+  File "/bin/pip", line 9, in <module>
+    load_entry_point('pip==21.0', 'console_scripts', 'pip')()
+  File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 378, in load_entry_point
+    return get_distribution(dist).load_entry_point(group, name)
+  File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 2566, in load_entry_point
+    return ep.load()
+  File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 2260, in load
+    entry = __import__(self.module_name, globals(),globals(), ['__name__'])
+  File "/usr/lib/python2.7/site-packages/pip/_internal/cli/main.py", line 60
+    sys.stderr.write(f"ERROR: {exc}")
+                                   ^
+```
+
+解决方法
+
+```
+curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+python get-pip.py
+```
+
