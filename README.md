@@ -16,6 +16,7 @@
 - [hbase](.NOTES/hbase.md)
 - [hdfs](.NOTES/hdfs.md)
 - [jinja2](.NOTES/jinja2.md)
+- [jumpserver](.NOTES/jumpserver.md)
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
 - [linux清理message](.NOTES/linux清理message.md)
