@@ -443,6 +443,9 @@ ansible-doc -l -t lookup
 
 ```mermaid
 graph TB
-A  
+A1(开始) --> A2(f)
+A2(带唯一hostid发起请求) --> F{查询}
+F -- 存在 --> B[发起更新]
+F -- 不存在 --> C[发起创建]
 ```
 
