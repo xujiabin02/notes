@@ -244,6 +244,183 @@ func main(){
 
 
 
+
+
+# unsafe
+
+
+
+[unsafe string to []byte](https://colobu.com/2022/09/06/string-byte-convertion/)
+
+## byte slice 和 string 的转换优化
+
+直接通过强转`string(bytes)`或者`[]byte(str)`会带来数据的复制，性能不佳，所以在追求极致性能场景，我们会采用『骇客』的方式，来实现这两种类型的转换,比如k8s采用下面的方式：
+
+```
+https://github.com/kubernetes/apiserver/blob/706a6d89cf35950281e095bb1eeed5e3211d6272/pkg/authentication/token/cache/cached_token_authenticator.go#L263-L271
+// toBytes performs unholy acts to avoid allocations
+func toBytes(s string) []byte {
+	return *(*[]byte)(unsafe.Pointer(&s))
+}
+
+// toString performs unholy acts to avoid allocations
+func toString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+```
+
+更多的采用下面的方式(rpcx也采用下面的方式):
+
+```
+func SliceByteToString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+func StringToSliceByte(s string) []byte {
+	x := (*[2]uintptr)(unsafe.Pointer(&s))
+	h := [3]uintptr{x[0], x[1], x[1]}
+	return *(*[]byte)(unsafe.Pointer(&h))
+}
+```
+
+甚至，标准库也采用这种方式：
+
+```
+https://github.com/golang/go/blob/82f902ae8e2b7f7eff0cdb087e47e939cc296a62/src/strings/clone.go
+func Clone(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	b := make([]byte, len(s))
+	copy(b, s)
+	return *(*string)(unsafe.Pointer(&b))
+}
+```
+
+因为 slice of byte 和 string 数据结构类似，所以我们可以可以使用这种『骇客』的方式强转。这两种类型的数据结构在`reflect`包中有定义:
+
+```
+type SliceHeader struct {
+	Data uintptr
+	Len  int
+	Cap  int
+}
+type StringHeader struct {
+	Data uintptr
+	Len  int
+}
+```
+
+`Slice`比`String`多一个`Cap`字段，它们的数据通过一个数组存储，这两个结构的`Data`存储了指向这个数组的指针。
+
+## Go 1.20 的新的方式
+
+很多项目中都使用上面的方式进行性能提升，但是这是通过`unsafe`实现的，有相当的风险，因为强转之后，slice可能会做一些变动，导致相关的数据被覆盖了或者被回收了，也经常会出现一些意想不到的问题，我在使用这种方式做RedisProxy的时候，也犯过类似的错误，我当时还以为是标准库出错了呢。
+
+因此， Go官方准备在 1.20 中把这两个类型`SliceHeader`和`StringHeader`废弃掉，避免大家的误用。
+废弃就废弃吧，但是也得提供相应的替代方法才行。这不，在 Go 1.12中，增加了几个方法`String`、`StringData`、`Slice`和`SliceData`,用来做这种性能转换。
+
+* func Slice(ptr *ArbitraryType, len IntegerType) []ArbitraryType: 返回一个Slice,它的底层数组自ptr开始，长度和容量都是len
+* func SliceData(slice []ArbitraryType) *ArbitraryType：返回一个指针，指向底层的数组
+* func String(ptr *byte, len IntegerType) string： 生成一个字符串，底层的数组开始自ptr, 长度是len
+* func StringData(str string) *byte: 返回字符串底层的数组
+
+这四个方法看起来很原始很底层。
+
+这个提交是由cuiweixie提交的。因为涉及到很基础很底层的实现，而且又是可能被广泛使用的方法，所以大家review起来特别的仔细，大家可以围观: [go-review#427095](https://go-review.googlesource.com/c/go/+/427095/)。
+
+甚至，这个修改都惊动了蛰伏多月的Rob Pike大佬，他老人家询问为啥只有实现连注释文档都没有呢:[#54858](https://github.com/golang/go/issues?q=is%3Aissue+unsafe)，当然原因是这个功能还在开发和review之中，不过可以看出Rob Pike很重视这个修改。
+
+cuiweixie 甚至还修改了标准库里面一些[写法](https://github.com/golang/go/issues/54854)，使用他提交的unsafe中的这四个方法。
+
+## 性能测试
+
+虽然cuiweixie的提交还没有被merge到主分支，还存在一些变数，但是我发现使用gotip能使用这几个方法了。 我理解的是gotip适合master分支保持一致的，难道不是么？
+
+不管怎样，先写个benchmark:
+
+```
+var L = 1024 * 1024
+var str = strings.Repeat("a", L)
+var s = bytes.Repeat([]byte{'a'}, L)
+
+var str2 string
+var s2 []byte
+
+func BenchmarkString2Slice(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		bt := []byte(str)
+		if len(bt) != L {
+			b.Fatal()
+		}
+	}
+}
+
+func BenchmarkString2SliceReflect(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		bt := *(*[]byte)(unsafe.Pointer(&str))
+		if len(bt) != L {
+			b.Fatal()
+		}
+	}
+}
+
+func BenchmarkString2SliceUnsafe(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		bt := unsafe.Slice(unsafe.StringData(str), len(str))
+		if len(bt) != L {
+			b.Fatal()
+		}
+	}
+}
+
+func BenchmarkSlice2String(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ss := string(s)
+		if len(ss) != L {
+			b.Fatal()
+		}
+	}
+}
+
+func BenchmarkSlice2StringReflect(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ss := *(*string)(unsafe.Pointer(&s))
+		if len(ss) != L {
+			b.Fatal()
+		}
+	}
+}
+
+func BenchmarkSlice2StringUnsafe(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ss := unsafe.String(unsafe.SliceData(s), len(str))
+		if len(ss) != L {
+			b.Fatal()
+		}
+	}
+}
+```
+
+实际测试结果:
+
+```
+➜  strslice gotip test -benchmem  -bench .
+goos: darwin
+goarch: arm64
+pkg: github.com/smallnest/study/strslice
+BenchmarkString2Slice-8          	   18826	         63942 ns/op	 1048579 B/op	       1 allocs/op
+BenchmarkString2SliceReflect-8   	1000000000	         0.6498 ns/op	       0 B/op	       0 allocs/op
+BenchmarkString2SliceUnsafe-8    	1000000000	         0.8178 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSlice2String-8          	   18686	         65864 ns/op	 1048580 B/op	       1 allocs/op
+BenchmarkSlice2StringReflect-8   	1000000000	         0.6488 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSlice2StringUnsafe-8    	1000000000	         0.9744 ns/op	       0 B/op	       0 allocs/op
+```
+
+可以看到，不通过『骇客』的方式，两种类型强转耗时非常巨大，如果采用`reflect`的方式，性能提升大大改观。
+
+如果采用最新的`unsafe`包的方式，性能也能大大提高，虽然耗时比`reflect`略有增加，可以忽略。
+
 # 朝花夕拾
 
 |      |      |      |

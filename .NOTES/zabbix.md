@@ -1,3 +1,5 @@
+[toc]
+
 
 
 # 表结构解析
@@ -48,3 +50,38 @@ Code:
 # 聚合
 
 https://www.zabbix.com/documentation/6.0/en/manual/config/items/itemtypes/calculated/aggregate
+
+
+
+
+
+# 抑制
+
+https://www.yisu.com/zixun/15926.html
+
+
+
+# 长文经验
+
+https://www.infoq.cn/article/rbw25cwbpb3esadqu0gp
+
+
+
+
+
+
+
+
+
+
+
+
+
+```sh
+proc.num[<name>,<user>,<state>,<cmdline>]
+```
+
+
+
+
+

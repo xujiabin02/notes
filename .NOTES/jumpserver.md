@@ -4,7 +4,7 @@
 
 
 
-# api auth
+# >=2.6.0 api auth
 
 https://docs.jumpserver.org/zh/master/dev/rest_api/#api_1
 

@@ -1,6 +1,6 @@
 # Cgroups 与 Systemd
 
-Cgroups 是 linux 内核提供的一种机制，如果你还不了解 cgroups，请参考前文《Linux cgroups 简介》先了解 cgroups。当 Linux 的 init 系统发展到 systemd 之后，systemd 与 cgroups 发生了融合(或者说 systemd 提供了 cgroups 的使用和管理接口，systemd 管的东西越来越多啊！)。本文将简单的介绍 cgroups 与 systemd 的关系以及如何通过 systemd 来配置和使用 cgroups。
+Cgroups 是 linux 内核提供的一种机制，如果你还不了解 cgroups，请参考前文《Linux cgroups 简介》先了解 cgroups。当 Linux 的 init 系统发展到 systemd 之后，systemd 与 cgroups 发生了融合(或者说 systemd 提供了 cgroups 的使用和管理接口，systemd 管的东西越来越多啊！)。本文将简单的介绍 cgroups 与 systemd 的关系以及如何通过 systemd 来配置和使用 cgroups。[systemd resource control](https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html)
 
 ## Systemd 依赖 cgroups
 

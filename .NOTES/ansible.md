@@ -422,3 +422,27 @@ ansible-doc -l -t lookup
 
 
 
+# 循环role
+
+
+
+```yaml
+- name: myrole
+  with_items:
+    - "aone"
+    - "atwo"
+  include_role:
+    name: myrole
+  vars:
+    thing: "{{ item }}"
+```
+
+
+
+
+
+```mermaid
+graph TB
+A  
+```
+
