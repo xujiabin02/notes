@@ -380,3 +380,95 @@ $ ll
  4 -r--r--r-- 1 root root  2513 6月  14 02:29 net_prio.txt
 ```
 
+# systemd 的一些小技巧
+
+[![img](.img_Cgroups%E4%B8%8ESystemd/webp)](https://www.jianshu.com/u/20312281f19b)
+
+[_fishman](https://www.jianshu.com/u/20312281f19b)关注
+
+2019.08.22 13:03:51字数 439阅读 572
+
+> 现在 systemd 正在日益的变成一个 Linux 内核与发行版之间的一个兼容层，systemd 向下管理了诸多底层组件，向上提供了一致的接口和 API。今天主要就是分享一些自己平时用到的一些 systemd 的小技巧
+
+管理多个服务，只要写一个 service 文件
+
+
+
+```dart
+vim /etc/systemd/system/tomcat@service
+```
+
+
+
+```csharp
+[Unit]
+Description=%i
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/data/ftp/app/tomcat-%i
+ExecStart=/bin/sh -c '/data/ftp/app/tomcat-%i/bin/catalina.sh run'
+User=app
+Restart=on-failure
+PrivateTmp=true
+KillSignal=KILL
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+```bash
+vim /etc/systemd/system/test@.service
+```
+
+
+
+```csharp
+[Unit]  
+Description=%i
+After=network.target  
+   
+[Service]  
+Type=simple
+WorkingDirectory=/data/ftp/app/%p/%i
+ExecStart=/bin/sh -c '/data/ftp/app/%p/%i/bin/run.sh run'
+User=app
+Restart=on-failure
+PrivateTmp=true  
+KillSignal=KILL
+TimeoutStopSec=5
+  
+[Install]  
+WantedBy=multi-user.target  
+```
+
+- %i 是 systemd 中的一个替换标记，表示 已转义的实例名称。对于实例化的单元，就是 "@" 和后缀之间的部分。，比如 systemctl start test@abc，这个 %i 就会被替换成 abc。更多选项可以在参考中查阅。
+- %p 是已转义的前缀名称。对于实例化的单元，就是 "@" 前面的部分；对于其他单元，就是去掉后缀(即类型)之后剩余的部分。这个%p会替换成test@.service的test。
+- KillSignal 是设置杀死进程的 第一步使用什么信号，杀死进程的时候，第一步首先使用 KillSignal= 信号(默认为 SIGTERM) (如果 SendSIGHUP=yes ，那么还会立即紧跟一个 SIGHUP 信号)， 若等候 TimeoutStopSec= 时间后， 进程仍然未被杀死， 则继续第二步使用 SIGKILL 信号(除非 SendSIGKILL=no)强制杀死。
+- TimeoutStopSec 是否在超过 TimeoutStopSec= 时间后， 使用 SIGKILL 信号杀死依然残存的进程。
+
+这俩个配置主要是我们生产应用关闭等待时间太长，所以强制发送KILL信号，超时5秒强制杀死所有残存的进程。
+
+
+
+```undefined
+KillSignal=KILL
+TimeoutStopSec=5
+```
+
+参考：
+[https://xuanwo.io/2018/10/30/tips-of-systemd/](https://links.jianshu.com/go?to=https%3A%2F%2Fxuanwo.io%2F2018%2F10%2F30%2Ftips-of-systemd%2F)
+[http://www.jinbuguo.com/systemd/systemd.unit.html](https://links.jianshu.com/go?to=http%3A%2F%2Fwww.jinbuguo.com%2Fsystemd%2Fsystemd.unit.html)
+[http://www.jinbuguo.com/systemd/systemd.kill.html](https://links.jianshu.com/go?to=http%3A%2F%2Fwww.jinbuguo.com%2Fsystemd%2Fsystemd.kill.html)
+
+
+
+0人点赞
+
+
+
+[devops](https://www.jianshu.com/nb/37478503)

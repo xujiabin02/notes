@@ -441,11 +441,55 @@ ansible-doc -l -t lookup
 
 
 
+幂等性请求
+
 ```mermaid
 graph TB
 A1(开始) --> A2(f)
 A2(带唯一hostid发起请求) --> F{查询}
 F -- 存在 --> B[发起更新]
 F -- 不存在 --> C[发起创建]
+```
+
+
+
+# ansible shell 执行远程命令遇到awk 中$符号的问题
+
+```
+\$ 转义
+```
+
+
+
+# WARN: Collection community.general does not support Ansible version 2.10.17
+
+```shell
+ansible-galaxy collection install community.general:==4.8.7 --force
+```
+
+
+
+
+
+
+
+# shell  配合 changed_when: false
+
+
+
+```yml
+
+
+# In Ansible, a play with the status of 'CHANGED' is a successful response. If it wasn't successful, it would have reported back that the play 'FAILED'.
+
+# In an Ansible playbook, you can suppress the 'CHANGED' status by adding changed_when: false to a play. If the play is successful, the status would then be 'OK'.
+
+- name: "create {{ proxy_db }}"
+  shell:
+    cmd: 'ls'
+    chdir: "{{ goose_home }}"
+  changed_when: false
+
+
 ```
 
