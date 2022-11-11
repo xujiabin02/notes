@@ -493,3 +493,207 @@ ansible-galaxy collection install community.general:==4.8.7 --force
 
 ```
 
+# hostvars inventory_hostname play_hosts
+
+
+
+1 hostvars 可以在当前操作主机中输出其他主机中的facts信息
+
+```lua
+---
+
+
+
+- name: "play 1: Gather facts of test71"
+
+
+
+  hosts: test71
+
+
+
+  remote_user: root
+
+
+
+ 
+
+
+
+- name: "play 2: Get facts of test71 when operating on test70"
+
+
+
+  hosts: test70
+
+
+
+  remote_user: root
+
+
+
+  tasks:
+
+
+
+  - debug:
+
+
+
+      msg: "{{hostvars['test71'].ansible_ens35.ipv4}}"
+```
+
+2 inventory_hostname 获取被操作的当前主机主机名（inventory文件中的名称）
+
+```csharp
+[test_group]
+
+
+
+10.1.1.60
+
+
+
+test70.zsythink.net ansible_host=10.1.1.70
+
+
+
+test71 anisble_host=10.1.1.71
+# ansible test_group -m debug -a "msg={{inventory_hostname}}"
+
+
+
+test70.zsythink.net | SUCCESS => {
+
+
+
+    "changed": false, 
+
+
+
+    "msg": "test70.zsythink.net"
+
+
+
+}
+
+
+
+10.1.1.60 | SUCCESS => {
+
+
+
+    "changed": false, 
+
+
+
+    "msg": "10.1.1.60"
+
+
+
+}
+
+
+
+test71 | SUCCESS => {
+
+
+
+    "changed": false, 
+
+
+
+    "msg": "test71"
+
+
+
+}
+```
+
+3 play_hosts 获取当前play所操作的所有主机的主机名列表
+
+```handlebars
+---
+
+
+
+- hosts: test70,test71
+
+
+
+  remote_user: root
+
+
+
+  gather_facts: no
+
+
+
+  tasks:
+
+
+
+  - debug:
+
+
+
+      msg: "{{play_hosts}}"
+```
+
+执行得到
+
+```css
+TASK [debug] *************************
+
+
+
+ok: [test70] => {
+
+
+
+    "msg": [
+
+
+
+        "test71", 
+
+
+
+        "test70"
+
+
+
+    ]
+
+
+
+}
+
+
+
+ok: [test71] => {
+
+
+
+    "msg": [
+
+
+
+        "test71", 
+
+
+
+        "test70"
+
+
+
+    ]
+
+
+
+}
+```
+
+4 groups 获取play操作的清单中分组列表
+
+5 group_names 获取当前操作的主机的分组名

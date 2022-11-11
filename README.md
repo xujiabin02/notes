@@ -19,6 +19,7 @@
 - [jumpserver](.NOTES/jumpserver.md)
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
+- [ldap](.NOTES/ldap.md)
 - [linux清理message](.NOTES/linux清理message.md)
 - [markdown](.NOTES/markdown.md)
 - [mysql](.NOTES/mysql.md)
