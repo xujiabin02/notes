@@ -153,3 +153,12 @@ grant all privileges on *.* to 'root'@'%' with grant option;
 flush privileges;
 ```
 
+
+
+# 获取 11天前0点
+
+```sql
+select CAST(CAST(NOW()AS DATE)AS DATETIME);
+select (UNIX_TIMESTAMP(CAST(CAST(NOW()AS DATE)AS DATETIME)) - (11*86400));
+```
+
