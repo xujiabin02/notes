@@ -27,6 +27,7 @@
 - [mysql](.NOTES/mysql.md)
 - [nextcloud](.NOTES/nextcloud.md)
 - [nginx](.NOTES/nginx.md)
+- [omicron](.NOTES/omicron.md)
 - [pex](.NOTES/pex.md)
 - [postgresql](.NOTES/postgresql.md)
 - [pytest](.NOTES/pytest.md)

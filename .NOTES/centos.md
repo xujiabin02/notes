@@ -234,3 +234,18 @@ vimdiff -s ceshi.vim -c TOhtml -c "w custom_name.html"
 vimdiff -c TOhtml -c "w custom_name.html"
 ```
 
+
+
+
+
+# limits
+
+
+
+stack是啥
+
+```
+* soft stack 65535
+* hard stack 65535
+```
+
