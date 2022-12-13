@@ -23,6 +23,10 @@
 
 
 
+[rpm下载](https://network.pivotal.io/products/vmware-tanzu-greenplum#/releases/1193700/file_groups/10395)
+
+
+
 ```
 fcopy
 ```

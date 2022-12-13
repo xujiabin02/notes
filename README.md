@@ -43,6 +43,7 @@
 - [vim](.NOTES/vim.md)
 - [vue_ts](.NOTES/vue_ts.md)
 - [web_service](.NOTES/web_service)
+- [xar](.NOTES/xar.md)
 - [zabbix](.NOTES/zabbix.md)
 - [基因](.NOTES/基因.md)
 - [教育](.NOTES/教育.md)
