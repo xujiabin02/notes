@@ -47,6 +47,7 @@
 - [zabbix](.NOTES/zabbix.md)
 - [基因](.NOTES/基因.md)
 - [教育](.NOTES/教育.md)
+- [河狸](.NOTES/河狸.md)
 - [测试](.NOTES/测试.md)
 - [盈利](.NOTES/盈利.md)
 - [视野](.NOTES/视野.md)

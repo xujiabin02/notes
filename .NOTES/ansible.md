@@ -774,7 +774,7 @@ ok: [test71] => {
 
 # 如何优化 Ansible Playbook执行速度
 
-[![img](.img_ansible/1632067541626_1943_5289.jpg)](https://bbs.huaweicloud.com/community/usersnew/id_1575540903718176) [山河已无恙](https://bbs.huaweicloud.com/community/usersnew/id_1575540903718176) 发表于 2022/08/25 00:32:15
+(https://bbs.huaweicloud.com/community/usersnew/id_1575540903718176) [山河已无恙](https://bbs.huaweicloud.com/community/usersnew/id_1575540903718176) 发表于 2022/08/25 00:32:15
 
  
 
