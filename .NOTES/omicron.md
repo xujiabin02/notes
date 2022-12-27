@@ -57,3 +57,11 @@ VC必备（嚼服或泡腾片含服，双倍剂量）
 
 
 ![img](.img_omicron/175837a1any8khbgkk2wwh.jpg)
+
+
+
+
+
+
+
+小刀割嗓子：  =>  西地碘含片
