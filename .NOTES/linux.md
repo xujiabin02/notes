@@ -113,7 +113,7 @@ echo -e "\033[34m 蓝色字 \033[0m"
 echo -e "\033[35m 紫色字 \033[0m"
 echo -e "\033[36m 天蓝字 \033[0m"
 echo -e "\033[37m 白色字 \033[0m"
- 
+
 
 echo -e "\033[40;37m 黑底白字 \033[0m"
 echo -e "\033[41;37m 红底白字 \033[0m"
@@ -149,3 +149,80 @@ echo -e "\033[47;30m 白底黑字 \033[0m"
 系统字体配色方案
 
 export LS_COLORS='no=00:fi=00:di=44;37:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=01;32:*.cmd=01;32:*.exe=01;32:*.com=01;32:*.btm=01;32:*.bat=01;32:*.sh=01;32:*.csh=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tz=01;31:*.rpm=01;31:*.cpio=01;31:*.jpg=01;35:*.gif=01;35:*.bmp=01;35:*.xbm=01;35:*.xpm=01;35:*.png=01;35:*.tif=01;35:'
+
+
+
+
+
+# linux 内存分配限制,overcommit_memory 2
+
+gonaYet
+
+于 2016-10-14 16:40:02 发布
+
+8278
+ 收藏 2
+分类专栏： 操作系统_linux 文章标签： linux 内存限制 overcommit_memory
+版权
+
+操作系统_linux
+专栏收录该内容
+145 篇文章0 订阅
+订阅专栏
+诡异场景:
+
+当你发现程序在申请大段内存的时候，发生申请失败。
+
+这时候你通过查看free -g发现free下的内存还有大量可以使用的内存。
+
+然后你再继续查看ulimit -a的时候，却发现max memroy size为不受限。
+
+这时候你或许会很疑惑，为什么在足够内存的情况下，当申请内存达到一定量的时候，却还是失败呢。
+
+这时候你查看sysctl -a | grep "vm.overcommit_memory",如果你发现值为2,那么问题便是发生在这里了
+
+在我们进行内存申请的时候，如malloc 200m,这时候仅仅是进行内存申请，但实际使用的时候可能仅仅是100m, 意味着有100m并没有真是被分配。
+
+这时候我们通过free 看到使用的也只有100m的内存。但是vm.overcommit_memory其关注的是申请的内存，即200m的内存，这点需要注意。
+
+而vm.overcommit_memory的意思:
+
+0 — 默认设置。内核执行启发式内存过量使用处理，方法是估算可用内存量，并拒绝明显无效的请求。遗憾的是因为内存是使用启发式而非准确算法计算进行部署，这个设置有时可能会造成系统中的可用内存超载。
+1 — 内核执行无内存过量使用处理。使用这个设置会增大内存超载的可能性，但也可以增强大量使用内存任务的性能。
+2 — 内存拒绝等于或者大于总可用 swap 大小以及  overcommit_ratio 指定的物理 RAM 比例的内存请求。如果您希望减小内存过度使用的风险，这个设置就是最好的
+值为2下的场景:
+
+公式:CommitLimit = (Physical RAM * vm.overcommit_ratio / 100) + Swap
+Physical RAM为当前系统的总物理内存
+
+ vm.overcommit_ratio为物理内存的比例,默认为50
+Swap为当前系统的总Swap
+
+可以通过查看
+
+grep -i commit /proc/meminfo
+CommitLimit:    73955212 kB
+Committed_AS:    kB
+
+这里的CommitLimit为当前系统可以申请的总内存，Committed_AS为当前已经申请的内存，记住是申请。
+
+因此当你的free查看有很多大量可用的内存的时候，实际Committed_AS可能已经申请了大量的内存了，在vm.overcommit_memory 2模式下，后续的程序可以申请的剩余内存
+
+为CommitLimit - Commited_AS了。
+
+而vm.overcommit_memory设置为2一般是建议当Swap大于物理内存的时候才进行设置。
+
+而vm.overcommit_memory一般是设置为0模式的。
+
+因此现在你知道该如何查理这种场景了吧。
+
+
+参考文章:
+
+https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html/Performance_Tuning_Guide/s-memory-captun.html
+
+http://linuxperf.com/?p=102
+http://engineering.pivotal.io/post/Virtual_memory_settings_in_Linux_-_The_problem_with_Overcommit/
+————————————————
+版权声明：本文为CSDN博主「gonaYet」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_16097611/article/details/52816908
