@@ -60,3 +60,16 @@ copy test to '/tmp/test1.csv' with csv header DELIMITER '|';
 copy test to '/tmp/test1.csv' with csv header null 'to be supplemented';
 ```
 
+
+
+# 授权
+
+
+
+```
+CREATE USER src_user WITH PASSWORD '*****';
+GRANT ALL PRIVILEGES ON DATABASE testDB TO testUser;
+GRANT ALL PRIVILEGES ON all tables in schema public TO testUser;
+
+```
+
