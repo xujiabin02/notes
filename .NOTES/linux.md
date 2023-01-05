@@ -226,3 +226,87 @@ http://engineering.pivotal.io/post/Virtual_memory_settings_in_Linux_-_The_proble
 ————————————————
 版权声明：本文为CSDN博主「gonaYet」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/qq_16097611/article/details/52816908
+
+
+
+
+
+# [linux 的overcommit_memory、overcommit_ratio、swappiness 的说明 ](https://www.cnblogs.com/ctypyb2002/p/9792921.html)
+
+## vm.overcommit_memory
+
+```avrasm
+vm.overcommit_memory = 0
+vm.overcommit_memory = 1
+vm.overcommit_memory = 2
+```
+
+0 默认设置。表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。
+遗憾的是因为内存是使用启发式overcommitting handle(会尽量减少swap的使用)而非准确算法计算进行部署，这个设置有时可能会造成系统中的可用内存超载。
+
+1 允许超过CommitLimit，即允许分配所有的物理内存，而不管当前的内存状态如何。
+使用这个设置会增大内存超载的可能性，但也可以增强大量使用内存任务的性能。
+
+2 拒绝超过CommitLimit的分配，即拒绝等于或者大于总可用 swap 大小以及 overcommit_ratio 指定的物理 RAM 比例的内存请求。如果您**希望减小内存过度使用的风险，这个设置就是最好的。**
+
+公式:CommitLimit = (Physical RAM * vm.overcommit_ratio / 100) + Swap
+
+## vm.overcommit_ratio
+
+```ini
+vm.overcommit_ratio = 90 
+```
+
+默认为50，为物理内存分配时的比例。
+只有当vm.overcommit_memory = 2的时候才会生效
+
+查看系统overcommit信息
+
+```avrasm
+# cat /proc/meminfo |grep -i commit
+CommitLimit:    90971304 kB
+Committed_AS:   64872556 kB
+```
+
+CommitLimit：最大能分配的内存(个人理解仅仅在vm.overcommit_memory=2时候生效)，具体的值是
+SWAP内存大小 + 物理内存 * overcommit_ratio / 100
+
+Committed_AS：当前已经分配的内存大小
+
+临时设置
+
+```bash
+#sysctl vm.swappiness=10
+```
+
+## vm.swappiness
+
+```ini
+vm.swappiness = 1 
+```
+
+默认值为60,代表 当剩余物理内存低于40%（40=100-60）时，开始使用交换空间
+
+vm.swappiness = 0
+最大限度使用物理内存，然后才是 swap空间，即在内存不足的情况下–当剩余空闲内存低于vm.min_free_kbytes limit时，使用交换空间。
+在内存紧张时优先减少RAM里文件系统缓存的大小，而非使用swap空间，**这是一种提高数据库性能的推荐做法。**
+
+vm.swappiness = 1
+内核版本3.5及以上、Red Hat内核版本2.6.32-303及以上，进行最少量的交换，而不禁用交换。
+
+vm.swappiness = 10
+当系统存在足够内存时，推荐设置为该值以提高性能。
+
+vm.swappiness = 60
+默认值
+
+vm.swappiness = 100
+积极的使用交换空间。
+
+对于内核版本为3.5及以上，Red Hat内核版本2.6.32-303及以上，多数情况下，设置为1可能比较好，0则适用于理想的情况下（it is likely better to use 1 for cases where 0 used to be optimal）
+
+临时设置
+
+```shell
+# echo 10 > /proc/sys/vm/swappiness
+```
