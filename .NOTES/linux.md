@@ -310,3 +310,8 @@ vm.swappiness = 100
 ```shell
 # echo 10 > /proc/sys/vm/swappiness
 ```
+
+
+
+# 大磁盘分区
+

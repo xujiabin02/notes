@@ -47,3 +47,19 @@
 ————————————————
 版权声明：本文为CSDN博主「嘉月君」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/MDJ_D2T/article/details/119183504
+
+
+
+# 中文乱码
+
+```
+Ctrl+Shift+P调出命令面板，在输入框输入Install Package
+```
+
+![img](.img_sublime/70-20230105133901609.png)
+
+![img](.img_sublime/70.png)
+
+
+
+或者弹出窗口 选择GBK
