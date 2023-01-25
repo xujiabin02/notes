@@ -1,3 +1,5 @@
+[toc]
+
 # 管理员
 
 
@@ -1445,6 +1447,250 @@ select * from gpexpand.status;
 select * from gpexpand.status_detail;
 ```
 
----
+
+
+# 压测记录
+
+集群性能主要是针对集群的网络性能、磁盘I/O性能进行测试。
+
+集群的网络性能测试：
+
+```
+gpcheckperf -f /data/opt/greenplum/all_hosts -r N -d /data/opt/greenplum/tmp
+```
+
+```sh
+[gpadmin@dp01 ~]$ gpcheckperf -f /data/opt/greenplum/all_hosts -r N -d /data/opt/greenplum/tmp
+/usr/local/greenplum-db-6.21.3/bin/gpcheckperf -f /data/opt/greenplum/all_hosts -r N -d /data/opt/greenplum/tmp
+
+-------------------
+--  NETPERF TEST
+-------------------
+
+====================
+==  RESULT 2023-01-10T11:13:51.012689
+====================
+Netperf bisection bandwidth test
+dp03 -> dp04 = 115.740000
+dp05 -> dp03 = 75.540000
+dp04 -> dp03 = 115.770000
+dp03 -> dp05 = 115.770000
+
+Summary:
+sum = 422.82 MB/sec
+min = 75.54 MB/sec
+max = 115.77 MB/sec
+avg = 105.70 MB/sec
+median = 115.77 MB/sec
+
+[Warning] connection between dp05 and dp03 is no good
+```
+
+另一块盘
+
+```sh
+[gpadmin@dp01 ~]$ gpcheckperf -f /data/opt/greenplum/all_hosts -r N -d /data1/opt/greenplum/tmp
+/usr/local/greenplum-db-6.21.3/bin/gpcheckperf -f /data/opt/greenplum/all_hosts -r N -d /data1/opt/greenplum/tmp
+
+-------------------
+--  NETPERF TEST
+-------------------
+
+====================
+==  RESULT 2023-01-10T11:16:31.069249
+====================
+Netperf bisection bandwidth test
+dp03 -> dp04 = 115.720000
+dp05 -> dp03 = 103.880000
+dp04 -> dp03 = 48.580000
+dp03 -> dp05 = 115.760000
+
+Summary:
+sum = 383.94 MB/sec
+min = 48.58 MB/sec
+max = 115.76 MB/sec
+avg = 95.98 MB/sec
+median = 115.72 MB/sec
+
+[Warning] connection between dp05 and dp03 is no good
+[Warning] connection between dp04 and dp03 is no good
+```
+
+
+
+磁盘I/O性能测试
+
+```shell
+[gpadmin@dp01 ~]$ gpcheckperf -f /data/opt/greenplum/all_hosts -r ds -D -v -d /data/opt/greenplum/tmp -d /data1/opt/greenplum/tmp 
+[Info] sh -c 'cat /proc/meminfo | grep MemTotal'
+MemTotal:       65804268 kB
+
+/usr/local/greenplum-db-6.21.3/bin/gpcheckperf -f /data/opt/greenplum/all_hosts -r ds -D -v -d /data/opt/greenplum/tmp -d /data1/opt/greenplum/tmp
+--------------------
+  SETUP 2023-01-10T11:19:07.646581
+--------------------
+[Info] verify python interpreter exists
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'python -c print'
+[Info] making gpcheckperf directory on all hosts ... 
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'rm -rf  /data/opt/greenplum/tmp/gpcheckperf_$USER /data1/opt/greenplum/tmp/gpcheckperf_$USER ; mkdir -p  /data/opt/greenplum/tmp/gpcheckperf_$USER /data1/opt/greenplum/tmp/gpcheckperf_$USER'
+[Info] copy local /usr/local/greenplum-db-6.21.3/bin/lib/multidd to remote /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpscp -f /data/opt/greenplum/all_hosts /usr/local/greenplum-db-6.21.3/bin/lib/multidd =:/data/opt/greenplum/tmp/gpcheckperf_$USER/multidd
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'chmod a+rx /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd'
+
+--------------------
+--  DISK WRITE TEST
+--------------------
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'time -p /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd -i /dev/zero -o /data/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -i /dev/zero -o /data1/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -B 32768'
+
+```
+
+
+
+写测试产生了126G数据, 16c配置load为4
+
+```sh
+[root@dp03 ~]# du -h --max-depth=1 /data/opt/greenplum/tmp/
+126G    /data/opt/greenplum/tmp/gpcheckperf_gpadmin
+[root@dp03 ~]# du -h --max-depth=1 /data1/opt/greenplum/tmp/
+126G    /data1/opt/greenplum/tmp/gpcheckperf_gpadmin
+```
+
+读测试, load为2
+
+```sh
+[root@dp05 ~]# w
+ 11:27:15 up 24 days, 17:47,  2 users,  load average: 2.45, 2.66, 1.47
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     pts/0    172.16.33.205    11:22    3.00s  0.03s  0.00s w
+gpadmin  pts/1    dp01             11:25    2:07  38.05s 19.07s dd if=/data/opt/greenplum/tmp/gpcheckperf_gpadmin/ddfile of=/dev/null count=4112766 bs=32768
+```
+
+
+
+结束
+
+```sh
+[gpadmin@dp01 ~]$ gpcheckperf -f /data/opt/greenplum/all_hosts -r ds -D -v -d /data/opt/greenplum/tmp -d /data1/opt/greenplum/tmp 
+[Info] sh -c 'cat /proc/meminfo | grep MemTotal'
+MemTotal:       65804268 kB
+
+/usr/local/greenplum-db-6.21.3/bin/gpcheckperf -f /data/opt/greenplum/all_hosts -r ds -D -v -d /data/opt/greenplum/tmp -d /data1/opt/greenplum/tmp
+--------------------
+  SETUP 2023-01-10T11:19:07.646581
+--------------------
+[Info] verify python interpreter exists
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'python -c print'
+[Info] making gpcheckperf directory on all hosts ... 
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'rm -rf  /data/opt/greenplum/tmp/gpcheckperf_$USER /data1/opt/greenplum/tmp/gpcheckperf_$USER ; mkdir -p  /data/opt/greenplum/tmp/gpcheckperf_$USER /data1/opt/greenplum/tmp/gpcheckperf_$USER'
+[Info] copy local /usr/local/greenplum-db-6.21.3/bin/lib/multidd to remote /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpscp -f /data/opt/greenplum/all_hosts /usr/local/greenplum-db-6.21.3/bin/lib/multidd =:/data/opt/greenplum/tmp/gpcheckperf_$USER/multidd
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'chmod a+rx /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd'
+
+--------------------
+--  DISK WRITE TEST
+--------------------
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'time -p /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd -i /dev/zero -o /data/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -i /dev/zero -o /data1/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -B 32768'
+
+--------------------
+--  DISK READ TEST
+--------------------
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'time -p /data/opt/greenplum/tmp/gpcheckperf_$USER/multidd -o /dev/null -i /data/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -o /dev/null -i /data1/opt/greenplum/tmp/gpcheckperf_$USER/ddfile -B 32768'
+
+
+--------------------
+--  STREAM TEST
+--------------------
+[Info] copy local /usr/local/greenplum-db-6.21.3/bin/lib/stream to remote /data/opt/greenplum/tmp/gpcheckperf_$USER/stream
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpscp -f /data/opt/greenplum/all_hosts /usr/local/greenplum-db-6.21.3/bin/lib/stream =:/data/opt/greenplum/tmp/gpcheckperf_$USER/stream
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'chmod a+rx /data/opt/greenplum/tmp/gpcheckperf_$USER/stream'
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts /data/opt/greenplum/tmp/gpcheckperf_$USER/stream
+--------------------
+  TEARDOWN
+--------------------
+[Info] /usr/local/greenplum-db-6.21.3/bin/gpssh -f /data/opt/greenplum/all_hosts 'rm -rf  /data/opt/greenplum/tmp/gpcheckperf_$USER /data1/opt/greenplum/tmp/gpcheckperf_$USER'
+
+====================
+==  RESULT 2023-01-10T11:34:47.364279
+====================
+
+ disk write avg time (sec): 348.61
+ disk write tot bytes: 808602697728
+ disk write tot bandwidth (MB/s): 2212.16
+ disk write min bandwidth (MB/s): 729.52 [dp03]
+ disk write max bandwidth (MB/s): 741.71 [dp04]
+ -- per host bandwidth --
+    disk write bandwidth (MB/s): 729.52 [dp03]
+    disk write bandwidth (MB/s): 741.71 [dp04]
+    disk write bandwidth (MB/s): 740.92 [dp05]
+
+
+ disk read avg time (sec): 475.13
+ disk read tot bytes: 808602697728
+ disk read tot bandwidth (MB/s): 1720.33
+ disk read min bandwidth (MB/s): 462.72 [dp04]
+ disk read max bandwidth (MB/s): 782.99 [dp03]
+ -- per host bandwidth --
+    disk read bandwidth (MB/s): 782.99 [dp03]
+    disk read bandwidth (MB/s): 462.72 [dp04]
+    disk read bandwidth (MB/s): 474.63 [dp05]
+
+
+ stream tot bandwidth (MB/s): 28889.60
+ stream min bandwidth (MB/s): 9613.60 [dp04]
+ stream max bandwidth (MB/s): 9646.10 [dp03]
+ -- per host bandwidth --
+    stream bandwidth (MB/s): 9646.10 [dp03]
+    stream bandwidth (MB/s): 9613.60 [dp04]
+    stream bandwidth (MB/s): 9629.90 [dp05]
+
+```
+
+
+
+每台主机的磁盘文件预读统一设置为：16384
+
+```sh
+[root@dp03 ~]#   /sbin/blockdev --getra /dev/vda
+8192
+[root@dp03 ~]#   /sbin/blockdev --getra /dev/vdb
+256
+[root@dp03 ~]#   /sbin/blockdev --getra /dev/vdc
+256
+[root@dp03 ~]#   /sbin/blockdev --getra /dev/vdb
+16384
+[root@dp03 ~]#   /sbin/blockdev --getra /dev/vdc
+16384
+```
+
+
+
+
+
+# --执行引擎--
+
+https://www.modb.pro/db/430294
+
+
+
+# --查看表分布--
+
+https://blog.csdn.net/chuckchen1222/article/details/106899710
+
+
+
+```sql
+select gp_segment_id,count(*) from table_name group by gp_segment_id;
+```
+
+
 
 # end
+
+
+
+
+
+
+
+
+

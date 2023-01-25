@@ -2024,3 +2024,17 @@ curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 python get-pip.py
 ```
 
+
+
+# pip安装时WARNING: Ignoring invalid distribution -XX的解决办法
+
+
+
+```sh
+cd /data/opt/anaconda3/lib/python3.7/site-packages
+find ./  -name ~\* -type d |xargs rm -rf
+```
+
+
+
+https://zhuanlan.zhihu.com/p/507200187

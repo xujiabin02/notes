@@ -315,3 +315,69 @@ vm.swappiness = 100
 
 # 大磁盘分区
 
+# rsync
+
+# [rsync 替换 cp 命令显示速度和进度](https://my.oschina.net/u/4332520/blog/4280798)
+
+[osc_wl6d9wri](https://my.oschina.net/u/4332520)
+
+2020/05/16 13:57
+
+阅读数 7.9K
+
+```sh
+# rsync -P test.tar.gz ./
+test.tar.gz
+    395,706,368  48%  377.34MB/s    0:00:01
+
+Or
+# rsync -avPh test.tar.gz ./
+注意：rsync和scp都可以远程拷贝。
+
+*****************************************************************************************
+一般最常用的选项组合：-avzP 来进行传输,
+
+rsync的同步参数选项：
+-a ：归档模式，表示以递归模式传输文件，并保持文件所有属性相当于-rtopgdl
+-v :详细模式输出，传输时的进度等信息
+-z :传输时进行压缩以提高效率—compress-level=num可按级别压缩
+-r :对子目录以递归模式，即目录下的所有目录都同样传输。
+-t :保持文件的时间信息—time
+-o ：保持文件属主信息owner
+-p ：保持文件权限
+-g ：保持文件的属组信息
+-P :--progress 显示同步的过程及传输时的进度等信息
+-e ：使用的信道协议，指定替代rsh的shell程序。例如：ssh
+-D :保持设备文件信息
+-l ：--links 保留软连接
+--progress  :显示备份过程
+--delete    :删除那些DST中SRC没有的文件
+--exclude=PATTERN 　指定排除不需要传输的文件模式
+-u, --update 仅仅进行更新，也就是跳过所有已经存在于DST，并且文件时间晚于要备份的文件。(不覆盖更新的文件)
+-b, --backup 创建备份，也就是对于目的已经存在有同样的文件名时，将老的文件重新命名为~filename。
+-suffix=SUFFIX 定义备份文件前缀
+-stats 给出某些文件的传输状态
+-R, --relative 使用相对路径信息  如：rsync foo/bar/foo.c remote:/tmp/   则在/tmp目录下创建foo.c文件，而如果使用-R参数：rsync -R foo/bar/foo.c remote:/tmp/     则会创建文件/tmp/foo/bar/foo.c，也就是会保持完全路径信息。
+--config=FILE 指定其他的配置文件，不使用默认的rsyncd.conf文件
+--port=PORT 指定其他的rsync服务端口
+```
+
+ 
+
+[rsync](https://www.oschina.net/p/rsync)
+
+本文转载自：https://blog.csdn.net/u010164190/article/details/106145819
+
+
+
+
+
+# 编译
+
+```sh
+yum -y install gcc automake autoconf libtool make
+yum install gcc gcc-c++
+yum install readline-devel -y
+yum install zlib-devel -y
+```
+
