@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "包管理vendor_mod.md",
+                "file": "健身康复.md",
                 "mode": "preview",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "包管理vendor_mod.md",
+                "file": "健身康复.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "包管理vendor_mod.md",
+                "file": "健身康复.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "包管理vendor_mod.md"
+                "file": "健身康复.md"
               }
             }
           }
@@ -146,8 +146,13 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "e39b750c1b7ba09a",
+  "active": "b7b2814a9b5a8cb4",
   "lastOpenFiles": [
+    "教育.md",
+    "基因.md",
+    "健身康复.md",
+    "深度睡眠.md",
+    "包管理vendor_mod.md",
     "ansible.md",
     "airflow.md",
     "组件运维.md",
