@@ -23,6 +23,7 @@
 - [kafka](.NOTES/kafka.md)
 - [ldap](.NOTES/ldap.md)
 - [linux](.NOTES/linux.md)
+- [mac](.NOTES/mac.md)
 - [markdown](.NOTES/markdown.md)
 - [mysql](.NOTES/mysql.md)
 - [nextcloud](.NOTES/nextcloud.md)
