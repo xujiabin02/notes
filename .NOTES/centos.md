@@ -249,3 +249,14 @@ stack是啥
 * hard stack 65535
 ```
 
+
+
+
+
+# rsync
+
+![image-20230220131518118](.img_centos/image-20230220131518118.png)
+
+
+
+https://rawbin-.github.io/dev-env/2016-08-20-windows-ssh-rsync/

@@ -1684,7 +1684,391 @@ select gp_segment_id,count(*) from table_name group by gp_segment_id;
 
 
 
+# 锁
+
+https://blog.csdn.net/Explorren/article/details/105107672
+
+
+
+
+
+来源：[Greenplum 运维脚本](https://mp.weixin.qq.com/s/jOhKsmNRE82x_vGkU2PHDw)
+
+## 摘录内容 
+Greenplum 运维脚本
+==============
+
+原创 gaoj [DCEGJ](javascript:void(0);)
+
+**DCEGJ** 
+
+微信号 gh_865591a6fb7b
+
+功能介绍 SHARE
+
+_2021-09-05 11:56_ _发表于_
+
+收录于合集
+
+  
+
+SQL语法
+-----
+
+*   列转行
+    
+
+```sql
+select unnest(string_to_array('111,222,333' , ',' ));
+select array_remove(array[a,b,c],null);
+select array[a,b,c,d] from xx;
+```
+
+SQL优化
+-----
+
+*   系统开关
+    
+
+| 参数名称                                           | 参数介绍 | 默认       |
+| --- | --- | --- |
+| optimizer | GPORCA优化器 | on |
+| enable_bitmapscan | 位图扫描规划类型的使用 | on |
+| enable_hashagg | hash聚集 | on |
+| enable_hashjoin | hash连接 | on |
+| enable_indexscan | 索引扫描 | on |
+| enable_mergejoin | 融合连接 | on |
+| enable_nestloop | 循环嵌套。我们不能完全消除明确的排序，但关闭这个参数可以让优化器在有其他方法的时候优先选择其他方法。 | on |
+| enable_seqscan | 顺序扫描。我们不能完全消除明确的排序，但关闭这个参数可以让优化器在有其他方法的时候优先选择其他方法。 | on |
+| enable_sort | 明确排序。我们不能完全消除明确的排序，但关闭这个参数可以让优化器在有其他方法的时候优先选择其他方法。 | on |
+| enable_tidscan | TID扫描类型 | on |
+
+打开/关闭命令：（会话级）
+
+```sql
+ set optimizer = off;
+ set enable_bitmapscan = on;
+ set enable_hashagg = on;
+ set enable_hashjoin = on;
+ set enable_indexscan = on;
+ set enable_mergejoin = off;
+ set enable_nestloop = off;
+ set enable_seqscan = on;
+ set enable_sort = on;
+ set enable_tidscan = on;
+```
+
+psql
+----
+
+*   常用系统管理命令
+    
+
+```sql
+ show search_path;
+```
+
+数据库管理
+-----
+
+*   常用伪列
+    
+
+```sql
+ --分布的host主机id
+ gp_segment_id
+ --把oid和关系互转
+ ::oid
+ ::regclass --把oid和关系互转
+```
+
+*   常用系统函数
+    
+
+```sql
+ --表大小
+ select pg_size_pretty(pg_relation_size('table_name')); --表大小
+ --杀进程
+ select pg_terminate_backen(pid); --与pg_stat_activity联用
+```
+
+*   查看数据库对象
+    
+
+```sql
+--查视图
+ select * from pg_views;
+ --查过程
+ select * from pg_proc where proname like '%过程名%';
+ --查字段
+ select * from pg_catalog.pg_attribute;
+ --查注释
+ select * from pg_catalog.pg_description;
+ 
+ --查用户、权限
+ select * from pg_roles;
+ select * from pg_authid;
+ select * from information_schema.role_table_grants;
+ 
+ --分区表
+ select * from pg_partitions;
+ 
+ --命名空间
+ select * from pg_namespace;
+```
+
+  
+
+*   资源管理
+    
+
+```sql
+ --数据分布
+ select gp_segment_id,count(*) from <table_name> group by gp_segment_id;
+ --分部键（一对多）
+ select * from pg_catalog.gp_distribution_policy;
+ 
+ --资源管理
+ select * from pg_roles,pg_resgroup where pg_roles.rolresgroup = pg_resgroup.oid;
+ select t.localoid::regclass,t.* from gp_toolkit.gp_resgroup_config t;
+```
+
+  
+
+*   连接数
+    
+
+```sql
+ --连接统计
+ select * from pg_stat_activity;
+ select client_addr,count(1) from pg_stat_activity group by 1 order by 2;
+ select pg_terminate_backend(pid) from pg_stat_activity where state = 'idle';
+```
+
+  
+
+*   死锁
+    
+
+```sql
+ select locks.pid, rolname, rsqname, granted, datnamek, query
+   from gp_roles roles, gp_toolkit.gp_resqueue_status grs, pg_locks, pg_stat_activity state
+  where roles.rolresqueue = locks.objid
+    and locks.objid = grs.queueid
+    and stat.pid = locks.pid;
+```
+
+  
+
+*   备份恢复
+    
+
+```css
+ pg_backup
+ pg_restore -d postgres pg_backup.dat
+```
+
+  
+
+模式管理 & 模式管理
+-----------
+
+```http
+ create database gpdb with owner gpadmin lc_collate 'C' template template0;
+ 
+ create extension pljava;
+ create extension gpss;
+ create extension pxf; --/dx查看
+ create schema test_dwd;
+ 
+ create role test_role login nosuperuser nocreatedb noinherit password 'test_role';
+ 
+ alter role test_role with createexttable(type='readable');
+ alter role test_role createexttable(typ'readable',protocol='gpfdist');
+ alter role test_role set search_path to adw,test_dwd,pg_catalog,public;
+ 
+ create resource group ods_group
+ with (
+ concurrency = 50,
+ cpu_rate_limit = 10,
+ memory_limit 20,
+ memory_shared_quota = 50,
+ memory_spill_ratio = 0
+ );
+ alter role test_role resource group ods_group;
+ 
+ create sequence com.com_t_log_seq start with 10000000 increment by 1 no minvalue no maxvalue cache 1;
+ 
+ grant all on schema test_dwd to test_role with grant option;
+ grant usage on schema test_dwd to test_role;
+ 
+ grant select on <table_name> in schema test_dwd to test_role;
+ grant select on all tables in schema test_dwd to test_role;
+ grant all on function com.fn_get_current_role() to test_role;
+ grant all on <table_name> to test_role;
+ 
+ --分裂分区
+ alter table test_dwd.test_dwd_table_name split default pg_partition
+ start ('20200123') inclusive end ('20220202') exclusive into (partition '20200123', default partition);
+```
+
+  
+
+  
+
+*   表所有者owner
+    
+
+```sql
+ alter table test.test_table_name owner to usr_test;
+ alter table test.test_table_name owner to usr_test;
+```
+
+  
+
+*   权限查询
+    
+
+```sql
+ 1、查看某用户的表权限
+ select * from information_schema.table_privileges where grantee='user_name';
+ 2、查看usage权限表
+ select * from information_schema.usage_privileges where grantee='user_name';
+ 3、查看存储过程函数相关权限表
+ select * from information_schema.routine_privileges where grantee='user_name';
+```
+
+  
+
+*   pxf赋权
+    
+
+```sql
+ ./pxf cluster init/reset/stop/start/gp_resqueue_status
+ grant select on protocol pxf to usr_text;
+ grant insert on protocol pxf to usr_text;
+```
+
+  
+
+审计：gp_toolkit
+-------------
+
+*   数据库大小
+    
+
+```sql
+select * from gp_toolkit.gp_size_of_database;
+select t.*,pg_size_pretty(soddatasize) as size from gp_toolkit.gp_size_of_database t order by 2 desc;
+```
+
+*   执行log
+    
+
+```sql
+ select * from gp_toolkit.__gp_log_master_ext t;
+ select * from gp_toolkit.__gp_log_segment_ext t;
+```
+
+*   倾斜判断
+    
+
+```sql
+--执行时间较长，数值越大越倾斜
+select * from gp_toolkit.gp_skew_coefficients;
+```
+
+
+ 通过计算表扫描过程中，系统闲置的百分比，帮助用户快速判断，是否存在分布键选择不合理，导致数据处理倾斜的问题。  
+ 变异系数CV:数值越低情况越好  
+ 在一次表扫描中系统空闲的百分比，0.1表示有10%的倾斜，超过0.1则要考虑其分布策略。  
+
+```cs
+select * from gp_toolkit.gp_skew_idlw_fractions;
+```
+
+  
+
+*   检查失效的segment
+    
+
+```sql
+select * from gp_toolkit.gp_pgdatabase_invalid;
+```
+
+  
+
+审计：gpcc
+-------
+
+*   sql执行历史（重要）
+    
+
+```sql
+ --只存住近5分钟的热数
+ select * from gpmetrics.gpcc_pg_log_history;
+```
+
+```sql
+ --重要
+ select * from gpmetrics.gpcc_queries_history;
+ select * from gpmetrics.queries_history; --对应gpcc_queries_history的视图
+```
+
+*   alert，对应gpcc中workload Mgmt里面对系统阈值的告警
+    
+
+```sql
+ --规则制定表，历史表（为什么有历史表自行脑补）
+ select * from gpmetrics.gpcc_alert_rule order by ctime desc;
+ select * from gpmetrics.gpcc_alter_history order by transaction_time desc;
+ 
+ --规则阈值触发日志
+ select * from gpmetrics.gpcc_alter_log order by transaction_time desc;
+```
+
+  
+
+
+alert执行结果，对应gpcc中触发history
+
+```sql
+ select * from gpmetrics.gpcc_wlm_rule;
+ select * from gpmetrics.gpcc_wlm_log_history;
+```
+## 想法
+
+
+
+
+
+# 追踪
+
+
+
+```sh
+yum install gdb strace -y
+```
+
+
+
+
+
+
+
+Strace是一个动态追踪进程系统调用的工具（进程跟操作系统内核的交互)，我们可以直接使用``strace -p` 这个命令直接查看，也可以用如下命令：
+
+```sh
+strace -T -f -ff -y -yy -p 
+```
+
+
+
 # end
+
+
+
+
 
 
 
