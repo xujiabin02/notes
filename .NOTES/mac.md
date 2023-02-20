@@ -54,3 +54,32 @@ sudo mount_ntfs -o rw,auto,nobrowse /dev/disk3s1 /Volumes/mnt
   最后再回到 Disk Utility 去重新修复分区，这次就会成功了。
 
 > 最后把硬盘插在 Windows 电脑上用命令修复了，十几分钟之后修复完毕，就可以正常在 Mac 电脑上使用了。
+
+
+
+
+
+
+
+# mac远程桌面出现自动输入字母c是什么原因？
+
+快乐小运维
+
+于 2021-06-22 16:00:50 发布
+
+1754
+ 收藏 2
+文章标签： mac
+版权
+最近一个蛋疼的问题困扰了我，每次远程windows服务器的时候自动输入一个字母c
+
+![数据库](.img_mac/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTI5MDczNA==,size_16,color_FFFFFF,t_70.png)
+
+当我打开navicat双击数据库的时候自动帮我输入一个c
+这个问题是因为我打开了翻译软件有道翻译，导致热键冲突
+
+当我把这个程序关闭之后再远程桌面就不会出现这个情况！
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210622155930353.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTI5MDczNA==,size_16,color_FFFFFF,t_70#pic_center)————————————————
+版权声明：本文为CSDN博主「快乐小运维」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_45290734/article/details/118109141
