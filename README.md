@@ -12,6 +12,7 @@
 - [flink](.NOTES/flink.md)
 - [git](.NOTES/git.md)
 - [golang](.NOTES/golang.md)
+- [gpu](.NOTES/gpu.md)
 - [grafana](.NOTES/grafana.md)
 - [greenplum](.NOTES/greenplum.md)
 - [hadoop](.NOTES/hadoop.md)
