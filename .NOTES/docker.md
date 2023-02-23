@@ -1744,3 +1744,41 @@ services:
 docker run -tid --name centos_1 --privileged=true centos:latest /sbin/init
 ```
 
+
+
+
+
+
+
+
+
+
+
+---
+
+|      |                                       |         |
+| ---- | ------------------------------------- | ------- |
+| save | docker save -o x.tar zookeeper:3.5.10 | offline |
+| load | docker load < x.tar                   | offline |
+|      |                                       |         |
+
+
+
+# save
+
+
+
+```sh
+docker save -o x.tar zookeeper:3.5.10
+```
+
+
+
+# load 
+
+```sh
+docker load < x.tar
+```
+
+
+
