@@ -671,3 +671,51 @@ Last login: Tue May 28 10:17:16 JST 2019 on pts/0
 28 May 10:22:08 ntpdate[26830]: adjust time server 172.19.3.200 offset 0.000270 sec
 ```
 
+
+
+# SWAP
+
+命令
+
+```sh
+dd if=/dev/zero of=/data2/32Gswap bs=1024 count=33554432
+/sbin/mkswap /data2/32Gswap
+chmod 600 /data2/32Gswap 
+/sbin/swapon /data2/32Gswap
+```
+
+
+
+/etc/fstab
+
+```
+/data2/32Gswap swap swap defaults 0 0
+```
+
+
+
+# yum --allowerasing
+
+从[官方文档](https://dnf.readthedocs.io/en/latest/command_ref.html)同样可以了解到，`--allowerasing`参数的设计目的就是为了自动化`yum swap`，做到真正的自动解冲突，即在遇到冲突时优先自动卸载产生冲突的软件包，并安装依赖所需的软件包。
+
+dnf的基本操作和yum基本一致，甚至在Fedora 22和RHEL/CentOS 8之后，将yum作为其软链接，如下图所示。
+
+[![[小技巧\] 巧用yum三板斧，巧解软件源重复导致的软件包冲突 – Untitled Spot_未命名小站](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_05a1384131bb57bf10e0b61c6ff581e5.jpg)](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_05a1384131bb57bf10e0b61c6ff581e5.jpg)
+
+> 图7. CentOS 8已默认将yum作为dnf的软链接
+
+如果你还在使用yum，不妨使用`alias`将包管理器升级为dnf，并享受`--allowerasing`的快感：
+
+```bash
+yum install dnf
+# 将这一行写入你所使用Shell的启动文件里，如~/.zshrc或~/.bashrc或/etc/profile
+alias yum="dnf"
+```
+
+接下来我们需要做的只是执行`dnf install --allowerasing install git`，然后见证奇迹：
+
+![[小技巧] 巧用yum三板斧，巧解软件源重复导致的软件包冲突 – Untitled Spot_未命名小站](.img_centos/wp_editor_md_97c8864dc2a07eae42d2eed50869e182.jpg)
+
+[![[小技巧\] 巧用yum三板斧，巧解软件源重复导致的软件包冲突 – Untitled Spot_未命名小站](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_97c8864dc2a07eae42d2eed50869e182.jpg)](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_97c8864dc2a07eae42d2eed50869e182.jpg)
+
+这里我们可以看到，yum（或者称之为dnf更合适）自动解决了冲突，并自动纠正了OpenSSH的版本，无需我们做任何操
