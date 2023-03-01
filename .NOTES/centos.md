@@ -719,3 +719,105 @@ alias yum="dnf"
 [![[小技巧\] 巧用yum三板斧，巧解软件源重复导致的软件包冲突 – Untitled Spot_未命名小站](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_97c8864dc2a07eae42d2eed50869e182.jpg)](https://untitled.pw/wp-content/uploads/2020/10/wp_editor_md_97c8864dc2a07eae42d2eed50869e182.jpg)
 
 这里我们可以看到，yum（或者称之为dnf更合适）自动解决了冲突，并自动纠正了OpenSSH的版本，无需我们做任何操
+
+
+
+
+
+# NFS报错
+
+## [关于nfs服务启动messages日志中报错-Unable to watch /proc/fs/nfsd/clients: No such file or directory](https://www.cnblogs.com/5201351/p/17126423.html)
+
+Posted on 2023-02-16 14:14 [520_1351](https://www.cnblogs.com/5201351/) 阅读(16) 评论(0) [编辑](https://i.cnblogs.com/EditPosts.aspx?postid=17126423) [收藏](javascript:void(0)) [举报](javascript:void(0))
+
+操作系统环境：Red Hat Enterprise Linux release 8.x
+
+nfs-utils版本：nfs-utils-2.3.3-57.el8.x86_64
+
+最近笔者在服务器中安装了nfs-utils，然后也配置了/etc/exports文件
+
+也通过systemctl restart nfs-server.service 启动nfs-server，命令行没有返回报错
+
+但是在本机showmount -e 时就发现有报错: **rpc mount export: RPC: Unable to receive; errno = Connection refused**
+
+```
+[root@QQ-5201351 ~]# showmount  -e
+rpc mount export: RPC: Unable to receive; errno = Connection refused
+```
+
+然后又去看了一下nfs相关的端口监听，TCP/2049 , TCP/111-(rpcbind) , TCP/20048 -(rpc.mountd)等端口也是监听了的
+
+又查看了一下 /var/log/messages日志中又有一段明显的报错日志：**Unable to watch /proc/fs/nfsd/clients: No such file or directory**
+
+```
+Feb 15 17:13:25 QQ-5201351 systemd[1]: Started NFS Mount Daemon.
+Feb 15 17:13:25 QQ-5201351 rpc.mountd[4321]: Unable to watch /proc/fs/nfsd/clients: No such file or directory
+Feb 15 17:13:25 QQ-5201351 systemd[1]: nfs-mountd.service: Main process exited, 
+```
+
+这里可以看到 可能是与nfs-mountd.service 这个服务没有启动成功，于是去查询状态，果然有些异常 Active: failed (Result: exit-code)
+
+通过如上报错信息，笔者想到会不会是与utils-utils的版本有关系，查询一了一下，是最新的版本
+
+那么就有可能是版本太新了？于是笔者尝试如下的解决方法：
+
+ 
+
+**解决方法一（不是很推荐）：降低nfs-utils的版本>>>>>>**
+
+操作步骤如下：
+
+```
+# yum 查看nfs-utils历史版本
+yum list nfs-utils --showduplicates
+
+# 然后降级安装nfs-utils
+yum downgrade nfs-utils-2.3.3-46.el8.x86_64
+```
+
+这样下来之后，nfs启动时，messages日志再没有报错了，showmount -e 也能正常列出本机的nfs资源，客户端也能正常挂载使用了
+
+```
+[root@QQ-5201351 ~]# showmount -e
+Export list for QQ-5201351:
+/nfstest *
+[root@QQ-5201351 ~]#
+```
+
+笔者从最新版本向下降级测试的，直到nfs-utils-2.3.3-46 才正常，前面还有2个更新的版本、都是不行的
+
+最后问题也算是临时解决了，但总觉得有点怪怪的，难道Red Hat Enterprise Linux release 8.x 就不能使用最新的nfs-utils么？
+
+按理说Redhat既然已经将最新的nfs-utils放到yum的repo仓库了，肯定是有过测试，而且能正常使用的
+
+ 
+
+**冷静分析中..............................**
+
+**1、难道与Redhat 的次版本存在兼容问题，于是又将 OS 版本升级到 Red Hat Enterprise Linux release 8.7 (Ootpa) 报错依然存在**
+
+**2、另外有没有可能与内核版本有关系呢？当时也查询了一下，rpc.mountd[4321]: Unable to watch /proc/fs/nfsd/clients: No such file or directory 报错**
+
+**也有说与内核的版本可能有关系，于是查看内核版本，才发现竟然是旧的内核版本，但笔者确实升级OS时用的yum update 升级的，同时内核也就升级了**
+
+**然后OS也进行了重启，新的内核版本没有应用上，于是笔者努力尝试让OS应用上最新的内核版本，最后才发现处理好内核版本后也就将最上面的nfs问题处理好了**
+
+**于是就有了第二种解决方案，升级kernel到最新版本，让最新nfs-utils与最新的kernel兼容，详细如下**
+
+ 
+
+**解决方法二（推荐）：升级kernel到最新的版本，从根原因解决>>>>>>**
+
+这里只说本文问题的原因，解决过程，是因为笔者这里的OS环境的问题，原因很复杂，也是经历了很多的时间去处理，最后才让OS应用上最新的kernel版本
+
+至于为什么升级kernel后，重启OS也没有应用上，笔者可能将在后续的文章中记录原因及处理方法
+
+**总之如果能升级kernel到最新版本，且能应用上，那么也就能正常的安装启动当前最新的nfs-utils版本，messages日志也没有报错，客户端也能正常挂载使用~**
+
+ 
+
+ 
+
+ 
+
+尊重别人的劳动成果 转载请务必注明出处：https://www.cnblogs.com/5201351/p/17126423.html
