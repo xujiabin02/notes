@@ -162,3 +162,38 @@ select CAST(CAST(NOW()AS DATE)AS DATETIME);
 select (UNIX_TIMESTAMP(CAST(CAST(NOW()AS DATE)AS DATETIME)) - (11*86400));
 ```
 
+
+
+
+
+# dump
+
+1.导出结构不导出数据
+
+复制代码代码如下:
+
+```
+mysqldump　--opt　-d　数据库名　-u　root　-p　>　xxx.sql
+```
+
+
+
+2.导出特定表的结构
+
+复制代码代码如下:
+
+```
+mysqldump　-uroot　-p　-B　数据库名　--table　表名　>　xxx.sql
+```
+
+
+
+# 导入
+
+登录mysql
+
+```
+use db_name;
+source xxx.sql
+```
+
