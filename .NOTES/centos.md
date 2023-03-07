@@ -682,6 +682,11 @@ dd if=/dev/zero of=/data2/32Gswap bs=1024 count=33554432
 /sbin/mkswap /data2/32Gswap
 chmod 600 /data2/32Gswap 
 /sbin/swapon /data2/32Gswap
+
+dd if=/dev/zero of=/data1/8Gswap bs=1024 count=8388608
+/sbin/mkswap /data1/8Gswap
+chmod 600 /data1/8Gswap 
+/sbin/swapon /data1/8Gswap
 ```
 
 

@@ -1,4 +1,8 @@
-[toc]
+# 实践
+
+https://cn.greenplum.org/greenplumha/
+
+https://www.hnbian.cn/posts/2138505f.html
 
 # 管理员
 
@@ -2061,6 +2065,28 @@ Strace是一个动态追踪进程系统调用的工具（进程跟操作系统�
 ```sh
 strace -T -f -ff -y -yy -p 
 ```
+
+
+
+来源：[(7条消息) Greenplum概念学习——节点分布模式：grouped、spread_greenplum group spread_肥叔菌的博客-CSDN博客](https://blog.csdn.net/asmartkiller/article/details/112549887) 
+
+## greenplum的两种节点分布模式 
+
+------------------
+
+(6台主机，每台4个segment，两两primary、mirror)   
+
+①grouped mirror模式：(grouped模式，主机的mirror节点全部放在下一个主机上)   ![](.img_greenplum/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FzbWFydGtpbGxlcg==,size_16,color_FFFFFF,t_70-20230306102121858.png)   ②spread mirror模式： (spread模式,主机的第一个mirror在下个主机,第二个mirror在次下个主机,第三mirror在次次下个主机…)   ![](.img_greenplum/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FzbWFydGtpbGxlcg==,size_16,color_FFFFFF,t_70.png) ## 想法
+
+# GPORCA
+
+
+
+|         | off  | on   |
+| ------- | ---- | ---- |
+| join on | 90   | 90   |
+| 分布    |      |      |
+|         |      |      |
 
 
 

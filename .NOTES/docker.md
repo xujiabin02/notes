@@ -92,7 +92,124 @@ hr:centos7 hr$ docker port 4966d35fe0a3
 
 ![img](.img_docker/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjUzMzg1Ng==,size_16,color_FFFFFF,t_70.png)
 
+docker swarm 删除节点 (解散集群)
 
+排空节点上的集群容器 。
+docker node update --availability drain g36lvv23ypjd8v7ovlst2n3yt
+
+主动离开集群，让节点处于down状态，才能删除
+docker swarm leave
+
+删除指定节点 （管理节点上操作）
+docker node rm g36lvv23ypjd8v7ovlst2n3yt
+
+管理节点，解散集群
+docker swarm leave --force
+
+ 
+
+
+docker swarm初始化
+1）docker swarm init # 针对机器只有一个IP的情况
+2）docker swarm init --advertise-addr 172.16.1.13 # 针对机器有多个IP的情况，需要指定一个IP，一般都是指定内网IP
+
+
+加入到swarm的命令
+docker swarm join --token SWMTKN-1-4929ovxh6agko49u0yokrzustjf6yzt30iv1zvwqn8d3pndm92-0kuha3sa80u2u27yca6kzdbnb 172.16.1.13:2377
+
+初始化网络
+docker network create -d overlay --attachable zhang
+docker network ls # 查看网络
+docker network inspect zhang # 查看网络信息
+
+删除网络【慎用】
+docker network rm zhang
+
+加入或退出swarm管理
+docker swarm join --token SWMTKN-1-4929ovxh6agko49u0yokrzustjf6yzt30iv1zvwqn8d3pndm92-0kuha3sa80u2u27yca6kzdbnb 172.16.1.13:2377
+
+当前swarm有哪些节点
+docker node ls
+
+退出当前的swarm节点
+docker node rm --force 2pfwllgxpajx5aitlvcih9vsq # 如果mini01上的docker没有停止服务，那么就需要使用 --force 选项
+
+docker node ls
+docker swarm leave //在每个 node节点的主机上 都跑一次这条命令
+
+
+swarm管理机退出swarm
+docker node ls
+docker swarm leave --force # swarm管理机退出swarm，需要 --force 参数
+docker node ls
+
+
+当前swarm有哪些服务
+docker service ls # 只是示例，不是实际数据
+
+swarm标签管理
+5.1. 标签添加
+根据最开始的主机和组件部署规划，标签规划如下：在swarm管理机mini03上执行。
+
+\# 给mini01机器的标签
+docker node update --label-add tomcat=true mini01
+docker node update --label-add datanode=true mini01
+docker node update --label-add hbase-regionserver-1=true mini01
+
+\# 给mini02机器的标签
+docker node update --label-add tomcat=true mini02
+docker node update --label-add datanode=true mini02
+docker node update --label-add hbase-regionserver-2=true mini02
+
+\# 给mini03机器的标签
+docker node update --label-add spark=true mini03
+docker node update --label-add zookeeper=true mini03
+docker node update --label-add namenode=true mini03
+docker node update --label-add hbase-master=true mini03
+
+5.2. 删除标签
+在swarm管理机mini03上执行，示例如下：
+
+docker node update --label-rm zookeeper mini03
+1
+5.3. 查看swarm当前的标签
+根据最开始的主机和组件部署规划，标签规划如下：在swarm管理机mini03上执行。
+
+\# 给mini01机器的标签
+docker node update --label-add tomcat=true mini01
+docker node update --label-add datanode=true mini01
+docker node update --label-add hbase-regionserver-1=true mini01
+
+\# 给mini02机器的标签
+docker node update --label-add tomcat=true mini02
+docker node update --label-add datanode=true mini02
+docker node update --label-add hbase-regionserver-2=true mini02
+
+\# 给mini03机器的标签
+docker node update --label-add spark=true mini03
+docker node update --label-add zookeeper=true mini03
+docker node update --label-add namenode=true mini03
+docker node update --label-add hbase-master=true mini03
+
+删除标签
+在swarm管理机mini03上执行，示例如下：
+docker node update --label-rm zookeeper mini03
+
+
+查看swarm当前的标签
+[root@mini03 ~]# docker node ls -q | xargs docker node inspect -f '{{.ID}}[{{.Description.Hostname}}]:{{.Spec.Labels}}'
+6f7dwt47y6qvgs3yc6l00nmjd[mini01]:map[tomcat:true datanode:true hbase-regionserver-1:true]
+5q2nmm2xaexhkn20z8f8ezglr[mini02]:map[tomcat:true datanode:true hbase-regionserver-2:true]
+ncppwjknhcwbegmliafut0718[mini03]:map[hbase-master:true namenode:true spark:true zookeeper:true]
+
+6. 查看日志
+
+启动容器时，查看相关日志，例如如下：
+
+docker stack ps hadoop
+docker stack ps hadoop --format "{{.Name}}: {{.Error}}"
+docker stack ps hadoop --format "{{.Name}}: {{.Error}}" --no-trunc
+docker stack ps hadoop --no-trunc
 
 
 
