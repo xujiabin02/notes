@@ -19,6 +19,45 @@ sudo mount_ntfs -o rw,auto,nobrowse /dev/disk3s1 /Volumes/mnt
 
 
 
+# mac怎么刻录带引导的iso
+
+[![img](.img_mac/webp-8423446.)](https://www.jianshu.com/u/9ede940c2add)
+
+[印随2018](https://www.jianshu.com/u/9ede940c2add)关注IP属地: 广东
+
+2019.07.06 12:39:23字数 100阅读 1,221
+
+**准备的东西：**
+
+1. USB口外置光驱
+2. ISO镜像文件（我刻录的是CentOS-7-x86_64-DVD-1708.iso）
+3. 一张比你ISO文件大的空白光盘
+
+**步骤**：
+
+1. USB外置光驱插入Mac
+2. 放入空白的光盘（也可以待会儿再放，just you like _）
+3. 按command+空格键，输入“ter" ，以打开Mac的终端（terminal）
+4. hdiutil burn CentOS-7-x86_64-DVD-1810.iso
+
+waiting......
+
+
+
+生成iso文件
+
+```sh
+hdiutil makehybrid -o app.iso /data/app
+```
+
+
+
+刻入
+
+```sh
+hdiutil burn -erase app.iso
+```
+
 
 
 # Mac 移动硬盘未挂载-解决办法

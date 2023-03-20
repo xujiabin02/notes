@@ -9,6 +9,7 @@
 - [devops](.NOTES/devops.md)
 - [docker](.NOTES/docker.md)
 - [dolphinscheduler](.NOTES/dolphinscheduler.md)
+- [exsi](.NOTES/exsi.md)
 - [flink](.NOTES/flink.md)
 - [git](.NOTES/git.md)
 - [golang](.NOTES/golang.md)

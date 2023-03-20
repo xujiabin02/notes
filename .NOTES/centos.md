@@ -1,3 +1,30 @@
+
+
+# rsync
+
+
+
+```sh
+# 建议使用rsync 同步目录和文件（支持跨主机）
+rsync -rltDzvOP -e "ssh -p 22" /base_dir/local_path root@hostip:/tmp/
+# local_path 为本地目录
+# 注意, 会将 local_path 同步到目标host 的 /tmp/local_path, 只需填写/tmp ，不需要写全下一级
+# -r, --recursive             recurse into directories
+# -l, --links                 copy symlinks as symlinks
+# -t, --times                 preserve modification times
+# -D                          same as --devices --specials
+# -z, --compress              compress file data during the transfer
+# -v, --verbose               increase verbosity
+# -O, --omit-dir-times        omit directories from --times
+# -P                          same as --partial --progress 显示进度
+```
+
+算法和工作原理  https://www.cnblogs.com/f-ck-need-u/p/7226781.html
+
+
+
+
+
 # yum 查询包版本与rpm包下载
 
 # 查询版本号
@@ -686,6 +713,11 @@ chmod 600 /data2/32Gswap
 dd if=/dev/zero of=/data1/8Gswap bs=1024 count=8388608
 /sbin/mkswap /data1/8Gswap
 chmod 600 /data1/8Gswap 
+/sbin/swapon /data1/8Gswap
+
+dd if=/dev/zero of=/data1/8Gswap bs=1024 count=8388608
+/sbin/mkswap /data1/8Gswap
+chmod 600 /data1/8Gswap
 /sbin/swapon /data1/8Gswap
 ```
 

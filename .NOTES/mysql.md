@@ -166,6 +166,29 @@ select (UNIX_TIMESTAMP(CAST(CAST(NOW()AS DATE)AS DATETIME)) - (11*86400));
 
 
 
+
+
+# 问题
+
+
+
+在 spring yaml里添加以下 jdbc 参数 
+
+```
+allowPublicKeyRetrieval=true
+```
+
+
+
+
+
+```sql
+use mysql;
+ALTER USER 'dolphinscheduler'@'%' IDENTIFIED WITH mysql_native_password  BY 'passwd';
+```
+
+
+
 # dump
 
 1.导出结构不导出数据

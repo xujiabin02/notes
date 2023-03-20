@@ -1,3 +1,58 @@
+
+
+# 启动oracle时ORA-04031错误的一种解决方法
+
+wait(0)
+
+于 2019-08-09 00:32:03 发布
+
+2193
+ 收藏 6
+分类专栏： oracle学习 文章标签： ORA04031
+版权
+
+oracle学习
+专栏收录该内容
+3 篇文章0 订阅
+订阅专栏
+今天重启完服务器后启动oracle时出现ORA-04031: unable to allocate 136224 bytes of shared memory (“shared pool”,“unknown object”,“sga heap(1,0)”,“private strands”)错误，翻阅大量资料 研究半天，大部分资料写的都是让刷新缓存池或者修改shared pool的大小，本身这个实例都启动不起来，我执行刷新缓存池的sql语句都报错。直到我看到下面这个帖子
+http://www.itpub.net/thread-1003842-1-1.html
+二楼说了一句用pfile启动，我就死马当活马医找到pfile参数文件路径 我的是在/u01/app/oracle/admin/orcl/pfile/init.ora.5112019132641这个文件然后没有修改直接
+执行SQL语句startup pfile='/u01/app/oracle/admin/orcl/pfile/init.ora.5112019132641'
+然后神奇的事情发生了，居然启动成功
+
+![启动成功](.img_oracle/20190809002622868.png)
+
+然后我们通过pfile文件创建spfile启动文件
+执行
+
+```sh
+create spfile from pfile ='/u01/app/oracle/admin/orcl/pfile/init.ora.5112019132641'
+```
+
+![创建成功](.img_oracle/20190809154215546.png)
+
+创建成功，我们来重启数据库
+
+![完美](.img_oracle/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTM0NTc5OA==,size_16,color_FFFFFF,t_70.png)
+
+完美，使用spfile模式也启动成功了。
+————————————————
+版权声明：本文为CSDN博主「wait(0)」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_45345798/article/details/98899931
+
+
+
+```sql
+create user yb_oracle identified by yb_oracle;
+alter user yb_oracle identified by Yaxin_2022;
+create user db_admin identified by db_admin;
+grant connect,resource,dba to yb_oracle;
+grant connect,resource,dba to test;
+```
+
+
+
 # docker安装oracle11g史上最全步骤（带图文）
 
 ![img](.img_oracle/reprint.png)

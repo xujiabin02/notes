@@ -1843,7 +1843,19 @@ services:
 
 
 
+# privileged device
 
+
+
+```
+--privileged
+```
+
+
+
+```
+--device /dev/disk3
+```
 
 
 
