@@ -1,3 +1,36 @@
+
+
+# Cancel query
+
+在 Greenplum 中，停止一个正在运行的查询有多种方法，具体取决于你使用的工具和你拥有的权限。下面是几种通用的方法：
+
+1. 使用pg_cancel_backend函数：该函数需要目标进程的pid作为参数，可以尝试优雅地取消正在运行的查询。首先，你需要查询正在运行的进程的pid，例如：
+
+   ```sql
+   
+   SELECT pid, query FROM pg_stat_activity WHERE state = 'active';
+   ```
+
+   然后使用找到的pid调用pg_cancel_backend函数：
+
+   ```sql
+   
+   SELECT pg_cancel_backend(pid);
+   ```
+
+2. 使用gp_cancel_query函数：该函数类似于pg_cancel_backend函数，但是在 Greenplum 中是更推荐的方法，因为它会检查并取消所有相关的进程，而不仅仅是目标进程。例如：
+
+   ```sql
+   
+   SELECT gp_cancel_query(gp_session_id());
+   ```
+
+   这将取消当前会话中正在运行的所有查询。
+
+3. 使用pgAdmin或psql工具：这些工具提供了一个直观的界面来列出所有活动进程和它们正在运行的查询，并允许你选择某个进程并中止它。
+
+需要注意的是，强制停止一个查询可能会导致数据不一致或者其他问题，所以请谨慎使用。
+
 # 实践
 
 https://cn.greenplum.org/greenplumha/

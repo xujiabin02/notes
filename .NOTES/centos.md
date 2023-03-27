@@ -1,3 +1,36 @@
+# ntp
+
+
+
+```
+http://cn.ntp.org.cn
+```
+
+
+
+# network
+
+
+
+**ifcfg编辑**
+
+```ini
+boot=yes
+IPADDR=
+GATEWAY=
+PREFIX=24
+DNS1=
+```
+
+
+
+**重载并启动网卡**
+
+```
+nmcli c reload 
+nmcli c up xxx
+```
+
 
 
 # rsync
@@ -55,6 +88,69 @@ yum install --downloadonly --downloaddir=/tmp/ [package-name]-[version].[archite
 yum install --downloadonly --downloaddir=/tmp/ cri-tools-1.0.0_beta.1-0
 ```
 
+# 7 yum 源
+
+
+
+
+
+CentOS-7.repo
+
+```ini
+# CentOS-Base.repo
+#
+# The mirror system uses the connecting IP address of the client and the
+# update status of each mirror to pick mirrors that are updated to and
+# geographically close to the client.  You should use this for CentOS updates
+# unless you are manually picking other mirrors.
+#
+# If the mirrorlist= does not work for you, as a fall back you can try the 
+# remarked out baseurl= line instead.
+#
+#
+
+[base]
+name=CentOS-$releasever - Base
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#released updates 
+[updates]
+name=CentOS-$releasever - Updates
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#additional packages that extend functionality of existing packages
+[centosplus]
+name=CentOS-$releasever - Plus
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/$releasever/centosplus/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+```
+
+
+
+
+
+```sh
+yum clean all
+yum makecache
+```
+
 
 
 # 8.4  yum 源
@@ -85,7 +181,7 @@ sudo yum makecache
 >
 > ```sh
 > sed -e 's/mirrorlist/#mirrorlist/g' -e 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' -i.bak /etc/yum.repos.d/CentOS-*.repo 
-> sudo yum makecache
+>  yum makecache
 > ```
 >
 > 2. **IF** aliyuncs => tuna

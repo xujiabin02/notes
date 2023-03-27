@@ -1,4 +1,59 @@
+# binary
 
+
+
+```go
+// 定义开关状态的常量
+const (
+	Switch1 = 1 << iota
+	Switch2
+	Switch3
+	Switch4
+)
+
+// 定义开关状态的类型
+type SwitchStatus uint8
+
+// 设置开关状态
+func (s *SwitchStatus) Set(switchNum uint, value bool) {
+	if value {
+		*s |= 1 << switchNum
+	} else {
+		*s &= ^(1 << switchNum)
+	}
+}
+
+// 读取开关状态
+func (s *SwitchStatus) Get(switchNum uint) bool {
+	return (*s & (1 << switchNum)) != 0
+}
+
+```
+
+遍历二进制
+
+
+
+要遍历二进制开关，您可以使用 for 循环和位运算符。
+
+假设您有一个整数变量 num，您可以使用以下代码来遍历它的每个二进制位：
+
+```go
+for i := 0; i < 64; i++ {
+    if (num & (1 << i)) != 0 {
+        // 第 i 位为 1
+        fmt.Println("Bit", i, "is on")
+    } else {
+        // 第 i 位为 0
+        fmt.Println("Bit", i, "is off")
+    }
+}
+
+```
+
+在上面的代码中，我们使用一个循环来遍历 num 的每个二进制位。在每个迭代中，我们使用位运算符 & 检查 num 的第 i 位是否为 1。如果为 1，则打印该位为打开状态，否则打印该位为关闭状态。
+
+请注意，上面的代码假设 num 是一个 64 位的整数。如果您正在处理较小或较大的整数，请相应地更改循环条件。
 
 # python vs Golang
 
