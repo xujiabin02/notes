@@ -1,3 +1,13 @@
+# embed
+
+https://colobu.com/2021/01/17/go-embed-tutorial/
+
+# pongo2
+
+filters
+
+https://github.com/flosch/pongo2/blob/master/docs/filters.md
+
 # binary
 
 
@@ -3263,3 +3273,7 @@ func ExampleOpt() {    ........}
 1.万字长文解读pkg.go.dev的设计和实现
 
 2.pkg.go.dev源码j
+
+
+
+e

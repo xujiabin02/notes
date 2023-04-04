@@ -20,6 +20,18 @@ dolphin.scheduler.network.interface.preferred=
 
 
 
+appuser
+
+![image-20230328144447155](.img_dolphinscheduler/image-20230328144447155.png)
+
+
+
+![image-20230328145159945](.img_dolphinscheduler/image-20230328145159945.png)
+
+
+
+![image-20230328145210244](.img_dolphinscheduler/image-20230328145210244.png)
+
 
 
 gp
