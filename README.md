@@ -21,6 +21,7 @@
 - [hdfs](.NOTES/hdfs.md)
 - [house](.NOTES/house.md)
 - [jinja2](.NOTES/jinja2.md)
+- [jira](.NOTES/jira.md)
 - [jumpserver](.NOTES/jumpserver.md)
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
