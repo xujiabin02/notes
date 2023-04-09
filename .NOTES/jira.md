@@ -16,8 +16,10 @@ docker pull atlassian/jira-software:8.14
 
 複製成功
 
-```
-FROM atlassian/jira-software:8.14COPY atlassian-agent.jar /opt/atlassian/jira/RUN echo 'export CATALINA_OPTS="-javaagent:/opt/atlassian/jira/atlassian-agent.jar ${CATALINA_OPTS}"' >> /opt/atlassian/jira/bin/setenv.sh
+```dockerfile
+FROM atlassian/jira-software:8.14
+COPY atlassian-agent.jar /opt/atlassian/jira/
+RUN echo 'export CATALINA_OPTS="-javaagent:/opt/atlassian/jira/atlassian-agent.jar ${CATALINA_OPTS}"' >> /opt/atlassian/jira/bin/setenv.sh
 ```
 
 下载破解包至Dockerfile同一级别目录
@@ -38,7 +40,16 @@ docker build -t wqblogs.com/jira-software:8.14 .
 添加mysql配置 my.cnf
 
 ```
-[mysqld]character_set_server = utf8mb4innodb_default_row_format = DYNAMICinnodb_log_file_size = 2Gsql_mode = NO_AUTO_VALUE_ON_ZERO[mysql]default-character-set = utf8mb4[client]default-character-set =utf8mb4
+[mysqld]
+character_set_server = utf8mb4
+innodb_default_row_format = DYNAMIC
+innodb_log_file_size = 2G
+sql_mode = NO_AUTO_VALUE_ON_ZERO
+[mysql]
+default-character-set = utf8mb4
+
+[client]
+default-character-set =utf8mb4
 ```
 
 重启mysql
@@ -49,14 +60,18 @@ docker build -t wqblogs.com/jira-software:8.14 .
 
 创建用户与数据库
 
-```
-mysql> CREATE DATABASE jiradb CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;mysql> CREATE USER 'jira'@'%' IDENTIFIED BY 'jira';mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,REFERENCES,ALTER,INDEX on jiradb.* TO 'jira'@'%';mysql> flush privileges;
+```sql
+CREATE DATABASE jiradb CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+CREATE USER 'jira'@'%' IDENTIFIED BY 'jira';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,REFERENCES,ALTER,INDEX on jiradb.* TO 'jira'@'%';
+flush privileges;
 ```
 
 启动jira容器
 
 ```
-mkdir /data/jiradocker run -v /data/jira:/var/atlassian/application-data/jira -v /etc/localtime:/etc/localtime:ro  --name="jira" -d -p 8080:8080 wqblogs.com/jira-software:8.14
+mkdir /data/jira
+docker run -v /data/jira:/var/atlassian/application-data/jira -v /etc/localtime:/etc/localtime:ro  --name="jira" -d -p 8080:8080 wqblogs.com/jira-software:8.14
 ```
 
 ## web访问
@@ -82,7 +97,27 @@ docker cp mysql-connector-java-8.0.22.jar jira:/opt/atlassian/jira/libdocker res
 需替换邮箱（[weiqun.he@tenxcloud.com](mailto:weiqun.he@tenxcloud.com)）、名称（DEV）、访问地址（http://116.196.65.248:8080/）、服务器ID（BKRG-CCI9-7V19-1M3C）为你的信息
 
 ```
-java -jar atlassian-agent.jar \    -d -m weiqun.he@tenxcloud.com -n DEV -p jira \    -o http://116.196.65.248:8080/ -s BKRG-CCI9-7V19-1M3C===========================================================        Atlassian Crack Agent         ==============           https://zhile.io           ==============          QQ Group: 30347511          ===========================================================Your license code(Don't copy this line!!!):AAABrQ0ODAoPeJyNkltvm0AQhd/5FUh93jXrCzGWkJIutKIFuwqO39d4HLbCC51dnDi/voshai6WVYmXRXPOfHNmvnxD6f4QymUzl/mLibdgU5fna3fsjZnziACqrJsGkKayAKVhfWpgKQ4Q8lWWxfc8uUsdjiCMrFUkDISdkHiMsJlzRRKBLlA2nSp8UJU8SAM7t+oF7vbklsY0ejEavZSyAiprJxNSGVBCFRA/NxJPQ7d5QLwb+zm/JYpXyngne+tlmmTJOo6cZXvYAq72DxpQh4S9wl3xarDetYWh3YPoem+eBAL9ZHSlVhRGHiE02MK7LN/+vyK3VIKDnRr70iGejW3cDTd28nb7L8ZzSXwUVXteRrgXlR7sPxqt8FEoqfu6LmkbNGM+ZYFP/RkdT+eLuTf3Rg6vlbGwsQ2/Cp9A/mkVLeHW7uG5qOp2R4v60Le4HMt/DpobgR1cjzxsJonCNInyeElS5jPPD4Ipm3r+5N2iL91WDngEtPKvP++/E86TgNxsWEBYNuGXTvrzsfxqsSiFho8H/VZ8jrNBqYfxLGh4AXZI8MwYxZu/MDEraDAsAhRSj05h4SNNiYw3KTM1pV2N1P6zoQIUHlNSQqah665emljexRRdKhfkAj8=X02kk
+java -jar atlassian-agent.jar \
+    -d -m weiqun.he@tenxcloud.com -n DEV -p jira \
+    -o http://116.196.65.248:8080/ -s BKRG-CCI9-7V19-1M3C
+
+====================================================
+=======        Atlassian Crack Agent         =======
+=======           https://zhile.io           =======
+=======          QQ Group: 30347511          =======
+====================================================
+
+Your license code(Don't copy this line!!!):
+
+AAABrQ0ODAoPeJyNkltvm0AQhd/5FUh93jXrCzGWkJIutKIFuwqO39d4HLbCC51dnDi/voshai6WV
+YmXRXPOfHNmvnxD6f4QymUzl/mLibdgU5fna3fsjZnziACqrJsGkKayAKVhfWpgKQ4Q8lWWxfc8u
+UsdjiCMrFUkDISdkHiMsJlzRRKBLlA2nSp8UJU8SAM7t+oF7vbklsY0ejEavZSyAiprJxNSGVBCF
+RA/NxJPQ7d5QLwb+zm/JYpXyngne+tlmmTJOo6cZXvYAq72DxpQh4S9wl3xarDetYWh3YPoem+eB
+AL9ZHSlVhRGHiE02MK7LN/+vyK3VIKDnRr70iGejW3cDTd28nb7L8ZzSXwUVXteRrgXlR7sPxqt8
+FEoqfu6LmkbNGM+ZYFP/RkdT+eLuTf3Rg6vlbGwsQ2/Cp9A/mkVLeHW7uG5qOp2R4v60Le4HMt/D
+pobgR1cjzxsJonCNInyeElS5jPPD4Ipm3r+5N2iL91WDngEtPKvP++/E86TgNxsWEBYNuGXTvrzs
+fxqsSiFho8H/VZ8jrNBqYfxLGh4AXZI8MwYxZu/MDEraDAsAhRSj05h4SNNiYw3KTM1pV2N1P6zo
+QIUHlNSQqah665emljexRRdKhfkAj8=X02kk
 ```
 
 将生成的许可证复制到页面，完成破解

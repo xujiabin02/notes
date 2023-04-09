@@ -46,6 +46,7 @@
 - [sublime](.NOTES/sublime.md)
 - [tornado](.NOTES/tornado.md)
 - [typora](.NOTES/typora.md)
+- [ubuntu](.NOTES/ubuntu.md)
 - [vim](.NOTES/vim.md)
 - [vpn](.NOTES/vpn.md)
 - [vue_ts](.NOTES/vue_ts.md)

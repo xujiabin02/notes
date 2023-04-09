@@ -1,3 +1,21 @@
+# mysql8  docker 
+
+```
+sudo docker run -p 13306:3306 --name mysql --restart=always \
+-v /data/opt/jira/mysql/mysql-files:/var/lib/mysql-files \
+-v /data/opt/jira/mysql/conf:/etc/mysql \
+-v /data/opt/jira/mysql/logs:/var/log/mysql \
+-v /data/opt/jira/mysql/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=Yaxin@123 \
+-d mysql:8
+```
+
+
+
+mysql jdbc  jar下载
+
+https://downloads.mysql.com/archives/c-j/
+
 # MySQL开启general_log查看执行的SQL语句
 
 [![img](https://uimg.majing.io/default/avatar/default.png)](https://devnote.pro/users/1184/posts)
