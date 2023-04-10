@@ -1,3 +1,45 @@
+# mac使uniaccess agent监控软件失能？
+
+作者：毒舌暴躁
+链接：https://www.zhihu.com/question/308601708/answer/1916872794
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+## Mac版本
+
+启动 `sudo newproc.d`，可以看到不停的在后台以每秒1次的频率执行以下： 
+
+```text
+2021 Nov  4 09:18:16 21177 <20569> 64b  sh -c /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, in (...)
+2021 Nov  4 09:18:16 21177 <20569> 64b  sh -c /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, in (...)
+2021 Nov  4 09:18:16 21179 <21177> 64b  awk / SSID/ {print substr($0, index($0, $2))}
+2021 Nov  4 09:18:16 21178 <21177> 64b  /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
+2021 Nov  4 09:18:18 21180 <20569> 64b  sh -c /opt/LVUAAgentInstBaseRoot/dvc-tool-exe -get-wifi-interfaces
+2021 Nov  4 09:18:18 21180 <20569> 64b  sh -c /opt/LVUAAgentInstBaseRoot/dvc-tool-exe -get-wifi-interfaces
+2021 Nov  4 09:18:18 21180 <20569> 64b  /opt/LVUAAgentInstBaseRoot/dvc-tool-exe -get-wifi-interfaces
+2021 Nov  4 09:18:18 21181 <20569> 64b  sh -c /sbin/ifconfig en7| grep "status"
+2021 Nov  4 09:18:18 21181 <20569> 64b  sh -c /sbin/ifconfig en7| grep "status"
+2021 Nov  4 09:18:18 21182 <21181> 64b  /sbin/ifconfig en7
+2021 Nov  4 09:18:18 21183 <21181> 64b  grep status
+2021 Nov  4 09:18:18 21184 <20569> 64b  sh -c /sbin/ifconfig en1| grep "status"
+```
+
+不停不能平民愤啊，这就是[流氓软件](https://www.zhihu.com/search?q=流氓软件&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A1916872794})。
+
+```bash
+cd /opt
+ls -lO
+sudo chflags -f -R nohidden LVUAAgentInstBaseRoot
+sudo chflags -f -R noschg LVUAAgentInstBaseRoot
+
+sudo mv LVUAAgentInstBaseRoot LVUAAgentInstBaseRoot_
+sudo pkill dvc-screen-exe dvc-unisensitive-exe dvc-core-exe dvc-remote-exe
+```
+
+注：MacOS下这个方案一定可行
+
 # mac完整卸载LV security agent 客户端
 
 1. 原公司离职后,这破软件总是卸载不掉,查了很多教程发现都是互抄,都无法卸载,最后联系官方才终于找到完整卸载方法,现分享出来,方法如下:
