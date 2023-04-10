@@ -90,23 +90,106 @@ resize2fs /dev/ubuntu-vg/ubuntu-lv
 
 
 
-# 安装GPU
+# 安装GPU驱动
+
+| 虚拟化   | 显卡        | 系统         |
+| -------- | ----------- | ------------ |
+| EXSI 6.7 | RTX 2080 Ti | Ubuntu 20.04 |
+|          |             |              |
+|          |             |              |
+
+## 物理机显卡直通
+
+物理机配置
+首先开机进入bios，提前修改物理机bios设置：
+
+Above 4G decoding - Enable
+Intel Virtualization Technology for Directed I/O (VT-d) - Enable
+MMIO High Base - 默认56T（若为ESXi 6.5以下版本注意修改为4G-16T之间的值，如4T）
+
+
+
+GPU 切换直通模式
+ 安装完ESXi软件后，首先需要将GPU切换为直通模式，切换方法为：导航界面选择管理—>硬件—>PCI设备，搜索框输入nvidia筛选出GPU设备，勾选后，点击切换直通。
+
+![ESXi GPU 直通_直通_05](.img_ubuntu/resize,m_fixed,w_1184)
+
+GPU切换直通后，需要重新引导主机使配置生效：
+
+![ESXi GPU 直通_vmware_06](.img_ubuntu/resize,m_fixed,w_1184-20230410104140815)
+
+重新引导主机后，GPU直通变为活动状态，表示GPU切换直通成功。
+
+![ESXi GPU 直通_vmware_07](.img_ubuntu/resize,m_fixed,w_1184-20230410104150014)
+
+
+
+如图，添加两块GPU，分别为Tesla V100和Tesla V100S，并在新PCI设备选项下点击预留所有内存。
+
+![ESXi GPU 直通_ESXi_15](.img_ubuntu/resize,m_fixed,w_1184-20230410104231275)
+
+
+
+![ESXi GPU 直通_直通_16](.img_ubuntu/resize,m_fixed,w_1184-20230410104243225)
+
+
+
+修改虚拟机内存
+
+ 虚拟硬件—>内存，建议设置最小内存为虚拟机所分配GPU显存总大小的1.5倍。确保已勾选预留所有客户机内存(全部锁定)
+
+
+
+![ESXi GPU 直通_GPU直通_17](.img_ubuntu/resize,m_fixed,w_1184-20230410104255959)
+
+
+
+编辑虚拟机选项、高级、配置参数，添加如下参数
+
+```
+hypervisor.cpuid.v0 = "FALSE"
+```
+
+
+
+![ESXi GPU 直通_vmware_19](.img_ubuntu/resize,m_fixed,w_1184-20230410104318998)
+
+
+
+
+
+修改虚拟机引导选项
+
+编辑虚拟机，修改虚拟机选项—>引导选项为EFI, 关闭UEFI安全引导
+
+![ESXi GPU 直通_vmware_20](.img_ubuntu/resize,m_fixed,w_1184-20230410104351244)
+
+
+
+安装系统
+
+
 
 ```
 sudo apt-get update   #更新软件列表
- 
 sudo apt-get install -y g++
- 
-sudo apt-get install -y gcc
- 
+sudo apt-get install -y gcc 
 sudo apt-get install  -y  make
+
+
 ```
 
 
 
 
 
+```
+lsmod |grep -i nouveau
+```
 
+
+
+关闭nouveau
 
 ```
 blacklist nouveau
@@ -123,7 +206,6 @@ alias lbm-nouveau off
 
 ```sh
 sudo update-initramfs -u
-
 ```
 
 
@@ -139,6 +221,20 @@ lsmod | grep nouveau
 ```
 
 
+
+下载460包
+
+https://http.download.nvidia.com/XFree86/Linux-x86_64/460.91.03/
+
+```sh
+sudo ./NVIDIA-Linux-x86_64-460.91.03.run -no-x-check -no-nouveau-check -no-opengl-files
+```
+
+
+
+
+
+---
 
 > ```shell
 > appuser@newkn1:~$ sudo ubuntu-drivers devices
@@ -242,6 +338,8 @@ https://www.zhangfangzhou.cn/esxi-2080ti-passthrough.html ESXi7u1设置NVIDIA GE
 
 
 https://github.com/OrangeSpatial/documents/blob/main/Ubuntu安装rtx%202080ti%20显卡.md
+
+
 
 
 

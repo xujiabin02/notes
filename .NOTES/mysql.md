@@ -1,5 +1,15 @@
 # mysql8  docker 
 
+1 . 
+
+2 . 
+
+1 ) 
+
+
+
+
+
 ```
 sudo docker run -p 13306:3306 --name mysql --restart=always \
 -v /data/opt/jira/mysql/mysql-files:/var/lib/mysql-files \
