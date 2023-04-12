@@ -33,8 +33,10 @@ cd /opt
 ls -lO
 sudo chflags -f -R nohidden LVUAAgentInstBaseRoot
 sudo chflags -f -R noschg LVUAAgentInstBaseRoot
-
-sudo mv LVUAAgentInstBaseRoot LVUAAgentInstBaseRoot_
+sudo mkdir bak
+sudo mv LVUAAgentInstBaseRoot/dvc-core-exe bak/
+sudo mv LVUAAgentInstBaseRoot/dvc-screen-exe.app bak/
+sudo mv LVUAAgentInstBaseRoot/dvc-unisensitive-exe bak/
 sudo pkill dvc-screen-exe dvc-unisensitive-exe dvc-core-exe dvc-remote-exe
 ```
 
