@@ -1,5 +1,26 @@
 
 
+# ansible ui
+
+
+
+```
+curl -X 'POST' \
+  'https://demo.ansible-semaphore.com/api/auth/login' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "auth": "admin",
+  "password": "changeme"
+}'
+```
+
+
+
+# ansible-playbook callback
+
+[callback](https://blog.csdn.net/weixin_30649641/article/details/95822105?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-95822105-blog-108602233.235^v28^pc_relevant_t0_download&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-95822105-blog-108602233.235^v28^pc_relevant_t0_download&utm_relevant_index=8)
+
 my_callback.py
 
 ```python
