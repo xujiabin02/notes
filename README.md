@@ -29,6 +29,7 @@
 - [ldap](.NOTES/ldap.md)
 - [mac](.NOTES/mac.md)
 - [markdown](.NOTES/markdown.md)
+- [mssql](.NOTES/mssql.md)
 - [mysql](.NOTES/mysql.md)
 - [nextcloud](.NOTES/nextcloud.md)
 - [nfs](.NOTES/nfs.md)

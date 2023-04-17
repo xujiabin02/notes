@@ -1,3 +1,131 @@
+
+
+my_callback.py
+
+```python
+#!/usr/bin/env python
+#-*-coding:utf-8 -*-
+
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+ 
+import os
+import time
+import json
+from ansible.module_utils._text import to_bytes
+from ansible.plugins.callback import CallbackBase
+
+class CallbackModule(CallbackBase):
+    """
+    logs playbook results, per host, in /var/log/ansible/hosts
+    """
+    CALLBACK_VERSION = 2.0
+    CALLBACK_TYPE = 'notification'
+    CALLBACK_NAME = 'log_plays'           #此处为callback_name,需要在配置文件中指定
+    CALLBACK_NEEDS_WHITELIST = True          #为True时，以上必做
+ 
+  #定义的格式，自定义即可
+    TIME_FORMAT="%b %d %Y %H:%M:%S"
+    MSG_FORMAT="%(now)s - %(category)s - %(data)s\n\n"
+    MSG_FORMAT1="%(data)s\n\n"
+ 
+    def __init__(self):
+ 
+        super(CallbackModule, self).__init__()
+ 
+        if not os.path.exists("/var/log/ansible/hosts"):
+            os.makedirs("/var/log/ansible/hosts")
+ 
+  #定义log函数的目的是将处理后的执行结果写到文件，我这里直接display在屏幕上，这里可以自定义一个写入到数据库的函数，
+    def log(self, host, category, data):
+        #默认的执行结果为一个字典，即data在这里为一个字典
+        result_last = json.dumps(self.option_result(data))  #定义一个函数，接收执行的结果，由于结果不支持字典数据，所以只能dumps成str
+        self._display.display(result_last)            #将执行结果在屏幕上显示出来（不支持print打印）
+        
+     #以下为相关格式化内容 
+        path = os.path.join("/var/log/ansible/hosts", host)
+        now = time.strftime(self.TIME_FORMAT, time.localtime())
+ 
+        msg = to_bytes(self.MSG_FORMAT % dict(now=now, category=category, data=data))
+        msg1 = to_bytes(self.MSG_FORMAT1 % dict(data=data))
+        with open(path, "ab") as fd:
+            fd.write(msg)
+ 
+   #定义函数，解析执行结果，并返回给log函数（注：此函数里代码可直接写到log函数里，此处为了区分清楚，单写一个）
+    def option_result(self,msg):
+      result = {}
+      result['stderr_lines'] = msg['stderr_lines']
+      result['start_time'] = msg['start']
+      result['end_time'] = msg['end']
+      result['stderr'] = msg['stderr']
+      return result
+
+    def runner_on_failed(self, host, res, ignore_errors=False):
+        self.log(host, 'FAILED', res)
+    
+    def runner_on_ok(self, host, res):
+        self.log(host, 'OK', res)
+ 
+    def runner_on_skipped(self, host, item=None):
+        self.log(host, 'SKIPPED', '...')
+  
+    def runner_on_unreachable(self, host, res):
+        self.log(host, 'UNREACHABLE', res)
+ 
+    def runner_on_async_failed(self, host, res, jid):
+        self.log(host, 'ASYNC_FAILED', res)
+ 
+    def playbook_on_import_for_host(self, host, imported_file):
+        self.log(host, 'IMPORTED', imported_file)
+ 
+    def playbook_on_not_import_for_host(self, host, missing_file):
+        self.log(host, 'NOTIMPORTED', missing_file)
+
+```
+
+
+
+```shell
+cp my_callback.py /home/data/opt/anaconda3/lib/python3.7/site-packages/ansible/plugins/callback/
+```
+
+
+
+ansible.cfg
+
+```ini
+[defaults]
+ansible_python=auto
+host_key_checking=False
+gathering=smart
+fact_caching=jsonfile
+fact_caching_connection=.ansible_facts_cache
+fact_caching_timeout=3600
+#callback_whitelist=profile_tasks
+callback_whitelist=my_callback
+sdtout_callback=my_callback
+roles_path    = ./roles
+#remote_port=22
+
+[inventory]
+unparsed_is_failed=True
+
+[ssh_connection]
+pipelining = True
+```
+
+
+
+|                                                              |      |      |
+| ------------------------------------------------------------ | ---- | ---- |
+| [rundeck + ansible 插件](https://liumiaocn.blog.csdn.net/article/details/89206990) |      |      |
+|                                                              |      |      |
+|                                                              |      |      |
+
+
+
+
+
 在ansible中foo_port是合法的变量名
 
 
