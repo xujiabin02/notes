@@ -2,6 +2,11 @@
 
 ## 安装步骤
 
+| 序列号                        |      |
+| ----------------------------- | ---- |
+| MDCJV-3YX8N-WG89M-KV443-G8249 |      |
+|                               |      |
+
 polybase不装，其他全选
 
 
@@ -35,3 +40,16 @@ https://www.cnblogs.com/fishparadise/p/5655570.html
 https://blog.csdn.net/qq_43719388/article/details/109801590
 
 https://www.jianshu.com/p/7516c015a772
+
+
+
+## 时长
+
+| 开始                | 结束 |      |
+| ------------------- | ---- | ---- |
+| 2023-04-18 09:30:33 |      |      |
+|                     |      |      |
+|                     |      |      |
+
+
+

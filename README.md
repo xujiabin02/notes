@@ -54,6 +54,7 @@
 - [vpn](.NOTES/vpn.md)
 - [vue_ts](.NOTES/vue_ts.md)
 - [web_service](.NOTES/web_service)
+- [win2016](.NOTES/win2016.md)
 - [xar](.NOTES/xar.md)
 - [zabbix](.NOTES/zabbix.md)
 - [基因](.NOTES/基因.md)
