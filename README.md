@@ -42,6 +42,7 @@
 - [python学习](.NOTES/python学习.md)
 - [redis](.NOTES/redis.md)
 - [regex](.NOTES/regex.md)
+- [ruoyi](.NOTES/ruoyi.md)
 - [security](.NOTES/security.md)
 - [selenium](.NOTES/selenium.md)
 - [shell](.NOTES/shell.md)
