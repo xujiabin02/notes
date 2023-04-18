@@ -1,6 +1,12 @@
+# 记一次no host to route
 
+```
+systemctl stop docker
+iptables -t nat -F
+systemctl start docker
+```
 
-
+推测是其他软件端口冲突导致转发规则有误
 
 # docker安装
 
