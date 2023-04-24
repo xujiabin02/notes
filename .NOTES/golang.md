@@ -1,3 +1,65 @@
+# 编译
+
+
+
+去除报错时模块完整路径
+
+```
+go build -trimpath 
+
+```
+
+
+
+# 灵活
+
+
+
+在 Go 语言中，可以将一个函数作为另一个函数的参数，也可以将一个函数赋值给一个变量，并且可以通过类型定义来限制函数的形式参数和返回值类型。这种函数作为一等公民的特性，使得在 Go 语言中将函数赋值给 map 变量成为可能。
+
+举个例子，我们可以定义一个 `KeyFunc` 类型，它是一个函数类型，接受一个字符串类型参数并返回一个字符串类型结果：
+
+```go
+type KeyFunc func(string) string
+```
+
+接着，我们可以定义一个 `map` 类型变量，它的键是字符串类型，值是 `KeyFunc` 类型函数：
+
+```go
+var keyFuncMap map[string]KeyFunc
+```
+
+然后，我们可以往 `keyFuncMap` 中添加各种不同的函数，例如下面的两个示例函数：
+
+```go
+func identity(s string) string {
+    return s
+}
+
+func toUpper(s string) string {
+    return strings.ToUpper(s)
+}
+```
+
+最后，我们可以使用 `keyFuncMap` 中的函数，例如：
+
+```go
+func main() {
+    keyFuncMap = map[string]KeyFunc{
+        "identity": identity,
+        "toUpper":  toUpper,
+    }
+
+    s := "Hello, world!"
+    fmt.Println(keyFuncMap["identity"](s))
+    fmt.Println(keyFuncMap["toUpper"](s))
+}
+```
+
+在上面的代码中，我们将 `identity` 函数和 `toUpper` 函数添加到了 `keyFuncMap` 中，并使用了这两个函数取出了 `s` 字符串的原值和大写值。
+
+通过这种方式，我们可以将不同的函数添加到同一个 `map` 变量中，并根据输入参数的不同来选择对应的函数进行处理，从而实现更加灵活和高效的程序逻辑。
+
 # embed
 
 https://colobu.com/2021/01/17/go-embed-tutorial/

@@ -2,6 +2,10 @@ https://www.jitanglaile.com/article/48
 
 
 
+# 钉钉
+
+https://zhuanlan.zhihu.com/p/129367398
+
 # docker安装破解jira-8.14
 
 ## 部署jira
@@ -71,7 +75,7 @@ flush privileges;
 
 ```
 mkdir /data/jira
-docker run -v /data/jira:/var/atlassian/application-data/jira -v /etc/localtime:/etc/localtime:ro  --name="jira" -d -p 8080:8080 wqblogs.com/jira-software:8.14
+docker run -v /data/opt/jira/data:/var/atlassian/application-data/jira -v /etc/localtime:/etc/localtime:ro  --name="jira" -d -p 8080:8080 wqblogs.com/jira-software:8.14
 ```
 
 ## web访问

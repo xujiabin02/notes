@@ -1,4 +1,19 @@
+[ara](https://github.com/ansible-community/ara)
 
+ara provides Ansible reporting by recording `ansible` and `ansible-playbook` commands wherever and however they are run:
+
+- from a terminal, by hand or from a script
+- from a laptop, desktop, server, VM or container
+- for development, CI or production
+- from most Linux distributions and even on Mac OS (as long as `python >= 3.6` is available)
+- from tools that run playbooks such as AWX & Automation Controller (Tower), ansible-(pull|test|runner|navigator) and Molecule
+- from CI/CD platforms such as Jenkins, GitHub Actions, GitLab CI, Rundeck and Zuul
+
+![getting-started](.img_ansible/getting-started.gif)
+
+
+
+![ui-web-demo](.img_ansible/ui-web-demo.gif)
 
 # ansible ui
 
