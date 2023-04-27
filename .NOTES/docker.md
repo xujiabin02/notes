@@ -1,3 +1,13 @@
+# docker update --restart=always
+
+修改已创建的容器的重启策略
+
+```sh
+docker container update --restart=always 容器名字
+```
+
+
+
 # 记一次no host to route
 
 ```
