@@ -55,6 +55,7 @@
 - [ubuntu](.NOTES/ubuntu.md)
 - [vim](.NOTES/vim.md)
 - [vpn](.NOTES/vpn.md)
+- [vscode](.NOTES/vscode.md)
 - [vue_ts](.NOTES/vue_ts.md)
 - [web_service](.NOTES/web_service)
 - [win2016](.NOTES/win2016.md)
