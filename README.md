@@ -26,6 +26,7 @@
 - [jinja2](.NOTES/jinja2.md)
 - [jira](.NOTES/jira.md)
 - [jumpserver](.NOTES/jumpserver.md)
+- [jupyter](.NOTES/jupyter.md)
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
 - [ldap](.NOTES/ldap.md)
