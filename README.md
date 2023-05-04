@@ -72,6 +72,7 @@
 - [读书](.NOTES/读书.md)
 - [软考](.NOTES/软考.md)
 - [达梦](.NOTES/达梦.md)
+- [随想](.NOTES/随想.md)
 - [包管理vendor_mod](.NOTES/包管理vendor_mod.md)
 - [信息来源](.NOTES/信息来源.md)
 - [健身康复](.NOTES/健身康复.md)
