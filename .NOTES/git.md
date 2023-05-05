@@ -1,3 +1,15 @@
+# gitlab postgresql设置
+
+```
+
+```
+
+
+
+
+
+
+
 # proxy
 
 ```sh

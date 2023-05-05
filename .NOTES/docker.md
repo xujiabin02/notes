@@ -1,3 +1,19 @@
+# timezone/时区
+
+
+
+```sh
+-e TZ=Asia/Shanghai
+```
+
+
+
+```sh
+-v /etc/localtime:/etc/localtime:ro
+```
+
+
+
 # docker update --restart=always
 
 修改已创建的容器的重启策略
