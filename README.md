@@ -3,6 +3,7 @@
 - [Sentinel](.NOTES/Sentinel.md)
 - [airflow](.NOTES/airflow.md)
 - [ansible](.NOTES/ansible.md)
+- [arm](.NOTES/arm.md)
 - [centos](.NOTES/centos.md)
 - [clickhouse](.NOTES/clickhouse.md)
 - [db](.NOTES/db.md)

@@ -32,7 +32,48 @@ http://cn.ntp.org.cn
 
 
 
-# network
+# network bond
+
+ifcfg-bond0
+
+```sh
+DEVICE=bond0
+NAME=bond0
+TYPE=Bond
+BONDING_MASTER=yes
+IPADDR=10.101.230.30
+PREFIX=27
+GATEWAY=10.101.230.1
+ONBOOT=yes
+BOOTPROTO=none
+BONDING_OPTS="mode=1 miimon=100"
+```
+
+
+
+ifcfg-ens1
+
+```sh
+TYPE=Ethernet
+BOOTPROTO=none                        #默认为dhcp，这里修改成none，也可以修改成static
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+NAME=eno1
+UUID=26ea0bd1-0837-4b1a-9039-f147abd19632
+DEVICE=eno1
+ONBOOT=yes                             #默认为no，这里修改成yes
+#以下两项为新增配置选项
+MASTER=bond0
+SLAVE=yes
+```
 
 
 
@@ -50,9 +91,10 @@ DNS1=
 
 **重载并启动网卡**
 
-```
+```sh
 nmcli c reload 
 nmcli c up xxx
+systemctl restart network.service       #重启网络服务
 ```
 
 
