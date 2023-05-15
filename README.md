@@ -6,6 +6,7 @@
 - [arm](.NOTES/arm.md)
 - [centos](.NOTES/centos.md)
 - [clickhouse](.NOTES/clickhouse.md)
+- [davinci](.NOTES/davinci.md)
 - [db](.NOTES/db.md)
 - [debian](.NOTES/debian.md)
 - [devops](.NOTES/devops.md)
