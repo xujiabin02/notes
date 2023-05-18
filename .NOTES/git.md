@@ -1,3 +1,9 @@
+# ci/cd ui variable
+
+
+
+
+
 # gitlab postgresql设置
 
 ```
@@ -314,7 +320,7 @@ docker
    docker run -d --name gitlab-runner --restart always \
      -v /app/gitlab-runner/config:/etc/gitlab-runner \
      -v /var/run/docker.sock:/var/run/docker.sock \
-     gitlab/gitlab-runner:latest
+     gitlab/gitlab-runner:v15.10.1
 ```
 
 ```sh
@@ -354,6 +360,17 @@ Registering runner... succeeded                     runner=8LX6xxxx
 Please enter the executor: parallels, shell, ssh, virtualbox, kubernetes, custom, docker, docker-ssh, docker+machine, docker-ssh+machine:
 shell
 Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+```
+
+
+
+
+
+制作gitlab-runner image
+
+```sh
+docker run --name tool-dc -ti -d --privileged --cap-add SYS_ADMIN -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock 10.1.198.114:5010/tool-centos:8.0 /bin/bash
+
 ```
 
 
