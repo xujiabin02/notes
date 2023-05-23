@@ -1,3 +1,13 @@
+
+
+# Archery
+
+```
+privileged: true
+```
+
+
+
 | 管理                                             |      |                                            |
 | ------------------------------------------------ | ---- | ------------------------------------------ |
 | [bytebase](https://github.com/bytebase/bytebase) |      | [doc](https://icode.best/i/59591647113977) |
@@ -246,3 +256,4 @@ Y=？
 * [https://www.jianshu.com/p/cf5d381ef637](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.jianshu.com%2Fp%2Fcf5d381ef637)
 * [https://www.modb.pro/db/139052](https://www.oschina.net/action/GoToLink?url=https%3A%2F%2Fwww.modb.pro%2Fdb%2F139052)
 * 《MYSQL 内核：INNODB 存储引擎 卷 1》
+
