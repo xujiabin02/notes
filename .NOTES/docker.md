@@ -105,7 +105,7 @@ sudo groupadd docker
 
 sudo usermod -aG docker appuser
 
-mkdir /app/docker && ln -s /app/docker /var/lib/docker && chown -R appuser:appuser /app/docker
+mkdir -p /data/docker && ln -s /data/docker /var/lib/docker && chown -R appuser:appuser /data/docker
 
 sudo systemctl restart docker
 ```
@@ -148,11 +148,9 @@ docker swarm leave --force
 
  
 
-
 docker swarm初始化
 1）docker swarm init # 针对机器只有一个IP的情况
 2）docker swarm init --advertise-addr 172.16.1.13 # 针对机器有多个IP的情况，需要指定一个IP，一般都是指定内网IP
-
 
 加入到swarm的命令
 docker swarm join --token SWMTKN-1-4929ovxh6agko49u0yokrzustjf6yzt30iv1zvwqn8d3pndm92-0kuha3sa80u2u27yca6kzdbnb 172.16.1.13:2377

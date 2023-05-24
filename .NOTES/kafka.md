@@ -1,3 +1,52 @@
+# docker swarm 单机kafka
+
+```yml
+version: "3"
+
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka:3.1
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+      
+  kafka-map:  # admin/admin
+    container_name: kafka-map
+    image: dushixiang/kafka-map:latest
+    depends_on:
+     - kafka
+    ports:
+      - "9093:8080"
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+```
+
+部署
+
+```sh
+docker stack deploy -c file.yml kafka3.1
+```
+
+
+
 # kafka删除group
 
 
