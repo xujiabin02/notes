@@ -1,3 +1,20 @@
+# 初始化密码
+
+新安装PostgreSQL后，创建的postgre用户是没有密码的，
+一般在pg_hba.conf中配置：
+
+```
+host all all 0.0.0.0/0 trust
+```
+
+将导致任何人都能访问数据库，
+是非常危险的，
+建议修改为：
+
+```
+host all all 0.0.0.0/0 md5
+```
+
 
 
 # Cancel query
@@ -50,6 +67,74 @@ https://www.hnbian.cn/posts/2138505f.html
 
 
 
+```mermaid
+flowchart TB
+  subgraph 集群
+  Master --> P1[Primary1 141.3.196.19]
+  P1 --> S1(seg 4个)
+  Master --> P2[Primary2 141.3.196.20]
+    P2 --> S2(seg 4个)
+  Master --> P3[Primary3 141.3.196.21]
+    P3 --> S3(seg 4个)
+  Master --> P4[Primary4 141.3.196.22]
+    P4 --> S4(seg 4个)
+  Master --> P5[Primary5 141.3.196.24]
+    P5 --> S5(seg 4个)
+  end
+  subgraph 扩容
+  P4 -->|2023-05-26| S6(seg 4个)
+  Master --> P6[Primary6 141.3.196.27]
+  P6 -->|2023-05-26| S7(seg 4个)
+  end 
+
+```
+
+
+
+```mermaid
+graph LR
+A(开始) --> B(增加节点)
+B --> C(增加节点)
+C --> D(增加节点)
+D --> E(增加节点)
+E --> F(增加节点)
+F --> G(结束)
+
+B -->|2021-07-01| H[节点1]
+C -->|2021-07-05| I[节点2]
+D -->|2021-07-10| J[节点3]
+E -->|2021-07-15| K[节点4]
+F -->|2021-07-20| L[节点5]
+
+style A fill:#6f9;color:#fff,stroke:#333,stroke-width:2px
+style B-D fill:#9f6;color:#fff,stroke:#333,stroke-width:2px
+style E-G fill:#f96;color:#fff,stroke:#333,stroke-width:2px
+style H-L fill:#69c;color:#fff,stroke:#333,stroke-width:2px
+
+```
+
+
+
+
+
+```mermaid
+graph LR;
+    A[客户端] --> B(Greenplum Master);
+    B -->|元数据| C(Greenplum Catalog);
+    B -->|查询解析| D(Greenplum Dispatcher);
+    D -->|查询计划| E(Greenplum Planner);
+    E -->|查询优化| F(Greenplum Optimizer);
+    B -->|数据切分| G(Greenplum Segment);
+    G -->|存储数据| H(Greenplum Data Nodes);
+    I[141.3.196.27新节点] -->|加入集群| J(Greenplum Master);
+    J -->|元数据同步| C;
+    J -->|数据切分| K(Greenplum Segment);
+    K -->|存储数据| L(Greenplum Data Nodes);
+    G -->|负载均衡| M(Greenplum Master);
+    M -->|数据重分布| K;
+
+```
+
 
 
 | greenplum 对比 | postgres |      |
@@ -60,7 +145,7 @@ https://www.hnbian.cn/posts/2138505f.html
 
 
 
-
+![image-20230529120151167](.img_greenplum/image-20230529120151167.png)
 
 [rpm下载](https://network.pivotal.io/products/vmware-tanzu-greenplum#/releases/1193700/file_groups/10395)
 

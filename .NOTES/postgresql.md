@@ -1,3 +1,11 @@
+# docker安装postgresql 12.12
+
+```
+docker run -d --name postgres --restart always -e POSTGRES_PASSWORD='admin'   -e POSTGRES_USER='admin' -e ALLOW_IP_RANGE=0.0.0.0/0 -v /data/postgres/data:/var/lib/postgresql -p 5432:5432 -d postgres
+```
+
+
+
 # 如何将postgresql数据库表内数据导出为excel格式
 
  原创

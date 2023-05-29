@@ -2,6 +2,8 @@
 
 
 
+变量名后缀`_MASKED`可以遮蔽敏感信息
+
 
 
 # gitlab postgresql设置
@@ -318,10 +320,14 @@ docker
 
 ```sh
    docker run -d --name gitlab-runner --restart always \
-     -v /app/gitlab-runner/config:/etc/gitlab-runner \
+     -v /data/gitlab-runner/config:/etc/gitlab-runner \
      -v /var/run/docker.sock:/var/run/docker.sock \
      gitlab/gitlab-runner:v15.10.1
 ```
+
+
+
+
 
 ```sh
 docker exec -ti gitlab-runner gitlab-runner register

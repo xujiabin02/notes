@@ -1,3 +1,14 @@
+
+
+# image \<none>定期清理
+
+```sh
+59 23 * * * docker rmi -f `docker images | grep '<none>' | awk '{print $3}'`
+55 23 * * * docker rmi -f `docker ps -a | grep Exited | awk '{print $1}'`
+```
+
+
+
 # [优化体积](https://waynerv.com/posts/how-to-reduce-docker-image-size/)
 
 

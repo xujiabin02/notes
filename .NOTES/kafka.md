@@ -1,3 +1,31 @@
+
+
+# 命令
+
+查看消息
+
+```sh
+kafka-console-consumer --bootstrap-server web01:9092,web02:9092,web04:9092 --topic rta_3d_td_self --from-beginning
+```
+
+
+
+**view group**
+
+```sh
+kafka-consumer-groups --bootstrap-server web01:9092,web02:9092,web04:9092  --group hangout_datalink    --describe
+```
+
+保存3天
+
+```sh
+./kafka-topics --zookeeper  tekb1-01:2181,tekb1-02:2181,tekb1-03:2181,tekb1-04:2181,tekb1-05:2181 --topic sync_db_bus --alter --config retention.ms=259200000
+```
+
+
+
+
+
 # docker swarm 单机kafka
 
 ```yml
