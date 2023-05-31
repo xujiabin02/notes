@@ -40,7 +40,7 @@ yum install -y postgresql-contrib
 | gp_enable_global_deadlock_detector | on         | 控制是否开启全局死锁检测功能，打开它才可以支持并发更新/删除操作； | gpconfig -c gp_enable_global_deadlock_detector -v on |
 | checkpoint_segments                | 2          | 影响checkpoint主动刷盘的频率，针对OLTP大量更新类语句适当调小此设置会增加刷盘频率，平均性能会有较明显提升； | gpconfig -c checkpoint_segments -v 2 –skipvalidation |
 
-
+PS: [参考](https://www.jianshu.com/p/d0e3d66a94f4)
 
 
 
