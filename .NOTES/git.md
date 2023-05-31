@@ -1,8 +1,53 @@
+
+
 # ci/cd ui variable
 
 
 
-变量名后缀`_MASKED`可以遮蔽敏感信息
+rules 中的variables只支持到script, 不支持 tags选择runner
+
+```yml
+.GolangPackage: &GoPack
+  stage: GolangPackage
+  image: golang:1.18
+  script:
+    - export
+    - cd scripts
+    - go env -w GOPROXY="$GO_PROXY"
+    - go mod tidy
+    - go build autoconfig.go
+    - echo $RAW_XU_PASSWD_MASKED
+    - echo $MY_TEST
+  artifacts:
+    paths:
+      - scripts/autoconfig
+  cache:
+    key: go-cache
+    paths:
+      - scripts/autoconfig
+    policy: push
+stages:
+  - GolangPackage
+  - DockerBuild
+GoPackOnDev:
+  <<: *GoPack
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^develop/
+      variables:
+        MY_TEST: "devops str"
+  tags:
+    - devops
+GoPackOnTool:
+  <<: *GoPack
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^dev-/
+      variables:
+        MY_TEST: "tools str"
+      when: manual
+  tags:
+    - tools
+
+```
 
 
 
