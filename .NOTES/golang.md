@@ -1,3 +1,12 @@
+# 升级
+
+```shell
+go install golang.org/dl/go1.20.5@latest
+go1.20.5 download
+```
+
+
+
 # 编译
 
 

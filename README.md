@@ -24,6 +24,7 @@
 - [hadoop](.NOTES/hadoop.md)
 - [hbase](.NOTES/hbase.md)
 - [hdfs](.NOTES/hdfs.md)
+- [helm](.NOTES/helm.md)
 - [house](.NOTES/house.md)
 - [jinja2](.NOTES/jinja2.md)
 - [jira](.NOTES/jira.md)

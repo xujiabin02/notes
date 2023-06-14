@@ -88,9 +88,11 @@ resize2fs /dev/ubuntu-vg/ubuntu-lv
 
 
 
+# [安装GPU驱动](ubuntu.md)
 
 
-# 安装GPU驱动
+
+
 
 | 虚拟化   | 显卡        | 系统         |
 | -------- | ----------- | ------------ |

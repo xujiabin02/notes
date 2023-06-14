@@ -1,3 +1,117 @@
+# Mac用Option键输入特殊符号
+
+[nuqiewuoz](https://www.jianshu.com/u/fb61bb93bc02)关注IP属地: 加州
+
+在Mac默认的英文输入法下，按住Option键或者Shift+Option键，再加其它键，可以快速的输入某些常用的特殊符号，例如•, º, ®, ≠, ∑, Ω, ≈,÷,≤,¿等等，具体列表如下
+
+| 原始按键         | `    | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    | 9    | 0    | -    | =    |
+| ---------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| Option +         | `    | ¡    | ™    | £    | ¢    | ∞    | §    | ¶    | •    | ª    | º    | –    | ≠    |
+| Shift + Option + | `    | ⁄    | €    | ‹    | ›    | ﬁ    | ﬂ    | ‡    | °    | ·    | ‚    | —    | ±    |
+
+| 原始按键         | q    | w    | e    | r    | t    | y    | u    | i    | o    | p    | [    | ]    | \    |
+| ---------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| Option +         | œ    | ∑    | ´    | ®    | †    | ¥    | ¨    | ˆ    | ø    | π    | “    | ‘    | «    |
+| Shift + Option + | Œ    | „    | ´    | ‰    | ˇ    | Á    | ¨    | ˆ    | Ø    | ∏    | ”    | ’    | »    |
+
+| 原始按键         | a    | s    | d    | f    | g    | h    | j    | k    | l    | ;    | '    |
+| ---------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| Option +         | å    | ß    | ∂    | ƒ    | ©    | ˙    | ∆    | ˚    | ¬    | …    | æ    |
+| Shift + Option + | Å    | Í    | Î    | Ï    | ˝    | Ó    | Ô    |     | Ò    | Ú    | Æ    |
+
+| 原始按键         | z    | x    | c    | v    | b    | n    | m    | ,    | .    | /    |
+| ---------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| Option +         | Ω    | ≈    | ç    | √    | ∫    | ˜    | µ    | ≤    | ≥    | ÷    |
+| Shift + Option + | ¸    | ˛    | Ç    | ◊    | ı    | ˜    | Â    | ¯    | ˘    | ¿    |
+
+
+
+58人点赞
+
+
+
+[随笔](https://www.jianshu.com/nb/7806911)
+
+# 双网卡
+
+![image-20230612131827813](.img_mac/image-20230612131827813.png)
+
+```shell
+sudo route add -net 10.1.0.0 -netmask 255.255.0.0 10.1.51.1
+```
+
+
+
+```shell
+sudo route delete -net 10.1.0.0 -netmask 255.255.0.0 10.1.51.1
+```
+
+
+
+
+
+# 改键
+
+Mouse keys Mode v4
+
+You can operate mouse via keyboard. (motion, click and scroll)
+Mouse keys mode is active by the following procedure.
+
+1. **d** key_down
+2. any keys of mouse keys key_down (**h**, **j**, **k**, **l**,...)
+3. any keys of mouse keys key_up (**h**, **j**, **k**, **l**,...)
+4. Then mouse keys is active until you release **d** key.
+
+**Example:**
+
+- Press **d**
+- Press **h**
+- Press **j**
+- Release **h**
+- Release **j**
+- Release **d**
+
+**Key bindings:**
+
+- h: mouse left
+- j: mouse down
+- k: mouse up
+- l: mouse right
+- v: left click
+- b: middle click
+- n: right click
+- f: fast mode (fast mouse move by f+hjkl)
+- g: slow mode (slow mouse move by g+hjkl)
+- s: scroll mode (scroll by s+hjkl)
+- u: set mouse cursor position to the center of current display
+- i: set mouse cursor position to the center of main display
+- o: set mouse cursor position to the center of second display
+- p: set mouse cursor position to the center of third display
+
+# 拆解蝶扣
+
+![img](.img_mac/v2-200ce9c46d540a368fb243ba9dc99e1c_1440w.webp)
+
+
+
+![img](.img_mac/v2-3d79bd671c981ee1e18053045718dbca_1440w.webp)
+
+**用自制塑料小工具，插入键盘左上方或者有上方，或者正上方，轻轻的左右滑动，轻微往上提，轻微！一旦上面的的按压卡扣打开，会有一声清脆的声音，那就是按压卡扣打开了，同理打开另一边的按压卡扣。**
+
+**只要上面2个按压卡扣打开，下面的推拉扣向上一提就出来了**
+
+![img](.img_mac/v2-ed5e568d756af0c692d964e78af5670b_1440w.webp)
+
+安装
+
+<mark>安装</mark>
+
+**与拆解相反，需要先将下方推拉扣插入进去，然后依次上面2个按压扣，1个1个的按上，发出清脆的“咔”，安装回去后，尝试按压看完整键帽声音是否清脆，有弹性。**
+
+# 关闭 Fn 功能键,  停掉 Fn+H 显示桌面功能
+
+I discovered that on my system, it's the 'globe' key shortcut that does this for some reason. If you go into 'System Preferences->Keyboard->Modifier Keys...' and disable the 'globe' shortcut then fn+h will stop showing the desktop.
+
 # mac使uniaccess agent监控软件失能？
 
 作者：毒舌暴躁

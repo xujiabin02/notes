@@ -1,3 +1,5 @@
+# [安装GPU驱动](ubuntu.md)
+
 
 
 # gpu k8s

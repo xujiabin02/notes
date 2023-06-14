@@ -1,3 +1,1327 @@
+# [Greenplum扩容详解](https://www.cnblogs.com/zsql/p/14602563.html)
+
+------
+
+随着收集额外数据并且现有数据的定期增长，数据仓库通常会随着时间的推移而不断增长。 有时，有必要增加数据库能力来联合不同的数据仓库到一个数据库中。 数据仓库也可能需要额外的计算能力（CPU）来适应新增加的分析项目。 在系统被初始定义时就留出增长的空间是很好的，但是即便用户预期到了高增长率，提前太多在资源上投资通常也不明智。 因此，用户应该寄望于定期地执行一次数据库扩容项目。Greenplum使用gpexpand工具进行扩容，所以本文首先会介绍下gpexpand工具。本文为博客园作者所写： [一寸HUI](https://home.cnblogs.com/u/zsql/)，个人博客地址：https://www.cnblogs.com/zsql/
+
+## 一、gpexpand介绍
+
+gpexpand是在阵列中的新主机上扩展现有的Greenplum数据库的一个工具，使用方法如下：
+
+
+
+```
+gpexpand [{-f|--hosts-file} hosts_file]
+                | {-i|--input} input_file [-B batch_size]
+                | [{-d | --duration} hh:mm:ss | {-e|--end} 'YYYY-MM-DD hh:mm:ss'] 
+        [-a|-analyze] 
+                  [-n  parallel_processes]
+                | {-r|--rollback}
+                | {-c|--clean}
+        [-v|--verbose] [-s|--silent]
+        [{-t|--tardir} directory ]
+        [-S|--simple-progress ]
+        
+        gpexpand -? | -h | --help 
+        
+        gpexpand --version
+```
+
+参数详解:
+
+```
+-a | --analyze
+    在扩展后运行ANALYZE更新表的统计信息，默认是不运行ANALYZE。
+-B batch_size
+    在暂停一秒钟之前发送给给定主机的远程命令的批量大小。默认值是16， 有效值是1-128。
+    gpexpand工具会发出许多设置命令，这些命令可能会超出主机的已验证 连接的最大阈值（由SSH守护进程配置中的MaxStartups定义）。该一秒钟 的暂停允许在gpexpand发出更多命令之前完成认证。
+    默认值通常不需要改变。但是，如果gpexpand由于连接错误 （例如'ssh_exchange_identification: Connection closed by remote host.'）而失败，则可能需要减少命令的最大数量。
+-c | --clean
+    删除扩展模式。
+-d | --duration hh:mm:ss
+    扩展会话的持续时间。
+-e | --end 'YYYY-MM-DD hh:mm:ss'
+    扩展会话的结束日期及时间。
+-f | --hosts-file filename
+    指定包含用于系统扩展的新主机列表的文件的名称。文件的每一行都必须包含一个主机名。
+    该文件可以包含指定或不指定网络接口的主机名。gpexpand工具处理这两种情况， 如果原始节点配置了多个网络接口，则将接口号添加到主机名的末尾。
+    Note: Greenplum数据库Segment主机的命名习惯是sdwN，其中sdw 是前缀并且N是数字。例如，sdw1、sdw2等等。 对于具有多个接口的主机，约定是在主机名后面添加破折号（-）和数字。例如sdw1-1 和sdw1-2是主机sdw1的两个接口名称。
+-i | --input input_file
+    指定扩展配置文件的名称，其中为每个要添加的Segment包含一行，格式为：
+    hostname:address:port:datadir:dbid:content:preferred_role
+-n parallel_processes
+    要同时重新分布的表的数量。有效值是1 - 96。
+    每个表重新分布过程都需要两个数据库连接：一个用于更改表，另一个用于在扩展方案中更新表的状态。 在增加-n之前，检查服务器配置参数max_connections的当前值， 并确保不超过最大连接限制。
+-r | --rollback
+    回滚失败的扩展设置操作。
+-s | --silent
+    以静默模式运行。在警告时，不提示确认就可继续。
+-S | --simple-progress
+    如果指定，gpexpand工具仅在Greenplum数据库表 gpexpand.expansion_progress中记录最少的进度信息。该工具不在表 gpexpand.status_detail中记录关系大小信息和状态信息。
+    指定此选项可通过减少写入gpexpand表的进度信息量来提高性能。
+[-t | --tardir] directory
+    Segment主机上一个目录的完全限定directory，gpexpand 工具会在其中拷贝一个临时的tar文件。该文件包含用于创建Segment实例的Greenplum数据库文件。 默认目录是用户主目录。
+-v | --verbose
+    详细调试输出。使用此选项，该工具将输出用于扩展数据库的所有DDL和DML。
+--version
+    显示工具的版本号并退出。
+-? | -h | --helpu
+    显示在线帮助
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+gpexpand的具体过程：
+
+gpexpand工具分两个阶段执行系统扩展：Segment初始化和表重新分布
+
+- 在初始化阶段，gpexpand用一个输入文件运行，该文件指定新Segment的数据目录、 dbid值和其他特征。用户可以手动创建输入文件，也可以在交互式对话中 按照提示进行操作。
+- 在表数据重分布阶段，gpexpand会重分布表的数据，使数据在新旧segment 实例之间平衡
+
+　　要开始重分布阶段，可以通过运行gpexpand并指定-d（运行时间周期） 或-e（结束时间）选项，或者不指定任何选项。如果客户指定了结束时间或运行周期，工具会在 扩展模式下重分布表，直到达到设定的结束时间或执行周期。如果没指定任何选项，工具会继续处理直到扩展模式的表 全部完成重分布。每张表都会通过ALTER TABLE命令来在所有的节点包括新增加的segment实例 上进行重分布，并设置表的分布策略为其原始策略。如果gpexpand完成所有表的重分布，它会 显示成功信息并退出。
+
+[回到顶部](https://www.cnblogs.com/zsql/p/14602563.html#_labelTop)
+
+## 二、扩容介绍
+
+扩容可以分为纵向扩容和横向扩容，扩容的先决条件如下：
+
+- 用户作为Greenplum数据库超级用户（gpadmin）登录。
+- 新的Segment主机已被根据现有的Segment主机安装和配置。这包括：
+
+1. 　　配置硬件和操作系统
+2. 　　安装Greenplum软件
+3. 　　创建gpadmin用户帐户
+4. 　　交换SSH密钥
+
+- 用户的Segment主机上有足够的磁盘空间来临时保存最大表的副本。
+- 重新分布数据时，Greenplum数据库必须以生产模式运行。Greenplum数据库不能是受限模式或 Master模式。不能指定gpstart的选项-R或者-m 启动Greenplum数据库
+
+扩容的基本步骤：
+
+1. 创建扩容输入文件：gpexpand -f hosts_file
+2. 初始化Segment并且创建扩容schema：gpexpand -i input_file，gpexpand会创建一个数据目录、从现有的数据库复制表到新的Segment上并且为扩容方案中的每个表捕捉元数据用于状态跟踪。 在这个处理完成后，扩容操作会被提交并且不可撤回。
+3. 重新分布表数据：gpexpand -d duration
+4. 移除扩容schema：gpexpand -c
+
+[回到顶部](https://www.cnblogs.com/zsql/p/14602563.html#_labelTop)
+
+## 三、纵向扩容
+
+
+
+### 3.1、扩容前准备
+
+首先看看现有的集群的状态：gpstate
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpstate
+20210331:14:10:34:014725 gpstate:lgh1:gpadmin-[INFO]:-Starting gpstate with args:
+20210331:14:10:34:014725 gpstate:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:10:34:014725 gpstate:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:10:34:014725 gpstate:lgh1:gpadmin-[INFO]:-Obtaining Segment details from master...
+20210331:14:10:34:014725 gpstate:lgh1:gpadmin-[INFO]:-Gathering data from segments...
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-Greenplum instance status summary
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Master instance                                           = Active
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Master standby                                            = lgh2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Standby master state                                      = Standby host passive
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total segment instance count from metadata                = 4
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Primary Segment Status
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segments                                    = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment valid (at master)                   = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment failures (at master)                = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Mirror Segment Status
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segments                                     = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment valid (at master)                    = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment failures (at master)                 = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as primary segments   = 0
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as mirror segments    = 2
+20210331:14:10:35:014725 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+现在的状态是有3台主机，一个是master节点，还有两个segment的机器，每个segment的机器上都有一个primary和mirror的segment，现在计划在现有的集群上进行segment的扩容，在每台机器上的segment的数量翻倍，
+现在segment的目录为：
+
+```
+primary:/apps/data1/primary
+mirror:/apps/data1/mirror
+```
+
+现在需要在两个segment的主机上创建新的目录如下：
+
+```
+primary:/apps/data2/primary
+mirror:/apps/data2/mirror
+```
+
+上面的目录的所属组和用户均为gpadmin:gpamdin，这里创建目录可以使用gpssh创建也可以一个一个的创建
+
+
+
+### 3.2、创建初始化文件
+
+查看目前segment的主机：
+
+```
+[gpadmin@lgh1 conf]$ cat seg_hosts
+lgh2
+lgh3
+```
+
+执行：gpexpand -f seg_hosts
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -f seg_hosts
+20210331:14:16:29:015453 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:16:29:015453 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:16:29:015453 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+
+System Expansion is used to add segments to an existing GPDB array.
+gpexpand did not detect a System Expansion that is in progress.
+
+Before initiating a System Expansion, you need to provision and burn-in
+the new hardware.  Please be sure to run gpcheckperf to make sure the
+new hardware is working properly.
+
+Please refer to the Admin Guide for more information.
+
+Would you like to initiate a new System Expansion Yy|Nn (default=N):
+> y
+
+You must now specify a mirroring strategy for the new hosts.  Spread mirroring places
+a given hosts mirrored segments each on a separate host.  You must be
+adding more hosts than the number of segments per host to use this.
+Grouped mirroring places all of a given hosts segments on a single
+mirrored host.  You must be adding at least 2 hosts in order to use this.
+
+
+
+What type of mirroring strategy would you like?
+ spread|grouped (default=grouped): #默认的mirror方式
+>
+
+** No hostnames were given that do not already exist in the **
+** array. Additional segments will be added existing hosts. **
+
+    By default, new hosts are configured with the same number of primary
+    segments as existing hosts.  Optionally, you can increase the number
+    of segments per host.
+
+    For example, if existing hosts have two primary segments, entering a value
+    of 2 will initialize two additional segments on existing hosts, and four
+    segments on new hosts.  In addition, mirror segments will be added for
+    these new primary segments if mirroring is enabled.
+
+
+How many new primary segments per host do you want to add? (default=0):
+> 1
+Enter new primary data directory 1:
+> /apps/data2/primary
+Enter new mirror data directory 1:
+> /apps/data2/mirror
+
+Generating configuration file...
+
+20210331:14:17:05:015453 gpexpand:lgh1:gpadmin-[INFO]:-Generating input file...
+
+Input configuration file was written to 'gpexpand_inputfile_20210331_141705'.
+
+Please review the file and make sure that it is correct then re-run
+with: gpexpand -i gpexpand_inputfile_20210331_141705  #生成的初始化文件
+
+20210331:14:17:05:015453 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+查看初始化文件：
+
+```
+[gpadmin@lgh1 conf]$ cat gpexpand_inputfile_20210331_141705
+lgh3|lgh3|6001|/apps/data2/primary/gpseg2|7|2|p
+lgh2|lgh2|7001|/apps/data2/mirror/gpseg2|10|2|m
+lgh2|lgh2|6001|/apps/data2/primary/gpseg3|8|3|p
+lgh3|lgh3|7001|/apps/data2/mirror/gpseg3|9|3|m
+```
+
+
+
+### 3.3、初始化Segment并且创建扩容schema
+
+执行命令：gpexpand -i gpexpand_inputfile_20210331_141705
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand  -i gpexpand_inputfile_20210331_141705
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-Heap checksum setting consistent across cluster
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-Syncing Greenplum Database extensions
+20210331:14:21:40:016004 gpexpand:lgh1:gpadmin-[INFO]:-The packages on lgh2 are consistent.
+20210331:14:21:41:016004 gpexpand:lgh1:gpadmin-[INFO]:-The packages on lgh3 are consistent.
+20210331:14:21:41:016004 gpexpand:lgh1:gpadmin-[INFO]:-Locking catalog
+20210331:14:21:41:016004 gpexpand:lgh1:gpadmin-[INFO]:-Locked catalog
+20210331:14:21:42:016004 gpexpand:lgh1:gpadmin-[INFO]:-Creating segment template
+20210331:14:21:42:016004 gpexpand:lgh1:gpadmin-[INFO]:-Copying postgresql.conf from existing segment into template
+20210331:14:21:43:016004 gpexpand:lgh1:gpadmin-[INFO]:-Copying pg_hba.conf from existing segment into template
+20210331:14:21:43:016004 gpexpand:lgh1:gpadmin-[INFO]:-Creating schema tar file
+20210331:14:21:43:016004 gpexpand:lgh1:gpadmin-[INFO]:-Distributing template tar file to new hosts
+20210331:14:21:44:016004 gpexpand:lgh1:gpadmin-[INFO]:-Configuring new segments (primary)
+20210331:14:21:44:016004 gpexpand:lgh1:gpadmin-[INFO]:-{'lgh2': '/apps/data2/primary/gpseg3:6001:true:false:8:3::-1:', 'lgh3': '/apps/data2/primary/gpseg2:6001:true:false:7:2::-1:'}
+20210331:14:21:47:016004 gpexpand:lgh1:gpadmin-[INFO]:-Cleaning up temporary template files
+20210331:14:21:48:016004 gpexpand:lgh1:gpadmin-[INFO]:-Cleaning up databases in new segments.
+20210331:14:21:49:016004 gpexpand:lgh1:gpadmin-[INFO]:-Unlocking catalog
+20210331:14:21:49:016004 gpexpand:lgh1:gpadmin-[INFO]:-Unlocked catalog
+20210331:14:21:49:016004 gpexpand:lgh1:gpadmin-[INFO]:-Creating expansion schema
+20210331:14:21:49:016004 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database template1
+20210331:14:21:50:016004 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database postgres
+20210331:14:21:50:016004 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database gpebusiness
+20210331:14:21:50:016004 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database gpperfmon
+20210331:14:21:50:016004 gpexpand:lgh1:gpadmin-[INFO]:-Starting new mirror segment synchronization
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-************************************************
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-Initialization of the system expansion complete.
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-To begin table expansion onto the new segments
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-rerun gpexpand
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-************************************************
+20210331:14:21:58:016004 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+使用gpstate验证下：（segment为8了，成功）
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpstate
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-Starting gpstate with args:
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-Obtaining Segment details from master...
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-Gathering data from segments...
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-Greenplum instance status summary
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Master instance                                           = Active
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Master standby                                            = lgh2
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Standby master state                                      = Standby host passive
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total segment instance count from metadata                = 8
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Primary Segment Status
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segments                                    = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment valid (at master)                   = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment failures (at master)                = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Mirror Segment Status
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segments                                     = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment valid (at master)                    = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment failures (at master)                 = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as primary segments   = 0
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as mirror segments    = 4
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-   Cluster Expansion                                         = In Progress
+20210331:14:23:19:016384 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 3.4、重分布数据
+
+执行命令：gpexpand -d 1:00:00 #不动命令回去看gpexpand命令说明，这里没有业务表，所以很快就重分布完成了，如果数据量很大，可以增加线程
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+20210331:14:28:45:016891 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:28:45:016891 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:28:45:016891 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+20210331:14:28:45:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding postgres.gpcc_schema.pghba_lock
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding postgres.gpcc_schema.pghba_lock
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_schedule
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_schedule
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_scan_history
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_scan_history
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_wlm_rule
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_wlm_rule
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_export_log
+20210331:14:28:46:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_export_log
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_table_info
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_table_info
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics._gpcc_plannode_history
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics._gpcc_plannode_history
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpcc_schema.pghba_lock
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpcc_schema.pghba_lock
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_alert_history
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_alert_history
+20210331:14:28:47:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_database_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_database_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_disk_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_disk_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_pg_log_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_pg_log_history
+20210331:14:28:48:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_plannode_history
+20210331:14:28:49:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_plannode_history
+20210331:14:28:49:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_queries_history
+20210331:14:28:49:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_queries_history
+20210331:14:28:49:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_system_history
+20210331:14:28:49:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_system_history
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_table_info_history
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_table_info_history
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_wlm_log_history
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_wlm_log_history
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics._gpcc_pg_log_meta
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics._gpcc_pg_log_meta
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-EXPANSION COMPLETED SUCCESSFULLY
+20210331:14:28:50:016891 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 3.5、移除扩容schema
+
+执行命令：gpexpand -c
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -c
+20210331:14:32:01:017244 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:14:32:01:017244 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:14:32:01:017244 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+
+
+Do you want to dump the gpexpand.status_detail table to file? Yy|Nn (default=Y):
+> y
+20210331:14:32:05:017244 gpexpand:lgh1:gpadmin-[INFO]:-Dumping gpexpand.status_detail to /apps/data1/master/gpseg-1/gpexpand.status_detail
+20210331:14:32:05:017244 gpexpand:lgh1:gpadmin-[INFO]:-Removing gpexpand schema
+20210331:14:32:05:017244 gpexpand:lgh1:gpadmin-[INFO]:-Cleanup Finished.  exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+这里为止纵向扩容就完成了，不出错都是傻瓜式的操作，出错多看日志，也不难。
+
+**注意：如果在扩容的时候失败或者出错了，记得回滚：gpexpand -r ，还有就是扩容成功，数据重分布成功后记得使用analyze或者analyzedb进行分析**
+
+[回到顶部](https://www.cnblogs.com/zsql/p/14602563.html#_labelTop)
+
+## 四、横向扩容
+
+
+
+### 4.1、安装前准备
+
+参考：[greenplum6.14、GPCC6.4安装详解](https://www.cnblogs.com/zsql/p/14598098.html) 第一部分
+
+
+
+### 4.2、基本配置和规划
+
+规划，新增两台机器（红色粗体部分），由于配置了mirror，所以至少要新增两台机器扩容，不然会报错：
+
+![img](.img_greenplum/1271254-20210331165456143-697136397.png)
+
+ 
+
+ 在新的两个机器进行如下操作：
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+#创建gp用户和用户组
+groupdel gpadmin
+userdel gpadmin
+groupadd gpadmin
+useradd  -g gpadmin gpadmin
+
+#创建segment目录
+mkdir /apps/data1/primary
+mkdir /apps/data2/primary
+mkdir /apps/data1/mirror
+mkdir /apps/data2/mirror
+chown -R gpamdin:gpamdin /apps/data*
+
+#拷贝master主机的安装目录
+cd /usr/local &&  tar -cf /usr/local/gp6.tar greenplum-db-6.14.1 #master主机操作
+scp gp6.tar root@lgh4:/usr/local/ #master主机操作
+scp gp6.tar root@lgh5:/usr/local/ #master主机操作
+cd /usr/local
+tar -xf gp6.tar
+ln -s greenplum-db-6.14.1 greenplum-db
+chown -R gpadmin:gpadmin greenplum-db*
+
+#ssh免密配置
+ssh-copy-id lgh4  #master主机操作
+ssh-copy-id lgh5  #master主机操作
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+修改seg_hosts，all_hosts文件，添加新主机名进去：
+
+```
+[gpadmin@mvxl53201 conf]$ cat seg_hosts``lgh2``lgh3``lgh4 #``new``lgh5 #``new
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@mvxl53201 conf]$ cat all_hosts
+lgh1
+lgh2
+lgh3
+lgh4 #new
+lgh5 #new
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+执行：gpssh-exkeys -f all_hosts
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpssh-exkeys -f all_hosts
+[STEP 1 of 5] create local ID and authorize on local host
+  ... /apps/gpadmin/.ssh/id_rsa file exists ... key generation skipped
+
+[STEP 2 of 5] keyscan all hosts and update known_hosts file
+
+[STEP 3 of 5] retrieving credentials from remote hosts
+  ... send to lgh2
+  ... send to lgh3
+  ... send to lgh4
+  ... send to lgh5
+
+[STEP 4 of 5] determine common authentication file content
+
+[STEP 5 of 5] copy authentication files to all remote hosts
+  ... finished key exchange with lgh2
+  ... finished key exchange with lgh3
+  ... finished key exchange with lgh4
+  ... finished key exchange with lgh5
+
+[INFO] completed successfully
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 4.3、创建初始化文件
+
+执行：gpexpand -f seg_hosts
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -f seg_hosts
+20210331:15:00:52:020105 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:15:00:52:020105 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:15:00:52:020105 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+
+System Expansion is used to add segments to an existing GPDB array.
+gpexpand did not detect a System Expansion that is in progress.
+
+Before initiating a System Expansion, you need to provision and burn-in
+the new hardware.  Please be sure to run gpcheckperf to make sure the
+new hardware is working properly.
+
+Please refer to the Admin Guide for more information.
+
+Would you like to initiate a new System Expansion Yy|Nn (default=N):
+> y
+
+You must now specify a mirroring strategy for the new hosts.  Spread mirroring places
+a given hosts mirrored segments each on a separate host.  You must be
+adding more hosts than the number of segments per host to use this.
+Grouped mirroring places all of a given hosts segments on a single
+mirrored host.  You must be adding at least 2 hosts in order to use this.
+
+
+
+What type of mirroring strategy would you like?
+ spread|grouped (default=grouped):
+>
+
+    By default, new hosts are configured with the same number of primary
+    segments as existing hosts.  Optionally, you can increase the number
+    of segments per host.
+
+    For example, if existing hosts have two primary segments, entering a value
+    of 2 will initialize two additional segments on existing hosts, and four
+    segments on new hosts.  In addition, mirror segments will be added for
+    these new primary segments if mirroring is enabled.
+
+
+How many new primary segments per host do you want to add? (default=0):
+>
+
+Generating configuration file...
+
+20210331:15:00:59:020105 gpexpand:lgh1:gpadmin-[INFO]:-Generating input file...
+
+Input configuration file was written to 'gpexpand_inputfile_20210331_150059'.
+
+Please review the file and make sure that it is correct then re-run
+with: gpexpand -i gpexpand_inputfile_20210331_150059  #生成文件
+
+20210331:15:00:59:020105 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+查看初始化的文件：
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ cat gpexpand_inputfile_20210331_150059
+lgh5|lgh5|6000|/apps/data1/primary/gpseg4|11|4|p
+lgh4|lgh4|7000|/apps/data1/mirror/gpseg4|17|4|m
+lgh5|lgh5|6001|/apps/data2/primary/gpseg5|12|5|p
+lgh4|lgh4|7001|/apps/data2/mirror/gpseg5|18|5|m
+lgh4|lgh4|6000|/apps/data1/primary/gpseg6|13|6|p
+lgh5|lgh5|7000|/apps/data1/mirror/gpseg6|15|6|m
+lgh4|lgh4|6001|/apps/data2/primary/gpseg7|14|7|p
+lgh5|lgh5|7001|/apps/data2/mirror/gpseg7|16|7|m
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 4.4、初始化Segment并且创建扩容schema
+
+执行：gpexpand -i gpexpand_inputfile_20210331_150059
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -i gpexpand_inputfile_20210331_150059
+20210331:15:04:06:020454 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:15:04:06:020454 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:15:04:06:020454 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+20210331:15:04:06:020454 gpexpand:lgh1:gpadmin-[INFO]:-Heap checksum setting consistent across cluster
+20210331:15:04:06:020454 gpexpand:lgh1:gpadmin-[INFO]:-Syncing Greenplum Database extensions
+20210331:15:04:07:020454 gpexpand:lgh1:gpadmin-[INFO]:-The packages on lgh5 are consistent.
+20210331:15:04:08:020454 gpexpand:lgh1:gpadmin-[INFO]:-The packages on lgh4 are consistent.
+20210331:15:04:08:020454 gpexpand:lgh1:gpadmin-[INFO]:-Locking catalog
+20210331:15:04:08:020454 gpexpand:lgh1:gpadmin-[INFO]:-Locked catalog
+20210331:15:04:09:020454 gpexpand:lgh1:gpadmin-[INFO]:-Creating segment template
+20210331:15:04:09:020454 gpexpand:lgh1:gpadmin-[INFO]:-Copying postgresql.conf from existing segment into template
+20210331:15:04:09:020454 gpexpand:lgh1:gpadmin-[INFO]:-Copying pg_hba.conf from existing segment into template
+20210331:15:04:10:020454 gpexpand:lgh1:gpadmin-[INFO]:-Creating schema tar file
+20210331:15:04:10:020454 gpexpand:lgh1:gpadmin-[INFO]:-Distributing template tar file to new hosts
+20210331:15:04:11:020454 gpexpand:lgh1:gpadmin-[INFO]:-Configuring new segments (primary)
+20210331:15:04:11:020454 gpexpand:lgh1:gpadmin-[INFO]:-{'lgh5': '/apps/data1/primary/gpseg4:6000:true:false:11:4::-1:,/apps/data2/primary/gpseg5:6001:true:false:12:5::-1:', 'lgh4': '/apps/data1/primary/gpseg6:6000:true:false:13:6::-1:,/apps/data2/primary/gpseg7:6001:true:false:14:7::-1:'}
+20210331:15:04:17:020454 gpexpand:lgh1:gpadmin-[INFO]:-Cleaning up temporary template files
+20210331:15:04:17:020454 gpexpand:lgh1:gpadmin-[INFO]:-Cleaning up databases in new segments.
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Unlocking catalog
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Unlocked catalog
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Creating expansion schema
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database template1
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database postgres
+20210331:15:04:19:020454 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database gpebusiness
+20210331:15:04:20:020454 gpexpand:lgh1:gpadmin-[INFO]:-Populating gpexpand.status_detail with data from database gpperfmon
+20210331:15:04:20:020454 gpexpand:lgh1:gpadmin-[INFO]:-Starting new mirror segment synchronization
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-************************************************
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-Initialization of the system expansion complete.
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-To begin table expansion onto the new segments
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-rerun gpexpand
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-************************************************
+20210331:15:04:34:020454 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 4.5、重分布数据
+
+执行：gpexpand -d 1:00:00
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -d 1:00:00
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding postgres.gpcc_schema.pghba_lock
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding postgres.gpcc_schema.pghba_lock
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_export_log
+20210331:15:06:46:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_export_log
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_schedule
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_schedule
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_wlm_rule
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_wlm_rule
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_table_info
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_table_info
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics._gpcc_pg_log_meta
+20210331:15:06:47:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics._gpcc_pg_log_meta
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics._gpcc_plannode_history
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics._gpcc_plannode_history
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpcc_schema.pghba_lock
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpcc_schema.pghba_lock
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_alert_history
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_alert_history
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_database_history
+20210331:15:06:48:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_database_history
+20210331:15:06:49:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_disk_history
+20210331:15:06:49:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_disk_history
+20210331:15:06:49:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_pg_log_history
+20210331:15:06:49:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_pg_log_history
+20210331:15:06:50:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_plannode_history
+20210331:15:06:50:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_plannode_history
+20210331:15:06:50:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_queries_history
+20210331:15:06:50:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_queries_history
+20210331:15:06:50:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_system_history
+20210331:15:06:51:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_system_history
+20210331:15:06:51:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_table_info_history
+20210331:15:06:51:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_table_info_history
+20210331:15:06:51:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_wlm_log_history
+20210331:15:06:51:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_wlm_log_history
+20210331:15:06:52:021037 gpexpand:lgh1:gpadmin-[INFO]:-Expanding gpperfmon.gpmetrics.gpcc_scan_history
+20210331:15:06:52:021037 gpexpand:lgh1:gpadmin-[INFO]:-Finished expanding gpperfmon.gpmetrics.gpcc_scan_history
+20210331:15:06:56:021037 gpexpand:lgh1:gpadmin-[INFO]:-EXPANSION COMPLETED SUCCESSFULLY
+20210331:15:06:56:021037 gpexpand:lgh1:gpadmin-[INFO]:-Exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+
+
+### 4.6、移除扩容schema
+
+执行命令：gpexpand -c
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpexpand -c
+20210331:15:08:19:021264 gpexpand:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:15:08:19:021264 gpexpand:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:15:08:19:021264 gpexpand:lgh1:gpadmin-[INFO]:-Querying gpexpand schema for current expansion state
+
+
+Do you want to dump the gpexpand.status_detail table to file? Yy|Nn (default=Y):
+> y
+20210331:15:08:21:021264 gpexpand:lgh1:gpadmin-[INFO]:-Dumping gpexpand.status_detail to /apps/data1/master/gpseg-1/gpexpand.status_detail
+20210331:15:08:21:021264 gpexpand:lgh1:gpadmin-[INFO]:-Removing gpexpand schema
+20210331:15:08:21:021264 gpexpand:lgh1:gpadmin-[INFO]:-Cleanup Finished.  exiting...
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+查看扩容结果：gpstate
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+```
+[gpadmin@lgh1 conf]$ gpstate
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-Starting gpstate with args:
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd'
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 9.4.24 (Greenplum Database 6.14.1 build commit:5ef30dd4c9878abadc0124e0761e4b988455a4bd) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 6.4.0, 64-bit compiled on Feb 22 2021 18:27:08'
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-Obtaining Segment details from master...
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-Gathering data from segments...
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-Greenplum instance status summary
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Master instance                                           = Active
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Master standby                                            = lgh2
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Standby master state                                      = Standby host passive
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total segment instance count from metadata                = 16
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Primary Segment Status
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segments                                    = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment valid (at master)                   = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total primary segment failures (at master)                = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Mirror Segment Status
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segments                                     = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment valid (at master)                    = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total mirror segment failures (at master)                 = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files missing              = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid files found                = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs missing               = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of postmaster.pid PIDs found                 = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files missing                   = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number of /tmp lock files found                     = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes missing                 = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number postmaster processes found                   = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as primary segments   = 0
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-   Total number mirror segments acting as mirror segments    = 8
+20210331:15:10:11:021437 gpstate:lgh1:gpadmin-[INFO]:-----------------------------------------------------
+```
+
+[![复制代码](.img_greenplum/copycode.gif)](javascript:void(0);)
+
+**注意：如果在扩容的时候失败或者出错了，记得回滚：gpexpand -r ，还有就是扩容成功，数据重分布成功后记得使用analyze或者analyzedb进行分析**
+
+ 
+
+[回到顶部](https://www.cnblogs.com/zsql/p/14602563.html#_labelTop)
+
+## 参考网址：
+
+http://docs-cn.greenplum.org/v6/admin_guide/expand/expand-main.html
+
+http://docs-cn.greenplum.org/v6/utility_guide/admin_utilities/gpexpand.html#topic1
+
+# 调优SQL查询
+
+Greenplum数据库的基于代价的优化器会为执行一个查询计算很多策略并且选择代价最低的方法。和其他RDBMS的优化器类似，在计算可选执行计划的代价时，Greenplum的优化器会考虑诸如要连接的表中的行数、索引的可用性以及列数据的基数等因素。规划器还会考虑数据的位置、倾向于在Segment上做尽可能多的工作以及最小化完成查询必须在Segment之间传输的数据量。
+
+当查询运行得比预期慢时，用户可以查看优化器选择的计划以及它为计划的每一步计算出的代价。这将帮助用户确定哪些步骤消耗了最多的资源，然后修改查询或者模式来为优化器提供更加有效的可选方法。用户可以使用SQL语句EXPLAIN来查看查询的计划。
+
+优化器基于为表生成的统计信息产生计划。精确的统计信息对于产生最好的计划非常重要。有关更新统计信息的指南请见本指南中的[用ANALYZE更新统计信息](https://gp-docs-cn.github.io/docs/best_practices/analyze.html#analyze)。
+
+**上级主题：** [最佳实践](https://gp-docs-cn.github.io/docs/best_practices/intro.html)
+
+## 如何产生解释计划
+
+EXPLAIN和EXPLAIN ANALYZE语句是发现改进查询性能机会的非常有用的工具。EXPLAIN会为查询显示其查询计划和估算的代价，但是不执行该查询。EXPLAIN ANALYZE除了显示查询的查询计划之外，还会执行该查询。EXPLAIN ANALYZE会丢掉任何来自SELECT语句的输出，但是该语句中的其他操作会被执行（例如INSERT、UPDATE或者DELETE）。要在DML语句上使用EXPLAIN ANALYZE却不让该命令影响数据，可以明确地把EXPLAIN ANALYZE用在一个事务中（BEGIN; EXPLAIN ANALYZE ...; ROLLBACK;）。
+
+EXPLAIN ANALYZE运行语句后除了显示计划外，还有下列额外的信息：
+
+- 运行该查询消耗的总时间（以毫秒计）
+- 计划节点操作中涉及的工作者（Segment）数量
+- 操作中产生最多行的Segment返回的最大行数（及其Segment ID）
+- 操作所使用的内存
+- 从产生最多行的Segment中检索到第一行所需的时间（以毫秒计），以及从该Segment中检索所有行花费的总时间。
+
+## 如何阅读解释计划
+
+解释计划是一份报告，它详细描述了Greenplum数据库优化器确定的执行查询要遵循的步骤。计划是一棵节点构成的树，应该从底向上阅读，每一个节点都会将其结果传递给其直接上层节点。每个节点表示计划中的一个步骤，每个节点对应的那一行标识了在该步骤中执行的操作——例如扫描、连接、聚集或者排序操作。节点还标识了用于执行该操作的方法。例如，扫描操作的方法可能是顺序扫描或者索引扫描。而连接操作可以执行哈希连接或者嵌套循环连接。
+
+下面是一个简单查询的解释计划。该查询在存储于每一Segment中的分布表中查找行数。
+
+```sql
+gpacmin=# EXPLAIN SELECT gp_segment_id, count(*) 
+                  FROM contributions 
+                  GROUP BY gp_segment_id;
+                                 QUERY PLAN 
+-------------------------------------------------------------------------------- 
+ Gather Motion 2:1  (slice2; segments: 2)  (cost=0.00..4.44 rows=4 width=16)
+   ->  HashAggregate  (cost=0.00..3.38 rows=4 width=16)
+         Group By: contributions.gp_segment_id
+         ->  Redistribute Motion 2:2  (slice1; segments: 2)  
+                 (cost=0.00..2.12 rows=4 width=8)
+               Hash Key: contributions.gp_segment_id
+               ->  Sequence  (cost=0.00..1.09 rows=4 width=8)
+                     ->  Result  (cost=10.00..100.00 rows=50 width=4)
+                           ->  Function Scan on gp_partition_expansion  
+                                   (cost=10.00..100.00 rows=50 width=4)
+                     ->  Dynamic Table Scan on contributions (partIndex: 0)
+                             (cost=0.00..0.03 rows=4 width=8)
+ Settings:  optimizer=on
+(10 rows)
+```
+
+这个计划有七个节点——Dynamic Table Scan、Function Scan、Result、Sequence、Redistribute Motion、HashAggregate和最后的Gather Motion。每一个节点包含三个代价估计：代价cost（读取的顺序页面）、行数rows以及行宽度width。
+
+代价cost由两部分构成。1.0的代价等于一次顺序磁盘页面读取。估计的第一部分是启动代价，它是得到第一行的代价。第二个不急是总代价，它是得到所有行的代价。
+
+行数rows估计是由计划节点输出的行数。这个数字可能会小于计划节点实际处理或者扫描的行数，它反映了WHERE子句条件的选择度估计。总代价假设所有的行将被检索出来，但并非总是这样（例如，如果用户使用LIMIT子句）。
+
+宽度width估计是计划节点输出的所有列的以字节计的总宽度。
+
+节点中的代价估计包括了其所有子节点的代价，因此计划中最顶层节点（通常是一个Gather Motion）具有对计划总体执行代价的估计。这就是查询规划器想要最小化的数字。
+
+扫描操作符扫描表中的行以寻找一个行的集合。对于不同种类的存储有不同的扫描操作符。它们包括：
+
+- 对表上的Seq Scan — 扫描表中的所有行。
+
+- Append-only Scan — 扫描行存追加优化表。
+
+- Append-only Columnar Scan — 扫描列存追加优化表中的行。
+
+- Index Scan — 遍历一个B-树索引以从表中取得行。
+
+- Bitmap Append-only Row-oriented Scan — 从索引中收集仅追加表中行的指针并且按照磁盘上的位置进行排序。
+
+- Dynamic Table Scan — 使用一个分区选择函数来选择分区。Function Scan节点包含分区选择函数的名称，可以是下列之一：
+
+  - gp_partition_expansion — 选择表中的所有分区。不会有分区被消除。
+  - gp_partition_selection — 基于一个等值表达式选择一个分区。
+  - gp_partition_inversion — 基于一个范围表达式选择分区。
+
+  Function Scan节点将动态选择的分区列表传递给Result节点，该节点又会被传递给Sequence节点。
+
+Join操作符包括下列：
+
+- Hash Join – 从较小的表构建一个哈希表，用连接列作为哈希键。然后扫描较大的表，为连接列计算哈希键并且探索哈希表寻找具有相同哈希键的行。哈希连接通常是Greenplum数据库中最快的连接。解释计划中的Hash Cond标识要被连接的列。
+- Nested Loop – 在较大数据集的行上迭代，在每次迭代时于较小的数据集中扫描行。嵌套循环连接要求广播其中的一个表，这样一个表中的所有行才能与其他表中的所有行进行比较。它在较小的表或者通过使用索引约束的表上执行得不错。它还被用于笛卡尔积和范围连接。在使用Nested Loop连接大型表时会有性能影响。对于包含Nested Loop连接操作符的计划节点，应该验证SQL并且确保结果是想要的结果。设置服务器配置参数enable_nestloop为OFF（默认）能够让优化器更偏爱Hash Join。
+- Merge Join – 排序两个数据集并且将它们合并起来。归并连接对预排序好的数据很快，但是在现实世界中很少见。为了更偏爱Merge Join，可把系统配置参数enable_mergejoin设置为ON。
+
+一些查询计划节点指定移动操作。在处理查询需要时，移动操作在Segment之间移动行。该节点标识执行移动操作使用的方法。Motion操作符包括下列：
+
+- Broadcast motion – 每一个Segment将自己的行发送给所有其他Segment，这样每一个Segment实例都有表的一份完整的本地拷贝。Broadcast motion可能不如Redistribute motion那么好，因此优化器通常只为小型表选择Broadcast motion。对大型表来说，Broadcast motion是不可接受的。在数据没有按照连接键分布的情况下，将把一个表中所需的行动态重分布到另一个Segment。
+- Redistribute motion – 每一个Segment重新哈希数据并且把行发送到对应于哈希键的合适Segment上。
+- Gather motion – 来自所有Segment的结果数据被组装成一个单一的流。对大部分查询计划来说这是最后的操作。
+
+查询计划中出现的其他操作符包括：
+
+- Materialize – 规划器将一个子查询物化一次，这样就不用为顶层行重复该工作。
+- InitPlan – 一个预查询，被用在动态分区消除中，当执行时还不知道规划器需要用来标识要扫描分区的值时，会执行这个预查询。
+- Sort – 为另一个要求排序数据的操作（例如Aggregation或者Merge Join）准备排序数据。
+- Group By – 通过一个或者更多列分组行。
+- Group/Hash Aggregate – 使用哈希聚集行。
+- Append – 串接数据集，例如在整合从分区表中各分区扫描的行时会用到。
+- Filter – 使用来自于一个WHERE子句的条件选择行。
+- Limit – 限制返回的行数。
+
+## 优化Greenplum查询
+
+这个主题描述可以用来在某些情况下提高系统性能的Greenplum数据库特性和编程实践。
+
+为了分析查询计划，首先找出估计代价非常高的计划节点。判断估计的行数和代价是不是和该操作执行的行数相关。
+
+如果使用分区，验证是否实现了分区消除。要实现分区消除，查询谓词（WHERE子句）必须与分区条件相同。还有，WHERE子句不能包含显式值且不能含有子查询。
+
+审查查询计划树的执行顺序。审查估计的行数。用户想要执行顺序构建在较小的表或者哈希连接结果上并且用较大的表来探查。最优情况下，最大的表被用于最后的连接或者探查以减少传递到树最顶层计划节点的行数。如果分析结果显示构建或探查的执行顺序不是最优的，应确保数据库统计信息为最新。运行ANALYZE将能更新数据库统计信息，进而产生一个最优的查询计划。
+
+查找计算性倾斜的迹象。当Hash Aggregate和Hash Join之类的操作符的执行导致Segment上的不平均执行时，查询执行中会发生计算性倾斜。在一些Segment上会使用比其他更多的CPU和内存，导致非最优的执行。原因可能是在具有低基数或者非一致分布的列上的连接、排序或者聚集。用户可以在查询的EXPLAIN ANALYZE语句中检测计算性倾斜。每个节点包括任一Segment所处理的最大行数以及所有Segment处理的平均行数。如果最大行数远大于平均数，那么至少有一个Segment执行了比其他更多的工作，因此应该怀疑该操作符出现了计算性倾斜。
+
+确定执行Sort或者Aggregate操作的计划节点。Aggregate操作下隐藏的就是一个Sort。如果Sort或者Aggregate操作涉及到大量行，这就是改进查询性能的机会。在需要排序大量行时，HashAggregate操作是比Sor和Aggregate操作更好的操作。通常优化器会因为SQL结构（也就是由于编写SQL的方式）而选择Sort操作。在重写查询时，大部分的Sort操作可以用HashAggregate替换。要更偏爱HashAggregate操作而不是Sort和Aggregate，请确保服务器配置参数enable_groupagg被设置为ON。
+
+当解释计划显示带有大量行的广播移动时，用户应该尝试消除广播移动。一种方法是使用服务器配置参数gp_segments_for_planner来增加这种移动的代价估计，这样优化器会偏向其他可替代的方案。gp_segments_for_planner变量告诉查询规划器在其计算中使用多少主Segment。默认值是零，这会告诉规划器在估算中使用实际的主Segment数量。增加主Segment的数量会增加移动的代价，因此会更加偏向重新分布移动。例如，设置gp_segments_for_planner = 100000会告诉规划器有100,000个Segment。反过来，要影响规划器广播表而不是重新分布它，可以把gp_segments_for_planner设置为一个较低的值，例如2。
+
+### Greenplum分组扩展
+
+Greenplum数据库对GROUP BY子句的聚集扩展可以让一些常见计算在数据库中执行得比在应用或者过程代码中更加高效：
+
+- GROUP BY ROLLUP(*col1*, *col2*, *col3*)
+- GROUP BY CUBE(*col1*, *col2*, *col3*)
+- GROUP BY GROUPING SETS((*col1*, *col2*), (*col1*, *col3*))
+
+ROLLUP分组创建从最详细层次上滚到总计的聚集小计，后面跟着分组列（或者表达式）列表。ROLLUP接收分组列的一个有序列表，计算GROUP BY子句中指定的标准聚集值，然后根据该列表从右至左渐进地创建更高层的小计。最后创建总计。
+
+CUBE分组创建给定分组列（或者表达式）列表所有可能组合的小计。在多维分析术语中，CUBE产生一个数据立方体在指定维度可以被计算的所有小计。
+
+用户可以用GROUPING SETS表达式选择性地指定想要创建的分组集。这允许在多个维度间进行精确的说明而无需计算整个ROLLUP或者CUBE.
+
+这些子句的细节请参考*Greenplum数据库参考指南*。
+
+### 窗口函数
+
+窗口函数在结果集的划分上应用聚集或者排名函数——例如，sum(population) over (partition by city)。窗口函数很强大，因为它们的所有工作都在数据库内完成，它们比通过从数据库中检索细节行并且预处理它们来产生类似结果的前端工具具有性能优势。
+
+- row_number()窗口函数为一个划分中的行产生行号，例如row_number() over (order by id)。
+- 当查询计划表明一个表被多个操作扫描时，用户可以使用窗口函数来降低扫描次数。
+- 经常可以通过使用窗口函数消除自连接。
+
+
+
+# 结束进程
+
+**结束进程两种方式：**
+
+```
+SELECT` `pg_cancel_backend(PID)
+```
+
+取消后台操作，回滚未提交事物 (select);
+
+```
+SELECT` `pg_terminate_backend(PID)
+```
+
+中断session，回滚未提交事物(select、update、delete、drop);
+
+```
+SELECT` `* ``FROM` `pg_stat_activity;
+```
+
+根据datid=10841
+
+```
+SELECT` `pg_terminate_backend (10841);
+```
+
+**补充：PostgreSQL无法在PL / pgSQL中开始/结束事务**
+
+# 常见问题
+
+本文链接：https://blog.csdn.net/q936889811/article/details/85612046
+
+​        文章目录
+
+1、错误：数据库初始化：gpinitsystem -c gpconfigs/gpinitsystem_config -h list
+
+2、错误 ：执行检查：gpcheck -f list
+
+3、错误：gpadmin-[CRITICAL]:-gpstate failed. (Reason='Environment Variable MASTER_DATA_DIRECTORY not set!') exiting...
+
+4、错误： Reason='[Errno 12] Cannot allocate memory'
+
+5、ERROR: permission denied: "gp_segment_configuration" is a system catalog
+
+6、错误：FATAL","XX000","could not create shared memory segment: Cannot allocate memory (pg_shmem.c:183)"
+
+7、修改shared_buffer，使无法启动数据库
+
+8、
+
+9、File "/home/gpadmin/greenplum-db/lib/python/gppylib/commands/base.py", line 243, in run
+
+10、ould not create shared memory segment: Invalid argument (pg_shmem.c:136),Failed
+
+11、"failed to acquire resources on one or more segments","connection pointer is NULL
+
+12、
+
+13、VM protect failed to allocate 131080 bytes from system, VM Protect 8098 MB available
+
+14、psql: FATAL: DTM initialization: failure during startup recovery, retry failed, check segment status (cdbtm.c:1602)
+1、错误：数据库初始化：gpinitsystem -c gpconfigs/gpinitsystem_config -h list
+错误提示：
+2018-08-29 16:51:01.338476 CST,,,p21229,th406714176,,,,0,,,seg-999,,,,,"FATAL","XX000","could not create semaphores: No space left on device (pg_sema.c:129)","Failed system call was semget(127, 17, 03600).","This error does *not* mean that you have run out of disk space.
+It occurs when either the system limit for the maximum number of semaphore sets (SEMMNI), or the system wide maximum number of semaphores (SEMMNS), would be exceeded. You need to raise the respective kernel parameter. Alternatively, reduce PostgreSQL's consumption ofsemaphores by reducing its max_connections parameter (currently 753).
+The PostgreSQL documentation contains more information about configuring your system for PostgreSQL.",,,,,,"InternalIpcSemaphoreCreate","pg_sema.c",129,1  0x95661b postgres errstart (elog.c:521)
+
+解决办法：
+[root@bj-ksy-g1-mongos-02 primary]# cat /proc/sys/kernel/sem
+250 32000 32 128
+
+修改kernel.sem为：
+[root@bj-ksy-g1-mongos-02 primary]# cat /etc/sysctl.conf
+kernel.sem = 250 512000 100 2048
+
+12345678910111213
+2、错误 ：执行检查：gpcheck -f list
+错误提示：
+XFS filesystem on device /dev/vdb1 is missing the recommended mount option 'allocsize=16m'
+
+解决办法：
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ cat /etc/fstab
+/dev/vdb1 /opt xfs defaults,allocsize=16348k,inode64,noatime    1 1
+
+1234567
+3、错误：gpadmin-[CRITICAL]:-gpstate failed. (Reason=‘Environment Variable MASTER_DATA_DIRECTORY not set!’) exiting…
+错误提示：
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ gpstop
+20180830:09:11:42:011904 gpstop:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Starting gpstop with args:
+20180830:09:11:42:011904 gpstop:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Gathering information and validating the environment...
+20180830:09:11:42:011904 gpstop:bj-ksy-g1-mongos-01:gpadmin-[CRITICAL]:-gpstop failed. (Reason='Environment Variable MASTER_DATA_DIRECTORY not set!') exiting...
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ gpstop -M fast
+20180830:09:12:07:011962 gpstop:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Starting gpstop with args: -M fast
+20180830:09:12:07:011962 gpstop:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Gathering information and validating the environment...
+20180830:09:12:07:011962 gpstop:bj-ksy-g1-mongos-01:gpadmin-[CRITICAL]:-gpstop failed. (Reason='Environment Variable MASTER_DATA_DIRECTORY not set!') exiting...
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ gpstate
+20180830:09:13:03:012093 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Starting gpstate with args:
+20180830:09:13:03:012093 gpstate:bj-ksy-g1-mongos-01:gpadmin-[CRITICAL]:-gpstate failed. (Reason='Environment Variable MASTER_DATA_DIRECTORY not set!') exiting...
+1234567891011
+解决方法：
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ vim ~/.bashrc
+添加：
+MASTER_DATA_DIRECTORY=/opt/data/master/gpseg-1
+export MASTER_DATA_DIRECTORY
+1234
+4、错误： Reason=’[Errno 12] Cannot allocate memory’
+
+gpstart、gpstate、gpstop操作会报同样的错误
+
+错误提示：
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ gpstate -s
+20180830:09:22:01:013309 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Starting gpstate with args: -s
+20180830:09:22:01:013309 gpstate:bj-ksy-g1-mongos-01:gpadmin-[CRITICAL]:-gpstate failed. (Reason='[Errno 12] Cannot allocate memory') exiting...
+123
+解决方法：
+使用root用户
+
+[root@bj-ksy-g1-mongos-01 ~]# swapon -s #查看swap情况
+[root@bj-ksy-g1-mongos-01 ~]# dd if=/dev/zero of=/swapfile bs=1024 count=1024k
+1048576+0 records in
+1048576+0 records out
+1073741824 bytes (1.1 GB) copied, 3.20053 s, 335 MB/s
+[root@bj-ksy-g1-mongos-01 ~]# mkswap /swapfile
+Setting up swapspace version 1, size = 1048572 KiB
+no label, UUID=3e8ef2b3-5d9e-4e04-9718-36caefbfc21d
+[root@bj-ksy-g1-mongos-01 ~]# swapon /swapfile
+swapon: /swapfile: insecure permissions 0644, 0600 suggested.
+
+[root@bj-ksy-g1-mongos-01 ~]#vim /etc/fstab #使swap持久化
+添加：
+/swapfile none swap sw 0 0
+
+进入gpadmin
+验证结果
+[gpadmin@bj-ksy-g1-mongos-01 ~]$ gpstate -s
+20180830:09:34:56:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Starting gpstate with args: -s
+20180830:09:34:56:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 5.4.0 build commit:1971b301f52979ac74fb3d0a141bbaae06b70857'
+20180830:09:34:56:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-master Greenplum Version: 'PostgreSQL 8.3.23 (Greenplum Database 5.4.0 build commit:1971b301f52979ac74fb3d0a141bbaae06b70857) on x86_64-pc-linux-gnu, compiled by GCC gcc (GCC) 6.2.0, 64-bit compiled on Jan 12 2018 21:15:36'
+20180830:09:34:56:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Obtaining Segment details from master...
+20180830:09:34:56:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-Gathering data from segments...
+20180830:09:34:57:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:-----------------------------------------------------
+20180830:09:34:57:015816 gpstate:bj-ksy-g1-mongos-01:gpadmin-[INFO]:--Master Configuration & Status
+123456789101112131415161718192021222324252627
+5、ERROR: permission denied: “gp_segment_configuration” is a system catalog
+错误：
+
+ERROR: permission denied: “gp_segment_configuration” is a system catalog
+
+解决：
+postgres=# delete from gp_segment_configuration where role='m';
+ERROR: permission denied: "gp_segment_configuration" is a system catalog
+postgres=# set allow_system_table_mods='dml';
+SET
+postgres=# delete from gp_segment_configuration where role='m';
+DELETE 9
+postgres=#
+1234567
+6、错误：FATAL",“XX000”,“could not create shared memory segment: Cannot allocate memory (pg_shmem.c:183)”
+2018-10-15 19:45:37.841672 CST,,,p10296,th624441152,,,,0,,,seg-1,,,,,"FATAL","XX000","could not create shared memory segment: Cannot allocate memory (pg_shmem.c:183)","Failed system call was shmget(key=40002001, size=267762784, 03600).","This error usually means that PostgreSQL's request for a shared memory segment exceeded available memory or swap space. To reduce the request size (currently 267762784 bytes), reduce PostgreSQL's shared_buffers parameter (currently 4000) and/or its max_connections parameter (currently 753).
+The PostgreSQL documentation contains more information about shared memory configuration.",,,,,,"InternalIpcMemoryCreate","pg_shmem.c",183,1  0x95661b postgres errstart (elog.c:521)
+2  0x7bc723 postgres <symbol not found> (pg_shmem.c:145)
+3  0x7bc9ba postgres PGSharedMemoryCreate (pg_shmem.c:387)
+4  0x812d69 postgres CreateSharedMemoryAndSemaphores (ipci.c:242)
+5  0x7d47dc postgres PostmasterMain (postmaster.c:3996)
+6  0x4c8af7 postgres main (main.c:206)
+7  0x7f372083ab15 libc.so.6 __libc_start_main + 0xf5
+8  0x4c904c postgres <symbol not found> + 0x4c904c
+
+12345678910
+解决方法：
+使用root用户
+
+[root@bj-ksy-g1-mongos-01 ~]# swapon -s #查看swap情况
+[root@bj-ksy-g1-mongos-01 ~]# dd if=/dev/zero of=/swapfile bs=1024 count=1024k
+1048576+0 records in
+1048576+0 records out
+1073741824 bytes (1.1 GB) copied, 3.20053 s, 335 MB/s
+[root@bj-ksy-g1-mongos-01 ~]# mkswap /swapfile
+Setting up swapspace version 1, size = 1048572 KiB
+no label, UUID=3e8ef2b3-5d9e-4e04-9718-36caefbfc21d
+[root@bj-ksy-g1-mongos-01 ~]# swapon /swapfile
+swapon: /swapfile: insecure permissions 0644, 0600 suggested.
+
+[root@bj-ksy-g1-mongos-01 ~]#vim /etc/fstab #使swap持久化
+添加：
+/swapfile none swap sw 0 0
+12345678910111213141516
+7、修改shared_buffer，使无法启动数据库
+gpconfig -c shared_buffers -v "8192MB"
+greenplum修改shared_buffer，使无法启动数据库。
+原因：kernel.shmmax的值为500000000(476MB),shared_buffer大于476MB时，数据库就无法正常启动。kernel.shmmax参数设置过小。
+
+解决办法：增加kernel.shmmax，最好把此参数设置为总内存的50%。
+
+123456
+8、
+greenplum运行一段时间连接失败，并且pg_stat_activity的连接数没有达到设置的限制。
+net.core.somaxconn=65535
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.core.somaxconn是Linux中的一个kernel参数，表示socket监听（listen）的backlog上限。什么是backlog呢？backlog就是socket的监听队列，当一个请求（request）尚未被处理或建立时，他会进入backlog。而socket server可以一次性处理backlog中的所有请求，处理后的请求不再位于监听队列中。当server处理请求较慢，以至于监听队列被填满后，新来的请求会被拒绝。
+Linux的参数net.core.somaxconn默认值同样为128。当服务端繁忙时，如NameNode或JobTracker，128是远远不够的。这样就需要增大backlog，例如我们的3000台集群就将ipc.server.listen.queue.size设成了32768，为了使得整个参数达到预期效果，同样需要将kernel参数net.core.somaxconn设成一个大于等于32768的值。
+9、File “/home/gpadmin/greenplum-db/lib/python/gppylib/commands/base.py”, line 243, in run
+错误提示：
+gpstate -s
+所有的segment出现故障
+开始停掉greenplum
+gpstop -a
+错误输出：
+'
+20181227:10:18:11:2243549 gpstop:hrdskf-k:gpadmin-[ERROR]:-ExecutionError: 'non-zero rc: 1' occured. Details: 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 hrdskf-k ". /home/gpadmin/greenplum-db/./greenplum_path.sh; $GPHOME/sbin/gpoperation.py"' cmd had rc=1 completed=True halted=False
+ stdout=''
+ stderr='\S
+Kernel \r on an \m
+Warm tips :Authorized for Haier Utility's Uses only. All activity may be monitored and reported.
+If you have any questions,please contact us.
+Mailbox:dts.jxjg@haier.com
+Phone:68066686 / 1000 / 8173
+WARNING: Your password has expired.
+Password change required but no TTY available.
+'
+Traceback (most recent call last):
+ File "/home/gpadmin/greenplum-db/lib/python/gppylib/commands/base.py", line 243, in run
+  self.cmd.run()
+ File "/home/gpadmin/greenplum-db/lib/python/gppylib/operations/__init__.py", line 53, in run
+  self.ret = self.execute()
+ File "/home/gpadmin/greenplum-db/lib/python/gppylib/operations/utils.py", line 48, in execute
+  cmd.run(validateAfter=True)
+ File "/home/gpadmin/greenplum-db/lib/python/gppylib/commands/base.py", line 717, in run
+  self.validate()
+ File "/home/gpadmin/greenplum-db/lib/python/gppylib/commands/base.py", line 764, in validate
+  raise ExecutionError("non-zero rc: %d" % self.results.rc, self)
+ExecutionError: ExecutionError: 'non-zero rc: 1' occured. Details: 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 hrdskf-k ". /home/gpadmin/greenplum-db/./greenplum_path.sh; $GPHOME/sbin/gpoperation.py"' cmd had rc=1 completed=True halted=False
+ stdout=''
+ stderr='\S
+Kernel \r on an \m
+Warm tips :Authorized for Haier Utility's Uses only. All activity may be monitored and reported.
+If you have any questions,please contact us.
+Mailbox:dts.jxjg@haier.com
+Phone:68066686 / 1000 / 8173
+WARNING: Your password has expired.
+Password change required but no TTY available.
+123456789101112131415161718192021222324252627282930313233
+解决思路：
+通过日志分析ssh问题
+1、验证是否可以免密登陆
+2、结果需要重新设置密码
+3、ssh hostname 提示修改密码
+服务器的普通设置，默认有实效时间
+查看并修改密码有效时间
+[root@hrdskf-m ~]# chage -l gpadmin
+Last password change                  : Dec 27, 2018
+Password expires                    : Feb 25, 2019
+Password inactive                    : never
+Account expires                     : never
+Minimum number of days between password change     : 1
+Maximum number of days between password change     : 60
+Number of days of warning before password expires    : 14
+[root@hrdskf-m ~]# chage -l root
+Last password change                  : Dec 24, 2018
+Password expires                    : never
+Password inactive                    : never
+Account expires                     : never
+Minimum number of days between password change     : 0
+Maximum number of days between password change     : 99999
+Number of days of warning before password expires    : 7
+[root@hrdskf-m ~]# chage -M 99999 gpadmin  #此设置永不过期
+[root@hrdskf-m ~]# chage -l gpadmin
+Last password change                  : Dec 27, 2018
+Password expires                    : never
+Password inactive                    : never
+Account expires                     : never
+Minimum number of days between password change     : 1
+Maximum number of days between password change     : 99999
+Number of days of warning before password expires    : 14
+[root@hrdskf-m ~]#
+1234567891011121314151617181920212223242526
+10、ould not create shared memory segment: Invalid argument (pg_shmem.c:136),Failed
+error:"could not create shared memory segment: Invalid argument (pg_shmem.c:136),Failed "
+解决：You will need to reduce the value of the parameter max_connections.
+11、“failed to acquire resources on one or more segments”,"connection pointer is NULL
+错误：2018-11-09 10:08:13.279910 CST,"gpadmin","xn_report",p119553,th-1821042816,"172.23.0.74","16532",2018-11-09 10:08:13 CST,0,con10783,,seg-1,,dx2364872,,sx1,"ERROR","58M01","failed to acquire resources on one or more segments","connection pointer is NULL
+1
+这与Master上的Query Dispatcher（QD）进程有关。它显示连接到主服务器上的postmaster进程的主服务器上的QD进程连接问题。
+可以将参数gp_reject_internal_tcp_connection更改为“off”。此参数的默认值为“on”。此参数用于允许与主服务器的内部TCP连接。理想情况下，应使用UNIX域套接字而不是TCP连接，这就是参数gp_reject_internal_tcp_connection的默认值为“on”的原因。
+此参数是受限制的参数，在设置此参数时，您需要使用“–skipvalidation”值。要设置参数，您需要运行以下命令：
+gpconfig -c gp_reject_internal_tcp_connection -v off --skipvalidation
+注意 - 设置此参数后，需要重新启动数据库。
+https://community.pivotal.io/s/article/Error-Failed-to-acquire-resources-on-one-or-more-segments-in-Pivotal-Greenplum
+12、
+max_connections 数据库服务器的最大并发连接数。在Greenplum系统中，用户客户端连接仅通过Greenplum主实例。段实例应该允许5-10倍的数量。增加此参数时，还必须增加max_prepared_transactions。
+max_prepared_transactions：
+设置可以同时处于准备状态的最大事务数。Greenplum在内部使用准备好的事务来确保各个段的数据完整性。该值必须至少与主服务器上的max_connections值一样大。段实例应设置为与主节点相同的值。
+gpconfig -c max_prepared_transactions -v 500
+gpconfig -c max_connections -v 2500 -m 500
+13、VM protect failed to allocate 131080 bytes from system, VM Protect 8098 MB available
+VM protect failed to allocate 131080 bytes from system, VM Protect 8098 MB available
+
+```sh
+gpconfig -c gp_max_plan_size -v "200MB"
+```
+
+1234
+14、psql: FATAL: DTM initialization: failure during startup recovery, retry failed, check segment status (cdbtm.c:1602)
+psql: FATAL: DTM initialization: failure during startup recovery, retry failed, check segment status (cdbtm.c:1602)
+
+12
+数据库启动节点都是up正常状态
+解决办法：
+
+```sh
+GOPTIONS='-c gp_session_role=utility' psql -d postgres
+```
+
+
+
+# failed to acquire resources on one or more segments
+
+11、“failed to acquire resources on one or more segments”,"connection pointer is NULL
+错误：2018-11-09 10:08:13.279910 CST,"gpadmin","xn_report",p119553,th-1821042816,"172.23.0.74","16532",2018-11-09 10:08:13 CST,0,con10783,,seg-1,,dx2364872,,sx1,"ERROR","58M01","failed to acquire resources on one or more segments","connection pointer is NULL
+1
+这与Master上的Query Dispatcher（QD）进程有关。它显示连接到主服务器上的postmaster进程的主服务器上的QD进程连接问题。
+可以将参数gp_reject_internal_tcp_connection更改为“off”。此参数的默认值为“on”。此参数用于允许与主服务器的内部TCP连接。理想情况下，应使用UNIX域套接字而不是TCP连接，这就是参数gp_reject_internal_tcp_connection的默认值为“on”的原因。
+此参数是受限制的参数，在设置此参数时，您需要使用“–skipvalidation”值。要设置参数，您需要运行以下命令：
+gpconfig -c gp_reject_internal_tcp_connection -v off --skipvalidation
+注意 - 设置此参数后，需要重新启动数据库。
+https://community.pivotal.io/s/article/Error-Failed-to-acquire-resources-on-one-or-more-segments-in-Pivotal-Greenplum
+
+
+
+# 重置为默认的方法
+
+gpconfig只能在系统启动的情况下调用，所以如果参数修改不合适，导致系统无法启动时，我们可以用下列方法处理:
+
+- 1、先把master的参数修改成正常的值
+- 2、gpstart -m 仅启动master进入管理模式
+- 3、gpconfig -r <参数> -- 把参数重置成默认值
+- 4、gpstop -a -r -M fast
+
+
+
+
+
+```
+failed to acquire resources on one or more segments,  timeout expired
+```
+
+
+
 # 压力测试
 
 

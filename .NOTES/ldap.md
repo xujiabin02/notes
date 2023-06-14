@@ -12,6 +12,12 @@ cn=许佳宾,ou=member,cn=dpds,dc=asianinfo-data,dc=com
 
  
 
+filter
+
+```sh
+(&(uid=*))
+```
+
 登录
 
 ```

@@ -1,5 +1,15 @@
 
 
+# 查看镜像信息
+
+
+
+```shell
+docker history --format json --no-trunc docker.io/mysql:5.7 
+```
+
+
+
 # image \<none>定期清理
 
 ```sh

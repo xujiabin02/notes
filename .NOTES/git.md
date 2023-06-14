@@ -1,3 +1,14 @@
+# gitlab配置 reload
+
+```sh
+#重载配置文件
+gitlab-ctl reconfigure                               
+#检查是否能够正常获取用户信息
+gitlab-rake gitlab:ldap:check                        
+```
+
+
+
 
 
 # ci/cd ui variable
