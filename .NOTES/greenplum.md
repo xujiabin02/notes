@@ -1,3 +1,207 @@
+# 反常识
+
+单节点情况下,  seqscan 比 index 要快
+
+| 2800W数据 | seqscan | index |
+| --------- | ------- | ----- |
+| count(1)  | 39      | 398   |
+|           | 7       |       |
+|           |         |       |
+
+
+
+# greenplum 物理存储对应
+
+
+
+## 数据目录
+
+greenplum 初始化时指定 segment 数据存储位置，查看 `gpinitsystem_config` 文件，假设内容如下：
+
+```plaintext
+...
+SEG_PREFIX=udwseg
+...
+
+declare -a DATA_DIRECTORY=(/data/primary /data/primary)
+...
+
+declare -a MIRROR_DATA_DIRECTORY=(/data/mirror /data/mirror)
+...
+```
+
+该配置文件指定了 2 个 primay 和 2 个 mirror，primary 的存储位置在 `/data/primary`，mirror 的存储位置在 `/data/mirror`
+
+具体到每个 segment，存储位置在 `/data/primary/udwseg<id>/base`
+
+## database 存储位置
+
+在 `base` 目录中，会按照不同 database 分成不同的子目录，子目录名是 database 的 oid。运行以下 sql 可以查看不同 database 的 oid:
+
+```sql
+select oid, datname from pg_database;
+```
+
+假如有以下结果：
+
+```plaintext
+postgres=# select oid, datname from pg_database;
+   oid   |      datname
+---------+-------------------
+   12025 | postgres
+   16386 | dev
+       1 | template1
+   12024 | template0
+```
+
+则 `dev` database 的数据存储在各个节点的 `/data/[primary|mirror]/udwseg<id>/base/16386` 中
+
+## table 存储文件
+
+table 对应的数据文件在各节点的 `/data/[primary|mirror]/udwseg<id>/base/<db.oid>` 中，文件名是该 table 的 relfilenode
+
+每个文件默认大小 1G，当 table 对应的内容超过 1G 时，对对文件进行切分，对应的文件列表为：
+
+```
+ /data/[primary|mirror]/udwseg/base// /data/[primary|mirror]/udwseg/base//.1 /data/[primary|mirror]/udwseg/base//.2 /data/[primary|mirror]/udwseg/base//.3 ... 
+```
+
+不同 segment 上查询相同的表，relfilenode (可能)不一致，可以在对应的节点上指定 segment 端口登录：
+
+```plaintext
+PGOPTIONS='-c gp_session_role=utility' psql -p 40001
+```
+
+切换到对应的 database, 查询 `dev` database 下的 `products` 表的 relfilenode
+
+```sql
+\c dev
+select oid, relname, relfilenode from pg_class where relname='products';
+ oid | relname | relfilenode ——-+———-+————- 16387 | products | 16384 
+```
+
+## 查看数据占用（检查数据倾斜）
+
+### 数据库数据占用
+
+根据数据库 `oid` 查看数据库占用大小：
+
+```bash
+du -b /data/primary/udwseg*/base/<oid>
+```
+
+查看不同节点下数据库数据占用大小
+
+```bash
+gpssh -f /usr/local/gpdb/conf/nodes -e "du -b /data/primary/udwseg*/base/16386" | grep -v "du -b"
+```
+
+进行统计：
+
+```bash
+gpssh -f /usr/local/gpdb/conf/nodes -e \
+    "du -b /data/primary/udwseg*/base/<oid>" | \
+    grep -v "du -b" | sort | awk -F" " '{ arr[$1] = arr[$1] + $2 ; tot = tot + $2 }; END \
+    { for ( i in arr ) print "Segment node" i, arr[i], "bytes (" arr[i]/(1024**3)" GB)"; \
+    print "Total", tot, "bytes (" tot/(1024**3)" GB)" }' -
+```
+
+### 表数据占用
+
+运行以下命令，替换 `db.oid` 和 `relfilenode`，可以统计 `db.oid` 数据库下 `relfilenode` 表文件占用磁盘存储：
+
+```bash
+find /data/primary/udwseg*/base/<db.oid> -name '<relfilenode>*'  | xargs ls -al | awk 'BEGIN {sum=0} {sum+=$5} END {print sum}'
+```
+
+在所有节点上执行：
+
+```shell
+gpssh -f /usr/local/gpdb/conf/nodes
+
+=> find /data/primary/udwseg*/base/16387 -name '24272176*'  | xargs ls -al | awk 'BEGIN {sum=0} {sum+=$5} END {print sum}'
+```
+
+
+
+# 免密登录
+
+这篇文章记录一下使用PostgreSQL的psql客户端免密码登录的几种方法。
+
+## 环境说明
+
+环境设定详细可参看下文：
+
+- https://liumiaocn.blog.csdn.net/article/details/108314226
+
+## 现象
+
+可以看到缺省情况下，是需要通过提示的方式让用户输入密码的。
+
+```none
+liumiaocn:postgres liumiao$ psql -h localhost -p 5432 postgres postgres
+Password for user postgres: 
+psql (12.4)
+Type "help" for help.
+
+postgres=# 
+```
+
+## 方法1：使用环境变量PGPASSWORD
+
+可以通过设定环境变量PGPASSWORD，其中设定为密码，然后export出来之后，psql就会使用此环境变量的值了。
+
+```shell
+liumiaocn:postgres liumiao$ export PGPASSWORD=liumiaocn;psql -h localhost -p 5432 postgres postgres;
+psql (12.4)
+Type "help" for help.
+
+postgres=# 
+```
+
+## 方法2: 客户端个人目录下的.pgpass文件
+
+通过提供客户端个人目录下的.pgpass文件，在此文件中提供相关信息，从而使得psql在执行时能够找到密码不再提示输入，格式信息如下所示：
+
+> 格式信息：主机名或者IP:端口:数据库名:用户名:密码
+
+另外还需要注意权限必须是600，否则也不起作用，因为此密码明文保存，在文件访问时600权限能够保证Owner之外的用户无法查看内容，在操作系统层面上对密码的安全做了一定的控制，算是聊胜于无。如果不满足的话, 是不会起作用的，比如644的权限的情况下：
+
+```sh
+liumiaocn:~ liumiao$ ls -l ${HOME}/.pgpass
+-rw-r--r--  1 liumiao  staff  43 Aug 31 07:20 /Users/liumiao/.pgpass
+liumiaocn:~ liumiao$ cat ${HOME}/.pgpass
+localhost:5432:postgres:postgres:liumiaocn
+liumiaocn:~ liumiao$ psql -h localhost -p 5432 postgres postgres
+WARNING: password file "/Users/liumiao/.pgpass" has group or world access; permissions should be u=rw (0600) or less
+Password for user postgres: 
+```
+
+
+
+只修改一下权限为600，即可成功
+
+```shell
+liumiaocn:~ liumiao$ chmod 600 ${HOME}/.pgpass
+liumiaocn:~ liumiao$ ls -l ${HOME}/.pgpass
+-rw-------  1 liumiao  staff  43 Aug 31 07:20 /Users/liumiao/.pgpass
+liumiaocn:~ liumiao$ psql -h localhost -p 5432 postgres postgres
+psql (12.4)
+Type "help" for help.
+
+postgres=# 
+```
+
+
+
+
+
+# 部署GP7
+
+https://docs.vmware.com/en/VMware-Tanzu-Greenplum/7/greenplum-database/GUID-install_guide-init_gpdb.html
+
+
+
 # [Greenplum扩容详解](https://www.cnblogs.com/zsql/p/14602563.html)
 
 ------
@@ -978,13 +1182,13 @@ CUBE分组创建给定分组列（或者表达式）列表所有可能组合的�
 **结束进程两种方式：**
 
 ```
-SELECT` `pg_cancel_backend(PID)
+SELECT pg_cancel_backend(PID)
 ```
 
 取消后台操作，回滚未提交事物 (select);
 
 ```
-SELECT` `pg_terminate_backend(PID)
+SELECT pg_terminate_backend(PID)
 ```
 
 中断session，回滚未提交事物(select、update、delete、drop);
@@ -1402,13 +1606,13 @@ host all all 0.0.0.0/0 md5
 
    ```sql
    
-   SELECT pg_cancel_backend(pid);
+   SELECT pg_cancel_backend('pid');
    ```
 
 2. 使用gp_cancel_query函数：该函数类似于pg_cancel_backend函数，但是在 Greenplum 中是更推荐的方法，因为它会检查并取消所有相关的进程，而不仅仅是目标进程。例如：
 
    ```sql
-   
+   select pg_terminate_backend('pid');
    SELECT gp_cancel_query(gp_session_id());
    ```
 

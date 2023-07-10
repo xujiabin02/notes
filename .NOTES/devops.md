@@ -1,3 +1,15 @@
+# nexus
+
+maven
+
+```sh
+mvn -s settings.xml deploy:deploy-file -DgroupId=e-iceblue -DartifactId=spire.xls.free -Dversion=5.1.0 -Dpackaging=jar -Dfile=spire.xls.free-5.1.0.jar -Durl=http://10.1.198.114:8888/repository/3rd/ -DrepositoryId=3rd-nexus
+```
+
+
+
+
+
 
 
 

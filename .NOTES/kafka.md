@@ -1,3 +1,16 @@
+##### group offset  和 auto.offset.reset消费起始位置设置
+
+设置作业从 kafka 消费数据最开始的起始位置，这一部分 Flink 也提供了非常好的封装。在构造好的 FlinkKafkaConsumer 类后面调用如下相应函数，设置合适的起始位置。
+
+- setStartFromGroupOffsets，也是默认的策略，
+  从 group offset 位置读取数据，group offset 指的是 kafka broker
+  端记录的某个 group 的最后一次的消费位置。但是 kafka broker 端没有该 group 信息，或者 group offset 无效的话，
+  将会根据 kafka 的参数”auto.offset.reset”的设置来决定从哪个位置开始消费，”auto.offset.reset” 默认为 largest。。
+- setStartFromEarliest，从 kafka 最早的位置开始读取。
+- setStartFromLatest，从 kafka 最新的位置开始读取。
+- setStartFromTimestamp(long)，从时间戳大于或等于指定时间戳的位置开始读取。Kafka 时戳，是指 kafka 为每条消息增加另一个时戳。该时戳可以表示消息在 proudcer 端生成时的时间、或进入到 kafka broker 时的时间。
+- setStartFromSpecificOffsets，从指定分区的 offset 位置开始读取，如指定的 offsets 中不存某个分区，该分区从 group offset 位置开始读取。此时需要用户给定一个具体的分区、offset 的集合。
+
 
 
 # 命令

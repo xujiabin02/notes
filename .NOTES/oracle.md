@@ -1,5 +1,13 @@
 
 
+
+
+```
+/opt/oracle/admin/orcl/pfile/
+```
+
+
+
 # 启动oracle时ORA-04031错误的一种解决方法
 
 wait(0)
@@ -45,10 +53,11 @@ create spfile from pfile ='/u01/app/oracle/admin/orcl/pfile/init.ora.51120191326
 
 ```sql
 create user yb_oracle identified by yb_oracle;
-alter user yb_oracle identified by Yaxin_2022;
-create user db_admin identified by db_admin;
 grant connect,resource,dba to yb_oracle;
-grant connect,resource,dba to test;
+grant dba to yb_oracle;
+
+改密码
+alter user yb_oracle identified by Yaxin_2022;
 ```
 
 

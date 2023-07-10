@@ -1,3 +1,18 @@
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
+flowchart LR
+  subgraph 分布式数据库
+  G1[(Greenplum)]
+  end
+  markdown["`This **is** _Markdown_`"]
+  newLines["`Line1
+  Line 2
+  Line 3`"]
+  markdown --> newLines
+```
+
+
+
 # Typora页内跳转，真正能用的方法
 
 用Typora写文章时，当一篇文章里的内容很多，我们需要从后面跳到前面去参考之前提到的东西时，我们需要用到页内跳转，所谓页内跳转就是从一篇文章的一个地方跳到该篇文章的另一个地方。

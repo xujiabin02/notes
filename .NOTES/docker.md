@@ -1,4 +1,59 @@
+# 热重启,不影响运行的容器
 
+生产环境 dockerd 内存泄漏？想重启 dockerd 又怕重启容器，影响到线上业务？
+
+别怕！用 docker live-restore, 在重启 dockerd 时，不会重启容器。
+
+配置 docker daemon 参数，编辑文件 /etc/docker/daemon.json，添加如下配置
+
+```json
+{ "live-restore": true }
+```
+
+**示例**
+
+cat /etc/docker/daemon.json 
+
+```json
+{
+  "registry-mirrors": ["http://hub-mirror.c.163.com"],
+  "insecure-registries": ["http://192.168.56.10"],
+  "exec-opts":["native.cgroupdriver=systemd"],
+  "live-restore": true
+}
+
+```
+
+dockerd reload 配置(不会重启 dockerd)
+
+```shell
+kill -SIGHUP $(pidof dockerd) 
+# 给 dockerd 发送 SIGHUP 信号，dockerd 收到信号后会 reload 配置
+```
+
+
+检查是否配置成功
+
+```sh
+docker info | grep -i live
+```
+
+**应该能看到 Live Restore Enabled: true**
+
+
+重启 docker，此时重启 docker 不会重启容器
+
+```
+systemctl restart docker
+```
+
+
+实在是好用，dockerd 有啥问题都可以重启，不用担心重启 dockerd 会影响现有业务了。比如：
+
+升级 docker 版本
+
+> dockerd 内存泄漏。 docker 17.06  之前容易出现这个问题，再也不怕 dockerd 吃掉所有内存又不敢重启了～
+> docker 可以不重启 reload 配置，使用 SIGHUP 信号，就像 nginx -s reload，挺好用的。
 
 # 查看镜像信息
 

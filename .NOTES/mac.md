@@ -1,3 +1,7 @@
+# 蓝牙打不开
+
+"活动监控器" 杀掉blue蓝牙进程,重新打开蓝牙
+
 # Mac用Option键输入特殊符号
 
 [nuqiewuoz](https://www.jianshu.com/u/fb61bb93bc02)关注IP属地: 加州
