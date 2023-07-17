@@ -1,3 +1,16 @@
+
+
+nexus 报超时
+
+```
+HttpHostConnectException: Connect to sonatype-download.global.ssl.fastly.net:443
+```
+
+> ### 解决方法
+>
+> - Capabilities Outreach:Management 连接超时，关闭服务即可
+>   [Server administration and configuration] → [System] → [Capabilities] → [Disable]
+
 # nexus
 
 maven

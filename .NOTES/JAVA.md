@@ -1,6 +1,10 @@
+# 使用NMT和pmap解决JVM资源泄漏问题
+
+https://heapdump.cn/article/2660684
 
 
 
+# GC优化
 
 ```sh
 gc优化
