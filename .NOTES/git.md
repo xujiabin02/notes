@@ -1,3 +1,13 @@
+# git log
+
+https://blog.csdn.net/xhqiang/article/details/82182342
+
+```shell
+ git log --pretty="[%cd | %h ] : %s"
+```
+
+
+
 # gitlab配置 reload
 
 ```sh
