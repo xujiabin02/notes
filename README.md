@@ -44,6 +44,7 @@
 - [oracle](.NOTES/oracle.md)
 - [pex](.NOTES/pex.md)
 - [postgresql](.NOTES/postgresql.md)
+- [psy](.NOTES/psy.md)
 - [pytest](.NOTES/pytest.md)
 - [python学习](.NOTES/python学习.md)
 - [redis](.NOTES/redis.md)
