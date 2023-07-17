@@ -103,6 +103,8 @@ lsmod |grep -i nouveau
 
 关闭nouveau
 
+> sudo vim /etc/modprobe.d/blacklist.conf
+
 ```
 blacklist nouveau
 blacklist lbm-nouveau
