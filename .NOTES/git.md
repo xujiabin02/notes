@@ -6,7 +6,7 @@ https://blog.csdn.net/xhqiang/article/details/82182342
  git log --pretty="[%cd | %h ] : %s"
 ```
 
-
+创建 release note 
 
 # gitlab配置 reload
 
