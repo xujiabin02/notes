@@ -1,3 +1,23 @@
+# 更改root-dir的三种方法
+
+一. daemon.json
+
+```json
+# cat /etc/docker/daemon.json
+{"registry-mirrors": ["https://5e159g9q.mirror.aliyuncs.com"],  "data-root": "/data/docker-data/default"}
+```
+
+二、修改启动配置文件
+
+vim /usr/lib/systemd/system/docker.service
+
+在ExecStart的行尾加上--graph=/data/docker-data/default
+
+PS：这里等同于docker -d --graph=/data/docker-data/default,区别在于这种方式只会临时修改，如果重启 docker daemon,就又会回到默认值
+————————————————
+版权声明：本文为CSDN博主「半生痴狂半生颠」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/lhuang0813/article/details/123005016
+
 # 热重启,不影响运行的容器
 
 生产环境 dockerd 内存泄漏？想重启 dockerd 又怕重启容器，影响到线上业务？

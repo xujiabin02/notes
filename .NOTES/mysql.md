@@ -184,9 +184,11 @@ mysql8
 
 
 ```mysql
+create USER 'dw_rw'@'%' IDENTIFIED BY 'xxxx';
 update user set host='%' where user='root';
 grant all privileges on *.* to 'root'@'%' with grant option;
 flush privileges;
+
 ```
 
 
