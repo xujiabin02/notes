@@ -1,3 +1,89 @@
+
+
+
+
+# Error 802: system not yet initialized
+
+解决nvcc、驱动正常，但GPU无法正常使用问题
+
+容器里使用cuda报错
+
+```shell
+root@13c785a7f060:/workspace/unet3d# python -c "import torch; print(torch.cuda.is_available())"
+/opt/conda/lib/python3.8/site-packages/torch/cuda/__init__.py:52: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 802: system not yet initialized (Triggered internally at  /opt/conda/conda-bld/pytorch_1607370172916/work/c10/cuda/CUDAFunctions.cpp:100.)
+  return torch._C._cuda_getDeviceCount() > 0
+False
+```
+
+
+
+https://blog.csdn.net/ZXF_1991/article/details/129855713
+
+引言
+在使用NVIDIA显卡(V100/A100/A30等)时，需要安装对应的驱动，但是有时还要安装与驱动版本对应的 nvidia-fabricmanager 服务，使 GPU 卡间能够通过NVSwitch互联。
+
+问题
+当报错信息为以下情况时需要安装nvidia-fabricmanager 服务
+
+ubuntu安装nvidia-fabricmanager
+
+
+```sh
+version=470.103.01  #已经安装的驱动版本
+main_version=$(echo $version | awk -F '.' '{print $1}')
+apt-get update
+apt-get -y install nvidia-fabricmanager-${main_version}=${version}-*
+
+```
+
+CentOS 安装nvidia-fabricmanager
+
+
+```sh
+version=470.103.01 #已经安装的驱动版本
+yum -y install yum-utils
+yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
+yum install -y nvidia-fabric-manager-${version}-1
+```
+
+
+查验安装结果
+启动服务
+
+```sh
+sudo systemctl start nvidia-fabricmanager
+```
+
+
+查看状态
+
+```sh
+sudo systemctl status nvidia-fabricmanager
+```
+
+添加开机启动
+
+```sh
+sudo systemctl enable nvidia-fabricmanager
+```
+
+
+
+查看 cuda 
+
+```sh
+python -c "import torch; print(torch.cuda.is_available())"
+python -c "import torch; print(torch.version.cuda)"
+```
+
+
+
+# cuda和驱动版本
+
+https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+
+
+
 # [安装GPU驱动](ubuntu.md)
 
 
