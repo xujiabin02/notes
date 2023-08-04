@@ -1,10 +1,43 @@
+# 并发编程
+
+Go具有内置的并发机制，可以轻松地编写并发程序。关键字`go`用于启动一个新的goroutine。
+
+```go
+func sayHello() {
+    fmt.Println("Hello")
+}
+
+func main() {
+    go sayHello()   // 在新的goroutine中执行sayHello函数
+    fmt.Println("World")
+}
+
+```
+
+
+
+# defer语句
+
+defer语句用于延迟函数的执行，它会在当前函数返回之前执行。
+
+```go
+func main() {
+    defer fmt.Println("World")
+    fmt.Println("Hello")
+}
+// 输出结果:
+// Hello
+// World
+```
+
+
+
 # 指针
 
 指针是存储变量内存地址的变量。可以使用`&`操作符获取变量的地址，使用`*`操作符访问指针指向的值。
 
 ```go
-go
-复制代码var age int = 30
+var age int = 30
 var ptr *int = &age        // 声明一个整数类型的指针变量，并初始化为age的地址
 fmt.Println(*ptr)          // 输出指针所指向的值
 ```
