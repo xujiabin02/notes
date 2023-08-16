@@ -196,6 +196,7 @@ sudo ip addr add 10.49.0.1/24 dev docker0
 sudo ip link set dev docker0 up
 
 sudo ip addr show docker0
+sudo useradd appuser
 
 sudo groupadd docker
 

@@ -1,3 +1,15 @@
+# schema授权
+
+
+
+```shell
+CREATE USER $user WITH PASSWORD '$password';
+GRANT ALL PRIVILEGES ON DATABASE $dbname TO $user;
+GRANT ALL ON schema  $schema to $user;
+```
+
+
+
 PostgreSQL 事务ID回卷问题分析
 
 ![img](.img_postgresql/avatar.jpeg)2023-05-06 17:46:22

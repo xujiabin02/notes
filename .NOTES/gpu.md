@@ -1,3 +1,157 @@
+# deepspeed
+
+https://www.zhihu.com/question/502677083
+
+https://zhuanlan.zhihu.com/p/256236705
+
+https://blog.csdn.net/weixin_43301333/article/details/127237122
+
+https://blog.csdn.net/bqw18744018044/article/details/129848009
+
+```sh
+# 1、conda部署
+sh Anaconda3-2019.10-Linux-x86_64.sh
+# 2、python38创建(记得修改国内镜像)
+conda create deepspeed python38
+# 3、torch安装
+pip3 install torch torchvision torchaudio
+# 4、cuda-tools安装
+sudo apt install nvidia-cuda-toolkit
+# 5、deepspeed安装
+pip install deepspeed
+# 6、requirements安装
+pip install -r requirements.txt
+ds_report
+pip install torch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1
+sudo apt install libaio-dev
+sudo apt-get install build-essential
+pip install Cython  torchsparseattn
+# 7、packing版本过高
+pip install packaging==21.3
+export CUDA_VISIBLE_DEVICES="0,1,2,3"
+# 8、demo运行
+cd /home/appuser/jupyter-notebook/deepspeed/DeepSpeedExamples/training/HelloDeepSpeed/
+# 9. 更新 train_bert.py  458 和 486行中的  mkdir => mkdir(exist_ok=True)
+deepspeed train_bert.py --checkpoint_dir ./experiments
+
+```
+
+
+
+![image-20230814160519055](.img_gpu/image-20230814160519055.png)
+
+# A100开箱
+
+# [服务器大讲堂：超A服务器开箱鉴赏系列之四](https://aijishu.com/a/1060000000329691)
+
+[服务器](https://aijishu.com/t/server)
+
+
+
+在益企研究院“超A服务器”开箱鉴赏系列前面三集中，主角都是2U的CPU服务器，作为本系列的完结篇，今天跟着狒哥一起来看一款支持8个英伟达A100 GPU的服务器，整体规格是4U，还蕴涵了3U和2U的元素，更有“隐藏款”1U双路CPU服务器。
+![截屏2022-06-08 下午12.58.15.png](.img_gpu/bVbxVr.png)
+超微有超多的GPU机型，仅仅H12代A+服务器（A+ Server）产品线中，就已经有六七款不同形态和GPU数量的型号，具有很强的代表性。
+
+这款A+ Server 4124GO-NART支持双路AMD EPYC 7003/7002系列CPU，和8个采用NVLink互联的英伟达（NVIDIA）A100 GPU，面向高性能计算（High Performance Computing，HPC）、AI/深度学习（Deep Learning）等应用。
+
+![截屏2022-06-08 下午3.38.50.png](.img_gpu/bVbxVu.png)
+俗话说“千金易得，一GPU难求”。这里要特别感谢E企研究院的战略合作伙伴联泰集群，提供了配满8个A100 GPU的AS -4124GO-NART+供我们拍摄——看这个“+”号就知道是NART的加强版，具体区别稍后解释。
+
+在上述大数据量的应用场景中，集群里有大量的GPU协同工作（许多节点一起运行单个作业），不仅每个GPU的性能要很强，GPU之间的互连带宽也要尽可能高。体现在服务器设计上，就是对内GPU之间要通过NVLink而不是相对低效的PCIe连接，并采用高性能的NVMe SSD；对外要有足够数量的高性能网卡，支持GPUDirect RDMA，譬如200Gb/s的Mellanox ConnectX-6。
+
+SXM4外形规格的A100 GPU通过英伟达专利的NVLink互联，带宽高达600GB/s，接近PCIe 4.0（x16）的10倍，而且不用去CPU转一圈儿，时延也要短很多。
+
+![截屏2022-06-08 下午3.41.28.png](.img_gpu/bVbxVw.png)
+A100 GPU的数量决定了NVLink组网的拓扑：4个GPU是两两直连，8个GPU则要通过6个NVSwitch。A100 GPU的显存有40GB HBM2和80GB HBM2e两种容量，SXM版本的最大TDP（Thermal Design Power，热设计功耗）分别高达400瓦（W）和500瓦，意味着8个GPU加6个NVSwitch芯片的总功耗可达4千瓦以上，对供电和散热能力的要求已经远超绝大多数CPU服务器。
+
+![截屏2022-06-08 下午3.51.36.png](.img_gpu/bVbxVx.png)
+AS -4124GO-NART由三个功能和外形不同的节点（Node）或者说子系统构成，分别是CPU节点、交换节点和GPU节点。单单GPU子系统就高达3U，深度约700mm，前端（机柜冷通道侧）是4个长宽92mm、深76mm的对旋风扇，分别达到13300RPM和12200RPM的高转速，后面的GPU基板上依次是6个NVSwitch和两行各4个A100 GPU，都安装有高大的散热片，气流先经过NVSwitch的散热片，然后在导流罩的约束下穿过密集排列的GPU散热片，再流过后方的交换节点和电源框排出。
+
+![截屏2022-06-08 下午3.46.06.png](.img_gpu/bVbxVy.png)
+强大的散热设计只是一款专业GPU服务器的必要而非充分条件，作为获得英伟达认证（NVIDIA Certified）的GPU服务器，AS -4124GO-NART遵循了英伟达的以下设计建议：
+
+![截屏2022-06-08 下午3.47.23.png](.img_gpu/bVbxVz.png)
+首先，选择2个最高端的服务器CPU，以匹配8个A100 GPU。在GPU子系统的正上方，就是1U的双路CPU服务器，支持AMD EPYC 7763这样的64核“顶流”CPU。为了在1U的空间内安顿好2个TDP可达280瓦的CPU，超微采用了两大杀手锏：
+
+一是8个4056对旋风扇，转速高达23300RPM/20300RPM（冷/热通道），向CPU吹出强劲气流；
+
+二是大量应用3M出品的扁平线缆，紧贴机箱两侧和底部，尽可能不阻碍气流，保证散热效率。
+
+其次，使用大量的PCIe链接。在2个CPU和8个A100 GPU之间使用至少4个PCIe x16链路，以确保CPU有足够的带宽将命令和数据推送到A100 GPU；
+![截屏2022-06-08 下午3.51.45.png](.img_gpu/bVbxVB.png)
+第三，为了获得最佳的大规模AI训练性能，A100 GPU与网卡（NIC）1:1配比以保证节点之间的网络性能。
+
+![截屏2022-06-08 下午3.52.25.png](.img_gpu/bVbxVA.png)
+使用PCIe交换机连接CPU、GPU、网卡和NVMe（存储），形成浅层且平衡的PCIe树形拓扑，可实现从网卡和NVMe进出A100 GPU的最快点对点传输。AS -4124GO-NART的交换节点位于CPU节点后方，核心是4个PCIe交换芯片，两侧各有4个PCIe 4.0 x16扩展槽，可以安装8个200Gb/s高速网卡，满足对网卡数量和带宽的要求。
+
+在交换节点的右侧边，还有1个来自CPU1的超微AIOM（Advanced I/O Module）卡槽，支持OCP 3.0网卡，提供基本而又灵活的网络连接能力。独立的RJ-45管理网口、VGA接口和2个USB 3.0端口，还有出自CPU2的PCIe 4.0 x16和x8 LP插槽各一，分居CPU节点前面板的两边。
+
+最后，在存储方面，英伟达建议采用GPUDirect Storage，可减少读/写延迟，降低CPU开销，并实现更高的性能。AS -4124GO-NART支持大量的NVMe存储设备，除主板后部2个PCIe 4.0 x4的M.2 2280/22110槽位外，CPU节点前面板中部有6个、交换节点也可选配4个，共可提供10个热插拔2.5英寸U.2盘位。
+
+是时候揭晓AS -4124GO-NART后面的这个“+”号了。服务器后端被分为上下两个2U，上2U是已经介绍过的交换节点，下2U则留给4个大功率供电单元（PSU，简称“电源”）。NART是4个2200瓦铂金（Platinum）级电源3+1冗余，NART+则是4个3000瓦钛金（Titanium）级电源2+2冗余，具有高达96%的转换效率，可以作为NART的升级选项。无论哪种配置，都能保证6千瓦（kW）级别的供电能力，充分发挥8个A100 GPU的强大算力。
+
+![WechatIMG187.jpeg](.img_gpu/bVbxVF.jpeg)
+粗略的看，上面是CPU节点接交换节点，下面是GPU节点接4个大功率电源，结果是AS -4124GO-NART的深度（长度)达到900mm，最好用1.2米的机柜适配。
+
+# ESXI——ESXI 6.7 重置 root 密码
+
+无效的用户名或密码
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16.png)
+
+1、制作 U 盘启动盘，刻录镜像至 U 盘中
+2、插入 U 盘，重启或开机服务器，开机按 del 键进入bios（浪潮系统），修改为 U 盘启动
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144004300.png)
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144015088.png)
+
+3、选择镜像后，选择进入救援模式
+
+
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144029265.png)
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144054481.png)
+
+4、
+选择语言，默认即可，回车直接进入下一步
+键盘类型也默认
+是否启用网络接口，此处不启用选No
+选Continue进入下一步
+此处提示没有找到linux分区，按ok将获得一个shell，从shell退出时系统将自动重启，按ok即可
+如下图选择”Shell Start shell”按ok后进入shell
+
+5、如图键入命令，关键命令如下
+
+```
+mkdir /mnt/sda5
+mount /dev/sda5 /mnt/sda5
+cp /mnt/sda5/state.tgz /tmp
+cd /tmp
+tar xf state.tgz （对state.tgz进行解压，因为state.tgz包含local.tgz，）
+tar xf local.tgz （对local.tgz进行解压，里面包含etc目录）
+```
+
+
+6、编辑etc/shadow，删除root用户第1个冒号与第2个冒号中间的内容（提示：x）
+vi etc/shadow
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144105123.png)
+
+7、执行如下命令，对修改过的文件重新打包。然后在虚拟机光驱设置中取消iso文件挂载，接下来执行exit命令，系统将重启
+
+```
+rm /tmp/state.tgz /tmp/local.tgz
+tar czf local.tgz etc/
+tar czf state.tgz local.tgz
+cp state.tgz /mnt/sda5/
+exit
+```
+
+8、系统重启后，按F2，提示输入密码时直接回车。此时密码为空
+
+![在这里插入图片描述](.img_gpu/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5rC05pm25YWwfg==,size_20,color_FFFFFF,t_70,g_se,x_16-20230810144114478.png)
+
 
 
 # GPU在容器云中的方案及使用

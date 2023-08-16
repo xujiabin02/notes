@@ -1,3 +1,16 @@
+# 关闭Mac的Microsoft AutoUpdate弹框提示
+
+
+
+**方法一：设置权限不可访问**
+
+打开终端
+
+1. cd /Library/Application\ Support/Microsoft/MAU2.0
+2. sudo chmod 000 Microsoft\ AutoUpdate.app
+
+
+
 # 电池
 
 AlDente Pro
