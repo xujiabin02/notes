@@ -26,6 +26,7 @@
 - [hdfs](.NOTES/hdfs.md)
 - [helm](.NOTES/helm.md)
 - [house](.NOTES/house.md)
+- [hudi](.NOTES/hudi.md)
 - [jinja2](.NOTES/jinja2.md)
 - [jira](.NOTES/jira.md)
 - [jumpserver](.NOTES/jumpserver.md)
