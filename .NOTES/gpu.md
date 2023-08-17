@@ -1,3 +1,23 @@
+# torch看版本
+
+docker run 参数
+
+```sh
+docker run --gpus all --ipc=host -ti --rm --runtime=nvidia  pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime /bin/bash
+```
+
+
+
+```sh
+python -c "import torch; print(torch.cuda.is_available())"
+python -c "import torch; print(torch.__version__)"
+python -c "import torch; print(torch.version.cuda)"
+python -c "import torch; print(torch.cuda.device_count())"
+python -c "import torch; print(torch.cuda.current_device())"
+```
+
+
+
 # deepspeed
 
 https://www.zhihu.com/question/502677083
@@ -982,6 +1002,16 @@ sudo apt-get -y install cuda
 
 
 cuda会装 530驱动，要手动卸载装460
+
+
+
+```
+sh cuda_11.8.0_520.61.05_linux.run --driver-skip-check
+```
+
+# 安装cuDNN
+
+在[cuDNN Archive 页面](https://developer.nvidia.com/rdp/cudnn-archive)挑选适合我们CUDA版本的cuDNN
 
 # [安装GPU驱动](ubuntu.md)
 
