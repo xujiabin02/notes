@@ -1,3 +1,21 @@
+# 容器依赖于驱动版本
+
+```sh
+docker run --gpus all --ipc=host -ti --rm --runtime=nvidia -v cv_human_portrait:/cv_human_portrait pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel /bin/bash
+```
+
+
+
+---
+
+```sh
+nvidia-container-cli: requirement error: unsatisfied condition: cuda>=11.7, please update your driver to a newer version
+```
+
+
+
+https://qiankunli.github.io/2021/10/30/pytorch_distributed.html
+
 # torch看版本
 
 docker run 参数
@@ -1001,9 +1019,9 @@ sudo apt-get -y install cuda
 
 
 
-cuda会装 530驱动，要手动卸载装460
+cuda会装 530驱动，要手动卸载装460 [archive](https://developer.nvidia.com/cuda-toolkit-archive)
 
-
+11.8驱动 ,[downlaod](https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu)
 
 ```
 sh cuda_11.8.0_520.61.05_linux.run --driver-skip-check

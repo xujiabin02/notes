@@ -1,3 +1,15 @@
+# 查看容量
+
+```sh
+gpssh -f ~/hosts -e \
+    "du -b /data[1-2]/gp-data/primary*/gpseg*/base/16408/pgsql_tmp/*" | \
+    grep -v "du -b" | sort | awk -F" " '{ arr[$1] = arr[$1] + $2 ; tot = tot + $2 }; END \
+    { for ( i in arr ) print "Segment node" i, arr[i], "bytes (" arr[i]/(1024**3)" GB)"; \
+    print "Total", tot, "bytes (" tot/(1024**3)" GB)" }' -
+```
+
+
+
 # 反常识
 
 单节点情况下,  seqscan 比 index 要快

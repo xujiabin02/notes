@@ -1,3 +1,17 @@
+kubectl config
+
+
+
+```sh
+mkdir -p ~/.kubeconfig
+# vi ~/.kubeconfig
+chmod o-r ~/.kube/config
+chmod g-r ~/.kube/config
+./helm list
+```
+
+
+
 |                                                              |                                                              |                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------- |
 | Jenkins,Artifactory&kubernetes                               |                                                              |                                              |

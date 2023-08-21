@@ -1,5 +1,30 @@
 
 
+# pip源
+
+腾讯
+
+```sh
+pip config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
+pip config set global.trusted-host mirrors.cloud.tencent.com
+```
+
+阿里
+
+```sh
+pip config set global.index-url http://mirrors.aliyun.com/pypi/simple
+pip config set global.trusted-host mirrors.aliyun.com
+```
+
+清华
+
+```shell
+pip config set global.index-url http://pypi.tuna.tsinghua.edu.cn/simple
+pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+```
+
+
+
 # conda源
 
 ```sh

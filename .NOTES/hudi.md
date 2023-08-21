@@ -72,6 +72,7 @@ bin/sql-client.sh embedded -j lib/hudi-flink1.16-bundle-0.13.1.jar shell
 ```sql
 
 set sql-client.execution.result-mode = tableau;
+set execution.type = batch;
 
 CREATE TABLE t1(
   uuid VARCHAR(20) PRIMARY KEY NOT ENFORCED,
