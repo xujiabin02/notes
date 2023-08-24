@@ -47,7 +47,7 @@
 - [postgresql](.NOTES/postgresql.md)
 - [psy](.NOTES/psy.md)
 - [pytest](.NOTES/pytest.md)
-- [python学习](.NOTES/python学习.md)
+- [python](.NOTES/python.md)
 - [redis](.NOTES/redis.md)
 - [regex](.NOTES/regex.md)
 - [ruoyi](.NOTES/ruoyi.md)

@@ -1,3 +1,32 @@
+#  阿里云盘
+
+获取token
+
+```sh
+https://aliyundriver-refresh-token.vercel.app/  
+#扫描二维码
+```
+
+客户端
+
+```
+https://github.com/tickstep/aliyunpan
+```
+
+
+
+# A800 H800
+
+![3058768fa1d40b54d6034da0818b5173b6902a4ece301799284e13ce1acef30c-p-6-c-0](.img_gpu/83922_f9ce418b-6f51-4b53-9eb3-82ca198c109a.png)
+
+
+
+![img](.img_gpu/v2-42c0dc756ee7cbbb5336f1cfc1a78535_b.webp)
+
+
+
+
+
 # 容器依赖于驱动版本
 
 ```sh
@@ -847,15 +876,12 @@ lsmod |grep -i nouveau
 
 关闭nouveau
 
-> sudo vim /etc/modprobe.d/blacklist.conf
+> sudo vi /etc/modprobe.d/blacklist.conf
 
-```
+```sh
+# nouveau
 blacklist nouveau
-blacklist lbm-nouveau
 options nouveau modeset=0
-alias nouveau off
-alias lbm-nouveau off
-
 ```
 
 
