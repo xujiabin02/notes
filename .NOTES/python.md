@@ -1,4 +1,331 @@
+# 软件开发中的原则 - SOLID
 
+函数名代替注释
+
+# 自动化测试
+
+https://developer.aliyun.com/article/835305
+
+# 微软开源最强Python自动化神器Playwright！不用写一行代码！自动生成代码还竟然如此流畅！妈妈再也不用担心我不会写代码了！-阿里云开发者社区
+
+Web3-Basketball,
+
+10 min read
+
+------
+
+版权声明：
+
+本文内容由阿里云实名注册用户自发贡献，版权归原作者所有，阿里云开发者社区不拥有其著作权，亦不承担相应法律责任。具体规则请查看《 [阿里云开发者社区用户服务协议](https://developer.aliyun.com/article/768092)》和 《[阿里云开发者社区知识产权保护指引](https://developer.aliyun.com/article/768093)》。如果您发现本社区中有涉嫌抄袭的内容，填写 [侵权投诉表单](https://yida.alibaba-inc.com/o/right)进行举报，一经查实，本社区将立刻删除涉嫌侵权内容。
+
+**简介：** 微软开源最强Python自动化神器Playwright！不用写一行代码！自动生成代码还竟然如此流畅！妈妈再也不用担心我不会写代码了！
+
+## 安装
+
+```sh
+# 安装playwright库
+pip install playwright
+
+# 安装浏览器驱动文件
+python -m playwright install
+
+#再安装
+playwright install
+```
+
+要求：**python版本3.7+**
+
+使用Playwright无需写一行代码，我们只需手动操作浏览器，它会录制我们的操作，然后自动生成代码脚本。
+
+下面就是录制的命令codegen，仅仅一行。
+
+```
+python -m playwright codegen
+```
+
+codegen的用法可以使用–help查看，如果简单使用就是直接在命令后面加上url链接，如果有其他需要可以添加options。我就把结果粘贴出来：
+
+```
+Usage: npx playwright codegen [options] [url]
+
+open page and generate code for user actions
+
+Options:
+  -o, --output <file name>     saves the generated script to a file
+  --target <language>          language to generate, one of javascript, test, python, python-async, csharp (default: "python")
+  -b, --browser <browserType>  browser to use, one of cr, chromium, ff, firefox, wk, webkit (default: "chromium")
+  --channel <channel>          Chromium distribution channel, "chrome", "chrome-beta", "msedge-dev", etc
+  --color-scheme <scheme>      emulate preferred color scheme, "light" or "dark"
+  --device <deviceName>        emulate device, for example  "iPhone 11"
+  --geolocation <coordinates>  specify geolocation coordinates, for example "37.819722,-122.478611"
+  --ignore-https-errors        ignore https errors
+  --load-storage <filename>    load context storage state from the file, previously saved with --save-storage
+  --lang <language>            specify language / locale, for example "en-GB"
+  --proxy-server <proxy>       specify proxy server, for example "http://myproxy:3128" or "socks5://myproxy:8080"
+  --save-storage <filename>    save context storage state at the end, for later use with --load-storage
+  --timezone <time zone>       time zone to emulate, for example "Europe/Rome"
+  --timeout <timeout>          timeout for Playwright actions in milliseconds (default: "10000")
+  --user-agent <ua string>     specify user agent string
+  --viewport-size <size>       specify browser viewport size in pixels, for example "1280, 720"
+  -h, --help                   display help for command
+
+Examples:
+
+  $ codegen
+  $ codegen --target=python
+  $ codegen -b webkit https://example.com
+```
+
+解释：
+
+-o：将录制的脚本保存到一个文件
+
+–target：规定生成脚本的语言，有JS和[Python](https://so.csdn.net/so/search?from=pc_blog_highlight&q=Python)，java,c#等，默认为Python
+
+-b：指定浏览器驱动
+
+举个例子：
+
+比如，我要在baidu.com搜索，用chromium驱动，将结果保存为my.py的python文件。
+
+```
+python -m playwright codegen --target python -o 'my.py' -b chromium https://www.baidu.com
+```
+
+![1.png](.img_python/1b638a80dd964253b2b7c03b94522757-20230828112010744.png)
+
+这就自动生成文件：
+
+![1.png](.img_python/48fb0e674f6d4209aaa66ffe6dbd9ffc-20230828112010757.png)
+
+现在我还得改个名。大家可以试试。
+
+当你在浏览器继续点击，他会继续更新生成新的代码：
+
+这次我们执行下命令：
+
+```
+python -m playwright codegen --target python -o 'my.py' -b chromium https://www.baidu.comom
+```
+
+点击一下，代码就自动更新：
+
+![1.png](.img_python/536b429f0eb149f7816398a077a1ab9e-20230828112012293.png)
+
+再点击一下，代码还会继续更新：
+
+![1.png](.img_python/bc6dc9a6b399497aa424682a3b26227f-20230828112012622.png)
+
+结束后自动关闭浏览器，保存生成的自动化脚本到py文件如下：
+
+```
+from playwright.sync_api import Playwright, sync_playwright
+
+
+def run(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+
+    # Open new page
+    page = context.new_page()
+
+    # Go to https://www.baidu.com/
+    page.goto("https://www.baidu.com/")
+
+    # Click text=阿里女员工称被侵害 事发饭店回应
+    with page.expect_popup() as popup_info:
+        page.click("text=阿里女员工称被侵害 事发饭店回应")
+    page1 = popup_info.value
+
+    # Click em:has-text("阿里女员工称被侵害 事发饭店回应")
+    with page1.expect_popup() as popup_info:
+        page1.click("em:has-text(\"阿里女员工称被侵害 事发饭店回应\")")
+    page2 = popup_info.value
+
+    # Close page
+    page2.close()
+
+    # Close page
+    page1.close()
+
+    # Close page
+    page.close()
+
+    # ---------------------
+    context.close()
+    browser.close()
+
+
+with sync_playwright() as playwright:
+    run(playwright)
+```
+
+playwright还提供了同步和异步的API接口，这里也有官方文档，如果你英文还可以，可以参考文档：
+
+```
+https://playwright.dev/python/docs/intro/
+```
+
+这里我继续演示一个例子。
+
+我就以访问我的CSDN为例子，我则需要在terminal执行以下命令：
+
+```
+python -m playwright codegen --target python -o 'my.py' -b chromium https://blog.csdn.net/weixin_46211269?spm=1000.2115.3001.5343
+```
+
+回车即可开始神操作！
+
+![1.png](.img_python/fad1e4a5020145f28cc4398b729127ba-20230828112010662.png)
+
+看效果，我多贴几个演示这个动态过程：
+
+![1.png](.img_python/6177164fc5024e0bb3012302474ca614-20230828112014304.png)
+
+我点击了一下一篇文章，代码也跟着自动更新：
+
+![1.png](.img_python/1048c7f4b574484a8f28fb2f414ef52e-20230828112011897.png)
+
+那么我还想再给自己点个赞，似乎被发现了猫腻？那我就用手机扫码登录，因为这是新的浏览器，没有登陆历史，所以这是正常的。
+
+![1.png](.img_python/55b1df1ec5d14b9a85e69ad53cad1b6f-20230828112011598.png)
+
+登陆了，我就给自己点了一个赞，代码也同时更新了我点赞的部分。
+
+手残，点了一下图片，他还是把代码加了一部分来点击照片，下面是‘my.py’新的代码：
+
+```
+from playwright.sync_api import Playwright, sync_playwright
+
+
+def run(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+
+    # Open new page
+    page = context.new_page()
+
+    # Go to https://blog.csdn.net/weixin_46211269?spm=1000.2115.3001.5343
+    page.goto("https://blog.csdn.net/weixin_46211269?spm=1000.2115.3001.5343")
+
+    # Click text=Django3.0入门教程:文章发布系统
+    with page.expect_popup() as popup_info:
+        page.click("text=Django3.0入门教程:文章发布系统")
+    page1 = popup_info.value
+
+    # Click #is-like-img
+    page1.click("#is-like-img")
+
+    # Click text=CSDN App扫码
+    page1.frame(name="passport_iframe").click("text=CSDN App扫码")
+
+    # Go to https://blog.csdn.net/weixin_46211269/article/details/119553344?spm=1001.2014.3001.5501
+    page1.goto("https://blog.csdn.net/weixin_46211269/article/details/119553344?spm=1001.2014.3001.5501")
+
+    # Click text=0 点赞 >> a
+    page1.click("text=0 点赞 >> a")
+
+    # Click img[alt="在这里插入图片描述"]
+    page1.click("img[alt=\"在这里插入图片描述\"]", button="right")
+
+    # Click text=在model.py复制粘贴以下代码：
+    page1.click("text=在model.py复制粘贴以下代码：")
+
+    # Click .imgViewDom img
+    page1.click(".imgViewDom img")
+
+    # Close page
+    page1.close()
+
+    # Close page
+    page.close()
+
+    # ---------------------
+    context.close()
+    browser.close()
+
+
+with sync_playwright() as playwright:
+    run(playwright)
+```
+
+你可以把文件名引号去掉，用这个代码运行，他则会执行相同的操作。
+
+**那么大家是不是还好奇如何分别使用同步和异步？**
+
+那么问题来了，我先贴个我的群：970353786hhhh继续发车
+
+由于这个生成代码如此之快，万一被发现怎么办？于是我想让他慢一点，比如这个火狐浏览器，使用slow_mo让他慢下来，而不能再用timeout,也不能用time . sleep (5) 来休息，而是可以用page.wait_for_timeout (5000)来代替，headless=False则表示无头模式
+
+```
+firefox.launch(headless=False, slow_mo=50)
+```
+
+直接说哦异步，因为同步我们已经写的太多了，如下就是异步的最简demo
+
+```
+import asyncio
+from playwright.async_api import async_playwright
+
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)
+        await browser.close()
+
+asyncio.run(main())
+```
+
+浏览器环境中也可以用来模拟多页场景涉及到移动设备,权限,语言环境和配色方案.比如：
+
+```
+import asyncio
+from playwright.async_api import async_playwright
+
+async def main():
+    async with async_playwright() as p:
+        iphone_11 = p.devices['iPhone 11 Pro']
+        browser = await p.chromium.launch()
+        context = await browser.new_context(
+            **iphone_11,
+            locale='de-DE',
+            geolocation={ 'longitude': 12.492507, 'latitude': 41.889938 },
+            permissions=['geolocation'],
+            color_scheme='dark',
+        )
+        page = await browser.new_page()
+        await browser.close()
+
+asyncio.run(main())
+```
+
+浏览器中可以有多个页面。 一个 页面 是指一个标签或一个弹出窗口在浏览器中上下文。 它应该被用来导航到url页面内容并与之交互。比如以下代码，这是demo,你得根据你需要的网址进行修改，example.com则为demo
+
+```
+page = await context.new_page()
+
+# Navigate explicitly, similar to entering a URL in the browser.
+await page.goto('http://example.com')
+# Fill an input.
+await page.fill('#search', 'query')
+
+# Navigate implicitly by clicking a link.
+await page.click('#submit')
+# Expect a new url.
+print(page.url)
+
+# Page can navigate from the script - this will be picked up by Playwright.
+# window.location.href = 'https://example.com'
+```
+
+操作实在太多，不再继续演示了，如果你英文可以，可以看看上面的参考文档，这工具也是实在牛逼，爽爆了！
+
+[![img](.img_python/O1CN01BJcIFs1l8XfppF39b_!!6000000004774-2-tps-1482-80.png)](https://developer.aliyun.com/topic/chrome-extension)
+
+相关文章
+
+[分别用python和go语言来实现的风靡一时的2048 游戏，包含完整代码](https://developer.aliyun.com/article/1316830)
+
+@[TOC](目录) 2048 游戏实现主要包括以下几个步骤： 1. 创建一个棋盘，通常使用二维列表表示。 2. 实现棋子的移动规则，左移、右移、上移、下移。 3. 判断游戏是否结束，即棋盘是否已满或者无空位可移动。 4. 实现游戏界面的显示。 # 1、Python实现 下面是一个简单的 Python 实现示例，运行效果如下： ```python import pygame import sys import random # 初始化 pygame pygame.init() # 设置屏幕大小 screen_size = (80
 
 # pip源
 

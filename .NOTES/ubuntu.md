@@ -2,6 +2,16 @@
 
 
 
+# 磁盘读写测试
+
+写入
+
+```
+dd if=/dev/zero of=./test bs=512k count=2048 oflag=direct
+```
+
+
+
 # 磁盘扩容
 
 **注意先删除快照**

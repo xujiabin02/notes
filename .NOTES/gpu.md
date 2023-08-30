@@ -1,3 +1,21 @@
+# [科普](https://github.com/FelixFu520/README/blob/main/envs/pytorch/cuda_gpu.md)
+
+
+
+# GPU和组网方案
+
+https://www.run.ai/guides/multi-gpu/gpu-clusters
+
+A100/H100系列、AMD MI200/300系列受美国禁令影响,只有二手,  A800和H800是中国特供, 代价是跟A100/H100相比带宽降到400(原600)GB/S,价格更贵
+
+| ib网络                                                | nvlink                                                     | vgpu                                                 |
+| ----------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| https://www.nvidia.cn/networking/products/infiniband/ | https://www.nvidia.cn/design-visualization/nvlink-bridges/ | https://www.nvidia.cn/data-center/virtual-solutions/ |
+|                                                       |                                                            |                                                      |
+|                                                       |                                                            |                                                      |
+
+
+
 #  阿里云盘
 
 获取token
