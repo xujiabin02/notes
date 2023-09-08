@@ -34,6 +34,7 @@
 - [jupyter](.NOTES/jupyter.md)
 - [k8s](.NOTES/k8s.md)
 - [kafka](.NOTES/kafka.md)
+- [kettle](.NOTES/kettle.md)
 - [ldap](.NOTES/ldap.md)
 - [mac](.NOTES/mac.md)
 - [markdown](.NOTES/markdown.md)
