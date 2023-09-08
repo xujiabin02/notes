@@ -10,10 +10,6 @@ The designated data directory /var/lib/mysql/ is unusable
 
 
 
-2 . 
-
-1 ) 
-
 
 
 

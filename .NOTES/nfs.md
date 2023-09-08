@@ -1,3 +1,63 @@
+# k8s
+
+https://www.kubernetes.org.cn/4022.html
+
+# ubuntu20
+
+```sh
+sudo apt install nfs-kernel-server
+sudo cat /proc/fs/nfsd/versions
+sudo mount --bind /data/m1/nfs/ /srv/nfs4/data
+```
+
+> /etc/fstab
+>
+> ```sh
+> /opt/backups /srv/nfs4/backups  none   bind   0   0
+> ```
+>
+> 
+
+
+
+> /etc/exports
+>
+> ```sh
+> /srv/nfs4  10.1.0.0/16(rw,sync,no_subtree_check,crossmnt,fsid=0)
+> /srv/nfs4/data 10.1.0.0/16(rw,sync,no_subtree_check,no_root_squash) 
+> ```
+>
+> 第一行包含`fsid=0`定义NFS根目录`/srv/nfs4`。仅允许来自`192.168.33.0/24`子网的客户端对此NFS访问权限。`crossmnt`选项是必需的，它用于共享目录和导出子目录。
+>
+> 第二行显示如何为一个文件系统指定多个导出规则。它导出`/srv/nfs4/backups`目录，只允许`192.168.33.0/24`网段的客户端有读的权限，并且仅允许IP地址是`192.168.33.3`的客户端具有读和写权限。`sync`选项告诉NFS在恢复之前将更改写入磁盘。
+>
+> 最后一行应该是不言自明的了。所有可用选项的更多信息，请在终端中输入`man exports`查看手册。
+>
+> 
+
+保存文件并退出vim编辑器，然后运行命令导出目录`sudo exportfs -ra`。
+
+```sh
+sudo exportfs -ra
+```
+
+k8s的子节点上需要安装nfs client
+
+```sh
+mount -t nfs -o vers=4 10.1.198.115:/data /data/nfs
+mount.nfs4  10.1.198.115:/data/demo /data/nfs
+```
+
+
+
+# centos nfs client
+
+```
+sudo yum install nfs-utils -y
+```
+
+
+
 # 开机启动
 
 ## rc.local 

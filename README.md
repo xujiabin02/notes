@@ -2,6 +2,7 @@
 - [JAVA](.NOTES/JAVA.md)
 - [Sentinel](.NOTES/Sentinel.md)
 - [airflow](.NOTES/airflow.md)
+- [algo](.NOTES/algo.md)
 - [ansible](.NOTES/ansible.md)
 - [arm](.NOTES/arm.md)
 - [centos](.NOTES/centos.md)
@@ -89,4 +90,3 @@
 - [组件运维](.NOTES/组件运维.md)
 - [代码大全2学习](.NOTES/代码大全2学习.md)
 - [分布式配置管理](.NOTES/分布式配置管理.md)
-- [数据结构与算法](.NOTES/数据结构与算法.md)

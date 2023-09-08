@@ -1,3 +1,77 @@
+# configmap
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "datamp.frontend.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "datamp.frontend.labels" . | nindent 4 }}
+data:
+  data-mp.conf: |-
+    {{ range .Files.Lines "data-mp.conf" }}
+    {{- . }}
+    {{ end }}
+
+```
+
+
+
+# k8s pullPolicy
+
+```
+
+```
+
+
+
+# volumes
+
+subPath[为文件时](https://www.cnblogs.com/liugp/p/16651760.html)
+
+```
+
+```
+
+
+
+# entrypoint
+
+docker run
+
+```
+--entrypoint /bin/bash
+```
+
+k8s job container spec
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: debian
+    command: ["printenv"]
+    args: ["HOSTNAME", "KUBERNETES_PORT"]
+  restartPolicy: OnFailure
+```
+
+**Note:** The `command` field corresponds to `entrypoint` in some container runtimes.
+
+# storageClass NFS
+
+
+
+# volumeClaimTemplates
+
+
+
 # Charts
 
 
@@ -15,10 +89,12 @@
 
 # kubectl config
 
+[kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/)
 
+[helm](https://github.com/helm/helm/releases)
 
 ```sh
-mkdir -p ~/.kubeconfig
+mkdir -p ~/.kube
 # vi ~/.kubeconfig
 chmod o-r ~/.kube/config
 chmod g-r ~/.kube/config
