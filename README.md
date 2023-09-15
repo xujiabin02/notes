@@ -63,6 +63,7 @@
 - [typora](.NOTES/typora.md)
 - [ubuntu](.NOTES/ubuntu.md)
 - [vim](.NOTES/vim.md)
+- [vmware](.NOTES/vmware.md)
 - [vpn](.NOTES/vpn.md)
 - [vscode](.NOTES/vscode.md)
 - [vue_ts](.NOTES/vue_ts.md)

@@ -1,3 +1,9 @@
+# storageclass
+
+https://zjj2wry.github.io/post/kubes/storage-hostpath-nfs/
+
+
+
 # configmap
 
 ```yaml

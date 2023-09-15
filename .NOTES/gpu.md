@@ -1,3 +1,21 @@
+# GPU虚拟化技术
+
+|                     |                                                              |      |
+| ------------------- | ------------------------------------------------------------ | ---- |
+| vmware passthrough  |                                                              |      |
+| vmware GRID vGPU    | 在工程设计上，GPUManager方案包括三个部分，cuda封装库vcuda、k8s device plugin 插件gpu-manager-daemonset和k8s调度插件gpu-quota-admission。 |      |
+| vCuda (gpu manager) |                                                              |      |
+
+
+
+# chatGLM
+
+https://www.tjsky.net/tutorial/667
+
+https://www.tjsky.net/tutorial/664
+
+
+
 # [科普](https://github.com/FelixFu520/README/blob/main/envs/pytorch/cuda_gpu.md)
 
 

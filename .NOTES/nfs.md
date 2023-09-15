@@ -52,8 +52,9 @@ mount.nfs4  10.1.198.115:/data/demo /data/nfs
 
 # centos nfs client
 
-```
+```sh
 sudo yum install nfs-utils -y
+mount -t nfs4  $IP:/data/demo-datamp /data/nfs
 ```
 
 
