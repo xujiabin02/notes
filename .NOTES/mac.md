@@ -225,6 +225,7 @@ sudo pkill dvc-screen-exe dvc-unisensitive-exe dvc-core-exe dvc-remote-exe
    这时可以查看下,文件夹已经完成删除了,进程也已经终止了,彻底卸载完成.
    ————————————————
    原文链接：https://blog.csdn.net/qq_37510316/article/details/123926516
+5. windows[卸载方法](https://blog.csdn.net/weixin_45094136/article/details/124033508?spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-124033508-blog-118721615.235^v38^pc_relevant_anti_vip&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-124033508-blog-118721615.235^v38^pc_relevant_anti_vip&utm_relevant_index=12) [方法2](https://blog.csdn.net/sinat_43606156/article/details/120583850?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-120583850-blog-124033508.235^v38^pc_relevant_anti_vip&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-120583850-blog-124033508.235^v38^pc_relevant_anti_vip&utm_relevant_index=1)
 
 # 网页版 B 站导致 CPU 占用高的原因分析与解决方案
 
