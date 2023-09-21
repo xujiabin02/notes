@@ -1,7 +1,76 @@
+# unable to calc client keyring client.admin placement PlacementSpec(label='_admin'): Cannot place : No matching hosts for label _admin
+
+```sh
+ceph orch host label add dp01 _admin
+```
+
+
+
+# centos7/8安装
+
+```
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+```
+
+To install ELRepo for RHEL-**9**:
+
+
+
+
+
+```
+yum install https://www.elrepo.org/elrepo-release-9.el9.elrepo.noarch.rpm
+```
+
+To install ELRepo for RHEL-**8**:
+
+
+
+```
+yum install https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+```
+
+To install ELRepo for RHEL-**7**, SL-**7** or CentOS-**7**:
+
+
+
+```
+yum install https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+```
+
+To make use of our mirror system, **please also install yum-plugin-fastestmirror**.
+
+# LVM
+
+```sh
+查看osd fsid
+ceph-volume lvm list
+```
+
+
+
+## 移除方式
+
+当部署异常的时候，可以使用下面的命令删除掉集群信息重新部署
+
+```shell
+ceph orch pause
+ceph fsid
+cephadm rm-cluster --force --zap-osds --fsid <fsid>
+```
+
 # 调整mon数量默认值
 
 ```sh
 ceph orch apply mon 3
+```
+
+# already in use
+
+```sh
+ceph orch rm [service]
+ceph orch apply [service]
 ```
 
 
@@ -77,10 +146,7 @@ ceph osd pool set cephfs_metadata pgp_num 16
 
 # RGW REST API failed request with status code 403 
 
-```sh
-ceph mgr module disable dashboard
-ceph mgr module enable dashboard
-```
+15.2升级到16.2.6解决
 
 # eph版本发行生命周期
 
