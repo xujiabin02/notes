@@ -1,3 +1,11 @@
+# 重建索引
+
+```sh
+sudo mdutil -a -E
+```
+
+
+
 # 关闭Mac的Microsoft AutoUpdate弹框提示
 
 
