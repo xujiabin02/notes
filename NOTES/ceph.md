@@ -1,3 +1,13 @@
+# 概念
+
+|       |                                                              |      |
+| ----- | ------------------------------------------------------------ | ---- |
+| *RGW* | Ceph对象网关，提供了一个兼容S3和Swift的restful API接口。RGW还支持多租户和Openstack的keystone身份验证服务。 |      |
+|       |                                                              |      |
+|       |                                                              |      |
+
+![img](.img_ceph/1cd90748cd554f4438eeaa3796417582.jpeg)
+
 # unable to calc client keyring client.admin placement PlacementSpec(label='_admin'): Cannot place : No matching hosts for label _admin
 
 ```sh
