@@ -1,3 +1,11 @@
+# 国产GPU
+
+https://www.eet-china.com/mp/a230168.html
+
+# 第四范式vgpu开源
+
+https://gitee.com/paradigm4/k8s-device-plugin
+
 # 【大模型训练】RDMA高速网络与集合通讯
 
 ------
