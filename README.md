@@ -56,6 +56,7 @@
 - [redis](NOTES/redis.md)
 - [regex](NOTES/regex.md)
 - [relationship](NOTES/relationship.md)
+- [rights_protect](NOTES/rights_protect.md)
 - [ruoyi](NOTES/ruoyi.md)
 - [security](NOTES/security.md)
 - [selenium](NOTES/selenium.md)

@@ -1,3 +1,13 @@
+# 调研
+
+|                                                              |                                                              |      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ---- |
+| [阿里盘古](https://polarisary.github.io/2018/04/13/pangu/)   |                                                              |      |
+| [百度](https://blog.csdn.net/shudaqi2010/article/details/70766179) |                                                              |      |
+| [网易云音乐](https://mp.weixin.qq.com/s/FZuWNIVPMX8L-w1PxwPZHA) | [github](https://github.com/opencurve/curve/blob/master/README_cn.md) |      |
+
+
+
 # 实践经验
 
 ## 内核BUG导致的ceph IO缓慢
