@@ -1,3 +1,4 @@
+- [Calibre](NOTES/Calibre.md)
 - [CgroupsSystemd](NOTES/CgroupsSystemd.md)
 - [JAVA](NOTES/JAVA.md)
 - [Sentinel](NOTES/Sentinel.md)
@@ -38,6 +39,7 @@
 - [kafka](NOTES/kafka.md)
 - [kettle](NOTES/kettle.md)
 - [ldap](NOTES/ldap.md)
+- [license](NOTES/license.md)
 - [mac](NOTES/mac.md)
 - [markdown](NOTES/markdown.md)
 - [mssql](NOTES/mssql.md)
