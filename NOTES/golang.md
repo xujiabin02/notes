@@ -48,7 +48,7 @@ fmt.Println(*ptr)          // 输出指针所指向的值
 
 ```shell
 go install golang.org/dl/go1.20.5@latest
-go1.20.5 downloado
+go1.20.5 download
 ```
 
 
@@ -60,8 +60,7 @@ go1.20.5 downloado
 去除报错时模块完整路径
 
 ```
-go build -trimpath 
-
+go build -trimpath
 ```
 
 

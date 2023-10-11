@@ -63,6 +63,7 @@
 - [security](NOTES/security.md)
 - [selenium](NOTES/selenium.md)
 - [shell](NOTES/shell.md)
+- [strongMemory](NOTES/strongMemory.md)
 - [sublime](NOTES/sublime.md)
 - [think](NOTES/think.md)
 - [tornado](NOTES/tornado.md)
