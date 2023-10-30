@@ -180,6 +180,8 @@ mysql8
 
 
 ```mysql
+update user set authentication_string='' where user='root';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Yckj@123';
 create USER 'dw_rw'@'%' IDENTIFIED BY 'xxxx';
 update user set host='%' where user='root';
 grant all privileges on *.* to 'root'@'%' with grant option;

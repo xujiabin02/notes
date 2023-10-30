@@ -28,6 +28,10 @@ HttpHostConnectException: Connect to sonatype-download.global.ssl.fastly.net:443
 
 # nexus
 
+清理磁盘
+
+https://www.cnblogs.com/ding2016/p/10726047.html
+
 maven
 
 ```sh
