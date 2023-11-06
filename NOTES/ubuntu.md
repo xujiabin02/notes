@@ -1,3 +1,13 @@
+# 重启
+
+`Failed to start reboot.target`
+
+```
+reboot -f
+```
+
+
+
 # 换国内源
 
 

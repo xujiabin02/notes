@@ -104,6 +104,12 @@ docker history --format json --no-trunc docker.io/mysql:5.7
 
 # timezone/时区
 
+Dockerfile
+
+```dockerfile
+ENV TZ=Asia/Shanghai
+```
+
 
 
 ```sh
@@ -1378,10 +1384,12 @@ Local Volumes   101       1         34.88GB   34.88GB (100%)
 Build Cache     2337      0         107.8GB   107.8GB
 ```
 
-
+# 清理build cache
 
 ```sh
 docker builder prune -f
+# 清理最近10天
+docker builder prune --filter 'until=240h'
 ```
 
 

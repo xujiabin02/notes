@@ -327,6 +327,14 @@ print(page.url)
 
 @[TOC](目录) 2048 游戏实现主要包括以下几个步骤： 1. 创建一个棋盘，通常使用二维列表表示。 2. 实现棋子的移动规则，左移、右移、上移、下移。 3. 判断游戏是否结束，即棋盘是否已满或者无空位可移动。 4. 实现游戏界面的显示。 # 1、Python实现 下面是一个简单的 Python 实现示例，运行效果如下： ```python import pygame import sys import random # 初始化 pygame pygame.init() # 设置屏幕大小 screen_size = (80
 
+# anaconda下载
+
+```
+https://repo.anaconda.com/archive/
+```
+
+
+
 # pip源
 
 腾讯

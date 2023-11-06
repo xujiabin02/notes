@@ -1,3 +1,19 @@
+# cenots7.9 装 gpu驱动
+
+```sh
+yum install -y kernel-devel
+```
+
+
+
+`ERROR: Unable to find the kernel source tree for the currently running kernel. Please make sure you have installed the kernel source files for your kernel and that they are properly configured; on Red Hat Linux systems, for example, be sure you have the 'kernel-source' or 'kernel-devel' RPM installed. If you know the correct kernel source files are installed, you may specify the kernel source path with the '--kernel-source-path' command line optiony`
+
+```shell
+yum install "kernel-devel-uname-r == $(uname -r)"
+```
+
+然后重启
+
 # 国产GPU
 
 https://www.eet-china.com/mp/a230168.html
