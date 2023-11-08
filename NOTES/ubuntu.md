@@ -10,7 +10,7 @@ reboot -f
 
 # 换国内源
 
-
+https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
 
 # 磁盘读写测试
 

@@ -68,6 +68,8 @@ ceph orch host label add dp01 _admin
 
 # centos7/8安装
 
+https://www.koenli.com/ef5921b8.html
+
 ```
 rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 
@@ -100,6 +102,33 @@ yum install https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
 ```
 
 To make use of our mirror system, **please also install yum-plugin-fastestmirror**.
+
+# install
+
+```
+cephadm bootstrap --mon-ip x.x.x.x
+cephadm --image quay.io/ceph/ceph:v17.2.6 bootstrap --mon-ip x.x.x.x
+```
+
+# add device
+
+```
+ceph orch daemon add osd dp01:/dev/sdc
+```
+
+
+
+# rgw
+
+```
+radosgw-admin realm create --rgw-realm=default-realm --default
+radosgw-admin zonegroup create --rgw-zonegroup=default-zonegroup --master --default
+radosgw-admin zone create --rgw-zonegroup=default-zonegroup --rgw-zone=default-zone --master --default
+radosgw-admin period update --rgw-realm=default-realm --commit
+ceph orch apply rgw koenli-rgw default-realm  --placement="3 dp01 dp02 dp03"
+```
+
+https://blog.csdn.net/wxb880114/article/details/130259386
 
 # LVM
 
@@ -156,6 +185,7 @@ https://www.cnblogs.com/varden/p/15965326.html
 ```
 docker pull quay.io/ceph/ceph:v16.2.6
 ceph orch upgrade start --ceph-version 16.2.6
+ceph orch upgrade start --ceph-version 17.2.6 
 ```
 
 
