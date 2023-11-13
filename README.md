@@ -60,6 +60,7 @@
 - [redis](NOTES/redis.md)
 - [regex](NOTES/regex.md)
 - [relationship](NOTES/relationship.md)
+- [report_template](NOTES/report_template.md)
 - [rights_protect](NOTES/rights_protect.md)
 - [ruoyi](NOTES/ruoyi.md)
 - [security](NOTES/security.md)

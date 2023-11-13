@@ -2072,6 +2072,8 @@ https://github.com/OrangeSpatial/documents/blob/main/Ubuntu安装rtx%202080ti%20
 
 https://blog.csdn.net/ziqibit/article/details/129935737
 
+下载页面 https://developer.nvidia.com/cuda-toolkit-archive
+
 ```
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
 sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600

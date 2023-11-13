@@ -130,6 +130,10 @@ ceph orch apply rgw koenli-rgw default-realm  --placement="3 dp01 dp02 dp03"
 
 https://blog.csdn.net/wxb880114/article/details/130259386
 
+# swift
+
+https://zhuanlan.zhihu.com/p/597907220
+
 # LVM
 
 ```sh
@@ -155,11 +159,309 @@ cephadm rm-cluster --force --zap-osds --fsid <fsid>
 ceph orch apply mon 3
 ```
 
+#  运维手册
+
+Ceph Dashboard 使用Prometheus、Grafana和相关工具来存储和可视化有关集群利用率和性能的详细指标。Ceph 用户有三种选择：
+
+1. 让 cephadm 部署和配置这些服务。这是引导新集群时的默认设置，除非使用该 --skip-monitoring-stack 选项。
+2. 手动部署和配置这些服务。对于在其环境中拥有现有 prometheus 服务的用户（以及 Ceph 使用 Rook 在 Kubernetes 中运行的情况），建议使用此方法。
+3. 完全跳过监控堆栈。某些 Ceph 仪表板图表将不可用。
+
+**监控栈由Prometheus、Prometheus 导出器（Prometheus Module、Node exporter）、Prometheus Alert Manager和Grafana 组成。**
+
+> 笔记: Prometheus 的安全模型假定不受信任的用户可以访问 Prometheus HTTP 端点和日志。不受信任的用户可以访问 Prometheus 收集的包含在数据库中的所有（元）数据，以及各种操作和调试信息。但是，Prometheus 的 HTTP API 仅限于只读操作。无法使用 API 更改配置，并且不会公开机密。此外，Prometheus 有一些内置措施来减轻拒绝服务攻击的影响。请参阅Prometheus 的安全模型 https://prometheus.io/docs/operating/security/了解更多详细信息。
+
+## 使用 CEPHADM 部署监控
+
+**cephadm的默认行为是部署一个基本的监控堆栈。**但是，您可能有一个没有监控堆栈的 Ceph 集群，并且您想向其中添加一个监控堆栈。（这里有一些方法可以让您拥有一个没有监控堆栈的 Ceph 集群：您可能在安装集群期间将--skip-monitoring stack选项传递给了cephadm，或者您可能已经将现有集群（没有监控堆栈）转换为cephadm管理。）
+
+要在没有监控的 Ceph 集群上设置监控，请按照以下步骤操作：
+
+1.在集群的每个节点上部署节点导出器服务。node-exporter 提供主机级别的指标，例如 CPU 和内存利用率：
+
+```mipsasm
+ceph orch apply node-exporter
+```
+
+部署警报管理器：
+
+```mipsasm
+ceph orch apply alertmanager
+```
+
+部署普罗米修斯。一个 Prometheus 实例就足够了，但为了实现高可用性 (HA)，您可能需要部署两个：
+
+```mipsasm
+ceph orch apply prometheus
+```
+
+要么:
+
+```bash
+ceph orch apply prometheus --placement 'count:2'
+```
+
+部署 grafana：
+
+```mipsasm
+ceph orch apply grafana
+```
+
+## 网络和端口
+
+所有监控服务都可以使用 yaml 服务规范配置它们绑定的网络和端口
+
+示例规范文件：
+
+```yaml
+service_type: grafana
+service_name: grafana
+placement:
+  count: 1
+networks:
+- 192.169.142.0/24
+spec:
+  port: 4200
+```
+
+## 使用自定义镜像
+
+可以基于其他镜像安装或升级监控组件。为此，需要首先将要使用的镜像的名称存储在配置中。以下配置选项可用。
+
+- container_image_prometheus
+- container_image_grafana
+- container_image_alertmanager
+- container_image_node_exporter
+
+可以使用命令ceph config设置自定义镜像：
+
+```bash
+ceph config set mgr mgr/cephadm/<option_name> <value>
+```
+
+例如:
+
+```bash
+ceph config set mgr mgr/cephadm/container_image_prometheus prom/prometheus:v1.4.1
+```
+
+如果已经有正在运行的监视堆栈守护程序的类型与您已更改其镜像的类型相同，则必须重新部署守护程序才能让它们实际使用新镜像。
+
+例如，如果您更改了 prometheus 镜像
+
+```mipsasm
+ceph orch redeploy prometheus
+笔记: 通过设置自定义镜像，默认值将被覆盖（但不会被覆盖）。当更新可用时，默认值会更改。通过设置自定义镜像，您将无法自动更新已设置自定义镜像的组件。您将需要手动更新配置（镜像名称和标签）才能安装更新。
+
+如果您选择使用建议，则可以重置之前设置的自定义镜像。之后，将再次使用默认值。ceph config rm用于重置配置选项:
+
+ceph config rm mgr mgr/cephadm/<option_name>
+
+例如:
+
+ceph config rm mgr mgr/cephadm/container_image_prometheus
+```
+
+## 使用自定义配置文件
+
+通过覆盖 cephadm 模板，可以完全自定义监控服务的配置文件。
+
+在内部，cephadm 已经使用Jinja2模板为所有监控组件生成配置文件。为了能够自定义 Prometheus、Grafana 或 Alertmanager 的配置，可以为每个将用于配置生成的服务存储一个 Jinja2 模板。每次部署或重新配置此类服务时，都会评估此模板。这样，自定义配置将被保留并自动应用于这些服务的未来部署。
+
+> 笔记: 当 cephadm 的默认配置更改时，自定义模板的配置也会保留。如果要使用更新后的配置，则需要在每次升级 Ceph 后手动迁移自定义模板。
+
+### 选项名称
+
+可以覆盖将由 cephadm 生成的文件的以下模板。这些是与 ceph config-key set 一起存储时要使用的名称：
+
+- services/alertmanager/alertmanager.yml
+- services/grafana/ceph-dashboard.yml
+- services/grafana/grafana.ini
+- services/prometheus/prometheus.yml
+
+您可以在以下位置src/pybind/mgr/cephadm/templates查找 cephadm 当前使用的文件模板：
+
+- services/alertmanager/alertmanager.yml.j2
+- services/grafana/ceph-dashboard.yml.j2
+- services/grafana/grafana.ini.j2
+- services/prometheus/prometheus.yml.j2
+
+### 用法
+
+以下命令应用单行值：
+
+```bash
+ceph config-key set mgr/cephadm/<option_name> <value>
+```
+
+要将文件的内容设置为模板，请使用以下-i参数：
+
+```bash
+ceph config-key set mgr/cephadm/<option_name> -i $PWD/<filename>
+```
+
+> 笔记: 当使用文件作为输入时，config-key必须使用文件的绝对路径。
+
+然后需要重新创建服务的配置文件。这是使用reconfig完成的。有关更多详细信息，请参见以下示例。
+
+### 示例
+
+```bash
+# set the contents of ./prometheus.yml.j2 as template
+ceph config-key set mgr/cephadm/services/prometheus/prometheus.yml \
+  -i $PWD/prometheus.yml.j2
+
+# reconfig the prometheus service
+ceph orch reconfig prometheus
+```
+
+## 在没有 CEPHADM 的情况下部署监控
+
+如果您有现有的 prometheus 监控基础架构，或者想自己管理它，则需要对其进行配置以与您的 Ceph 集群集成。
+
+- 在 ceph-mgr 守护进程中启用 prometheus 模块
+
+```bash
+ceph mgr module enable prometheus
+```
+
+默认情况下，ceph-mgr 在每个运行 ceph-mgr 守护进程的主机上的 9283 端口上显示 prometheus 指标。配置 prometheus 来抓取这些。
+
+- 要启用仪表板的基于 prometheus 的警报，请参阅启用 Prometheus 警报。
+- 要启用仪表板与 Grafana 的集成，请参阅启用 Grafana 仪表板的嵌入。
+
+## 禁用监控
+
+要禁用监控并删除支持它的软件，请运行以下命令：
+
+```shell
+$ ceph orch rm grafana
+$ ceph orch rm prometheus --force   # this will delete metrics data collected so far
+$ ceph orch rm node-exporter
+$ ceph orch rm alertmanager
+$ ceph mgr module disable prometheus
+```
+
+另请参阅删除服务。
+
+## 设置 RBD-IMAGE 监控
+
+**由于性能原因，默认情况下禁用 RBD 镜像监控。**有关详细信息，请参阅 Ceph 健康检查。如果禁用，Grafana 中的概述和详细信息仪表板将保持空白，Prometheus 中将看不到指标。
+
+## 设置 GRAFANA
+
+### 手动设置 GRAFANA URL
+
+Cephadm 在所有情况下都会自动配置 Prometheus、Grafana 和 Alertmanager，除了一种。
+
+在某些设置中，Dashboard 用户的浏览器可能无法访问 Ceph Dashboard 中配置的 Grafana URL。当集群和访问用户位于不同的 DNS 区域时，可能会发生这种情况。
+
+如果是这种情况，您可以使用 Ceph Dashboard 的配置选项来设置用户浏览器用于访问 Grafana 的 URL。cephadm 永远不会更改此值。要设置此配置选项，请发出以下命令：
+
+```cpp
+ceph dashboard set-grafana-frontend-api-url <grafana-server-api>
+```
+
+部署服务可能需要一两分钟。部署服务后，您应该在发出ceph orch ls命令时看到如下内容：
+
+```bash
+$ ceph orch ls
+NAME           RUNNING  REFRESHED  IMAGE NAME                                      IMAGE ID        SPEC
+alertmanager       1/1  6s ago     docker.io/prom/alertmanager:latest              0881eb8f169f  present
+crash              2/2  6s ago     docker.io/ceph/daemon-base:latest-master-devel  mix           present
+grafana            1/1  0s ago     docker.io/pcuzner/ceph-grafana-el8:latest       f77afcf0bcf6   absent
+node-exporter      2/2  6s ago     docker.io/prom/node-exporter:latest             e5a616e4b9cf  present
+prometheus         1/1  6s ago     docker.io/prom/prometheus:latest                e935122ab143  present
+```
+
+## 为 GRAFANA 配置 SSL/TLS
+
+cephadm使用 ceph 键/值存储中定义的证书部署 Grafana。如果未指定证书，则在cephadm部署 Grafana 服务期间生成自签名证书。
+
+可以使用以下命令配置自定义证书：
+
+```bash
+ceph config-key set mgr/cephadm/grafana_key -i $PWD/key.pem
+ceph config-key set mgr/cephadm/grafana_crt -i $PWD/certificate.pem
+```
+
+如果您已经部署了 Grafana，请在服务上运行reconfig以更新其配置：
+
+```mipsasm
+ceph orch reconfig grafana
+```
+
+该reconfig命令还为 Ceph Dashboard 设置正确的 URL。
+
+## 设置初始管理员密码
+
+**默认情况下，Grafana 不会创建初始管理员用户。**为了创建管理员用户，请创建一个包含以下内容的grafana.yaml文件：
+
+```yaml
+service_type: grafana
+spec:
+  initial_admin_password: mypassword
+```
+
+然后应用此规范：
+
+```mipsasm
+ceph orch apply -i grafana.yaml
+ceph orch redeploy grafana
+```
+
+Grafana 现在将创建一个使用给定密码调用的管理员用户admin。
+
+## 设置警报管理器
+
+### 添加 ALERTMANAGER WEBHOOK
+
+要将新的 webhook 添加到 Alertmanager 配置中，请添加额外的 webhook url，如下所示：
+
+```makefile
+service_type: alertmanager
+spec:
+  user_data:
+    default_webhook_urls:
+    - "https://foo"
+    - "https://bar"
+```
+
+default_webhook_urls的附加 URL 列表将添加到默认接收器的<webhook_configs>配置。
+
+在服务上运行reconfig以更新其配置：
+
+```mipsasm
+ceph orch reconfig alertmanager
+```
+
 # already in use
 
 ```sh
 ceph orch rm [service]
 ceph orch apply [service]
+```
+
+s3操作
+
+```sh
+# 1、删除S3用户
+radosgw-admin  user rm --uid=rgwuser
+
+# 2、权限调整,允许rgwuser读写users信息：
+radosgw-admin caps add --uid=rgwuser --caps="users=*"
+
+# 3、允许admin读写所有的usage信息
+radosgw-admin caps add --uid=rgwuser --caps="usage=read,write"
+
+# 4、删除swift子用户
+radosgw-admin subuser rm  --subuser=rgwuser:swift
+
+# 5、列出当前系统下所有的bucket信息
+radosgw-admin bucket list
+
+# 6、查看具体某个BUCKET属性
+radosgw-admin bucket stats --bucket=my-first-s3-bucket
 ```
 
 

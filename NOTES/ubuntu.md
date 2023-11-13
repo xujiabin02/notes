@@ -1,3 +1,16 @@
+# apt install 指定版本
+
+```sh
+apt-cache madison [package]
+apt-get install [package]=[version]
+```
+
+将列出所有来源的版本。信息会比上面详细一点，如下输出所示：
+
+```
+apt-cache policy <<package name>>
+```
+
 # 重启
 
 `Failed to start reboot.target`
