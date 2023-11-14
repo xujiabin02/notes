@@ -1798,8 +1798,11 @@ sudo systemctl enable nvidia-fabricmanager
 查看 cuda 
 
 ```sh
-python -c "import torch; print(torch.cuda.is_available())"
-python -c "import torch; print(torch.version.cuda)"
+python3 -c "import torch; print(torch.cuda.is_available())"
+python3 -c "import torch; print(torch.version.cuda)"
+python3 -c "import torch; print(torch.version.cuda)"
+python3 -c "import torch; print(torch.cuda.device_count())"
+python3 -c "import torch; print(torch.cuda.current_device())"
 ```
 
 

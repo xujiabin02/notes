@@ -1,5 +1,6 @@
 - [Calibre](NOTES/Calibre.md)
 - [CgroupsSystemd](NOTES/CgroupsSystemd.md)
+- [HA](NOTES/HA.md)
 - [JAVA](NOTES/JAVA.md)
 - [Sentinel](NOTES/Sentinel.md)
 - [airflow](NOTES/airflow.md)
