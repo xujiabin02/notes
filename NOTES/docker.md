@@ -160,6 +160,8 @@ yum install bridge-utils -y
 sudo brctl addbr docker0
 
 sudo ip addr add 172.17.0.1/24 dev docker0
+sudo ip addr add 172.27.0.1/24 dev docker0
+
 
 # vi /etc/docker/daemon.json
 

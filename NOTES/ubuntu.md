@@ -25,6 +25,51 @@ reboot -f
 
 https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
 
+阿里
+
+```sh
+deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+```
+
+**中科大源**
+
+```
+deb https://mirrors.ustc.edu.cn/ubuntu/ jammy main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy main restricted universe multiverse
+deb https://mirrors.ustc.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse
+deb https://mirrors.ustc.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse
+deb https://mirrors.ustc.edu.cn/ubuntu/ jammy-security main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy-security main restricted universe multiverse
+deb https://mirrors.ustc.edu.cn/ubuntu/ jammy-proposed main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy-proposed main restricted universe multiverse
+```
+
+**网易163源**
+
+```
+deb http://mirrors.163.com/ubuntu/ jammy main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ jammy-security main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ jammy-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ jammy-proposed main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ jammy-backports main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ jammy main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ jammy-security main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ jammy-updates main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ jammy-proposed main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ jammy-backports main restricted universe multiverse
+```
+
 # 磁盘读写测试
 
 写入

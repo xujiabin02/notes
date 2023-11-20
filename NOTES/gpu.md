@@ -10,9 +10,16 @@ yum install -y kernel-devel
 
 ```shell
 yum install "kernel-devel-uname-r == $(uname -r)"
+yum install gcc -y
 ```
 
 然后重启
+
+```
+./NVIDIA-Linux-x86_64-525.60.13.run
+```
+
+
 
 # 国产GPU
 

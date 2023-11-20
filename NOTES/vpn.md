@@ -14,6 +14,12 @@ WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1544', remote='link-
 bash centos-8-vpn.sh
 ```
 
+# EasyRSA-3.0.7.tgz
+
+```
+cp EasyRSA-3.0.7.tgz ~/easy-rsa.tgz
+```
+
 
 
 # Insufficient key material or header text not found in file” error
