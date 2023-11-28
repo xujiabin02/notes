@@ -1,3 +1,18 @@
+# ubuntu20.04密码的问题
+
+/etc/ssh/sshd_config
+
+```sh
+Port 22
+LoginGraceTime 100m
+#PermitRootLogin prohibit-password
+PermitRootLogin yes
+StrictModes yes
+PasswordAuthentication yes
+```
+
+
+
 # apt install 指定版本
 
 ```sh

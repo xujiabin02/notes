@@ -1,6 +1,6 @@
+# 日志收集
 
-
-
+[日志收集](https://doc.ruoyi.vip/ruoyi-cloud/cloud/elk.html#日志收集)
 
 
 

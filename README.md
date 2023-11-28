@@ -18,6 +18,7 @@
 - [devops](NOTES/devops.md)
 - [docker](NOTES/docker.md)
 - [dolphinscheduler](NOTES/dolphinscheduler.md)
+- [elk](NOTES/elk.md)
 - [exsi](NOTES/exsi.md)
 - [flink](NOTES/flink.md)
 - [ftp](NOTES/ftp.md)

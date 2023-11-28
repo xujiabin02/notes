@@ -1,3 +1,18 @@
+# 编辑 Docker 20以上配置文件
+```sh
+sudo vim /etc/docker/daemon.json
+```
+
+加入以下配置项
+
+```json
+{
+    "default-address-pools": [
+      {"base": "10.1.0.0/16", "size": 24}
+    ]
+}
+```
+
 # 更改root-dir的三种方法
 
 一. daemon.json
@@ -161,6 +176,9 @@ sudo brctl addbr docker0
 
 sudo ip addr add 172.17.0.1/24 dev docker0
 sudo ip addr add 172.27.0.1/24 dev docker0
+sudo ip addr add 172.50.0.1/24 dev docker0
+
+
 
 
 # vi /etc/docker/daemon.json
