@@ -45,6 +45,7 @@
 - [kettle](NOTES/kettle.md)
 - [ldap](NOTES/ldap.md)
 - [license](NOTES/license.md)
+- [loki](NOTES/loki.md)
 - [mac](NOTES/mac.md)
 - [markdown](NOTES/markdown.md)
 - [mssql](NOTES/mssql.md)
