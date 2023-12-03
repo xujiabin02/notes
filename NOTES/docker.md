@@ -1,4 +1,17 @@
+# 启动时添加host
+
+```sh
+# 启动时增加hosts，参考自docker docs
+
+docker run -d --name test1 \
+    --add-host test1.a:1.2.3.4 \
+    local/test
+```
+
+
+
 # 编辑 Docker 20以上配置文件
+
 ```sh
 sudo vim /etc/docker/daemon.json
 ```

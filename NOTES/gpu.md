@@ -1014,7 +1014,9 @@ L40S 最大的特点之一是 **time-to-market 时间短**，也就是从订货�
 | ------------------- | ------------------------------------------------------------ | ---- |
 | vmware passthrough  |                                                              |      |
 | vmware GRID vGPU    | 在工程设计上，GPUManager方案包括三个部分，cuda封装库vcuda、k8s device plugin 插件gpu-manager-daemonset和k8s调度插件gpu-quota-admission。 |      |
-| vCuda (gpu manager) |                                                              |      |
+| gpu manager         | https://blog.csdn.net/weixin_46519031/article/details/132212258 |      |
+|                     | https://cloud.tencent.com/developer/article/1685122          |      |
+| vCuda (gpu manager) | https://www.cnblogs.com/deny/p/16305744.html                 |      |
 
 
 

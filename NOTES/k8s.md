@@ -1,5 +1,7 @@
 # storageclass
 
+http://www.lishuai.fun/2021/12/31/k8s-pv-s3/#/安装
+
 https://zjj2wry.github.io/post/kubes/storage-hostpath-nfs/
 
 
