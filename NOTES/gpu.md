@@ -1,3 +1,9 @@
+# 报错systemctl 止住
+
+Failed to get properties: Transport endpoint is not connected
+
+H800 530驱动版本不匹配,升级到535解决
+
 # cenots7.9 装 gpu驱动
 
 ```sh
