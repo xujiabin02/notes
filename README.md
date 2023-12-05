@@ -53,6 +53,7 @@
 - [nextcloud](NOTES/nextcloud.md)
 - [nfs](NOTES/nfs.md)
 - [nginx](NOTES/nginx.md)
+- [nvlink](NOTES/nvlink.md)
 - [omicron](NOTES/omicron.md)
 - [oracle](NOTES/oracle.md)
 - [pex](NOTES/pex.md)
