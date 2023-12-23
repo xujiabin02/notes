@@ -3,6 +3,7 @@
 ```sh
 #可以用这个命令测试磁盘写性能：
 dd if=/dev/zero of=./test bs=512k count=2048 oflag=direct
+sudo dd if=/dev/zero of=/opt/3w.img bs=1M count=30000
 ```
 
 

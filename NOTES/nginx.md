@@ -6,6 +6,17 @@
 |      |      |      |
 |      |      |      |
 
+# websocket
+
+```nginx
+    location /websocket {
+        proxy_pass http://oss;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+}
+```
+
 
 
 # Nginx在URL末尾不加斜杠的重定向
