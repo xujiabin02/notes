@@ -44,6 +44,7 @@
 - [kafka](NOTES/kafka.md)
 - [kettle](NOTES/kettle.md)
 - [ldap](NOTES/ldap.md)
+- [li_ao](NOTES/li_ao.md)
 - [license](NOTES/license.md)
 - [loki](NOTES/loki.md)
 - [mac](NOTES/mac.md)
