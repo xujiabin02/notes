@@ -76,6 +76,7 @@
 - [shell](NOTES/shell.md)
 - [strongMemory](NOTES/strongMemory.md)
 - [sublime](NOTES/sublime.md)
+- [suricata](NOTES/suricata.md)
 - [think](NOTES/think.md)
 - [tornado](NOTES/tornado.md)
 - [typora](NOTES/typora.md)
