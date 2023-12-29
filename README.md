@@ -29,6 +29,7 @@
 - [gpu](NOTES/gpu.md)
 - [grafana](NOTES/grafana.md)
 - [greenplum](NOTES/greenplum.md)
+- [grub](NOTES/grub.md)
 - [hadoop](NOTES/hadoop.md)
 - [hbase](NOTES/hbase.md)
 - [hdfs](NOTES/hdfs.md)
