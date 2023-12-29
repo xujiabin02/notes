@@ -1,3 +1,30 @@
+# 禁用内核更新
+
+```shell
+# 禁用内核更新
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+# 恢复内核更新
+sudo apt-mark unhold linux-generic linux-image-generic linux-headers-generic
+
+```
+
+
+
+# resolv问题
+
+vi /etc/systemd/resolv.conf
+
+```
+DNS=223.5.5.5
+```
+
+```shell
+systemctl enable systemd-resolved
+systemctl start systemd-resolved
+```
+
+
+
 # ubuntu20.04密码的问题
 
 /etc/ssh/sshd_config
