@@ -1,3 +1,12 @@
+# 不留痕迹
+
+```sh
+history -r
+unset HISFILE
+```
+
+
+
 # 禁用内核更新
 
 ```shell
