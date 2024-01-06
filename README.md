@@ -47,6 +47,7 @@
 - [kettle](NOTES/kettle.md)
 - [kvm](NOTES/kvm.md)
 - [ldap](NOTES/ldap.md)
+- [learn](NOTES/learn.md)
 - [li_ao](NOTES/li_ao.md)
 - [license](NOTES/license.md)
 - [loki](NOTES/loki.md)
