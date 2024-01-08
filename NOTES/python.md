@@ -1,3 +1,11 @@
+# Nuitka编译
+
+- 支持：Python 2.6、2.7、3.3 至 3.7
+
+Nuitka 是一个源到源的 Python 编译器，它采用 Python 代码并将其编译为 C/C++ 源代码或可执行文件。即使计算机上没有运行 Python，也可以使用 Nuitka 开发独立程序。
+
+Nuitka 完全用 Python 编写，允许使用各种 Python 库和扩展模块。Python 编译器可用于 FreeBSD、Linux、macOS X、NetBSD 和 Windows 平台，并根据 Apache 许可证版本 2.0 获得许可。Nuitka 还可以与 Anaconda 一起使用，适合那些喜欢用它来开发涉及数据科学和机器学习的项目的人。
+
 # 软件开发中的原则 - SOLID
 
 函数名代替注释
