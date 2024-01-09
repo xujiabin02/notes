@@ -1,3 +1,4 @@
+- [AIops](NOTES/AIops.md)
 - [Calibre](NOTES/Calibre.md)
 - [CgroupsSystemd](NOTES/CgroupsSystemd.md)
 - [HA](NOTES/HA.md)
