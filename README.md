@@ -58,6 +58,7 @@
 - [mssql](NOTES/mssql.md)
 - [mysql](NOTES/mysql.md)
 - [nextcloud](NOTES/nextcloud.md)
+- [nexus](NOTES/nexus.md)
 - [nfs](NOTES/nfs.md)
 - [nginx](NOTES/nginx.md)
 - [nvlink](NOTES/nvlink.md)
