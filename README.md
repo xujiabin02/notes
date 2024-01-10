@@ -64,6 +64,7 @@
 - [omicron](NOTES/omicron.md)
 - [oracle](NOTES/oracle.md)
 - [pex](NOTES/pex.md)
+- [poem](NOTES/poem.md)
 - [postgresql](NOTES/postgresql.md)
 - [psy](NOTES/psy.md)
 - [pytest](NOTES/pytest.md)
