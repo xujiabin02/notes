@@ -1,3 +1,46 @@
+# 切国内brew源
+
+在国内,使用brew极慢. 因为它需要访问国外的一些服务器.
+
+解决方法是使用国内的镜像站.
+
+- 如果是首次安装:
+
+```text
+curl https://raw.githubusercontent.com/Homebrew/install/master/install.sh  > install-brew.sh
+```
+
+然后,在下载的文件中, 修改BREW_REPO为:
+
+```text
+BREW_REPO="https://mirrors.ustc.edu.cn/brew.git"
+```
+
+最后, 运行:
+
+```text
+HOMEBREW_CORE_GIT_REMOTE=https://mirrors.ustc.edu.cn/homebrew-core.git bash install-brew.sh
+```
+
+
+
+- 如果是已经安装了brew, 可以这样替换镜像站:
+
+```text
+cd "$(brew --repo)"
+git remote set-url origin https://mirrors.ustc.edu.cn/brew.git
+
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+source ~/.bash_profile
+
+cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"
+git remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git
+```
+
+
+
+替换后, 就可以正常使用brew了.
+
 # Mac pkd进程cpu占用率过高卡顿问题解决
 
 
