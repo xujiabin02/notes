@@ -26,6 +26,7 @@
 - [ftp](NOTES/ftp.md)
 - [gettingmoney](NOTES/gettingmoney.md)
 - [git](NOTES/git.md)
+- [gitlab-ci](NOTES/gitlab-ci.md)
 - [golang](NOTES/golang.md)
 - [gpt](NOTES/gpt.md)
 - [gpu](NOTES/gpu.md)
