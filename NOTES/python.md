@@ -96,6 +96,8 @@ Examples:
 
 比如，我要在baidu.com搜索，用chromium驱动，将结果保存为my.py的python文件。
 
+[伪装浏览器头](https://cloud.tencent.com/developer/article/2326417)
+
 ```
 python -m playwright codegen --target python -o 'my.py' -b chromium https://www.baidu.com
 ```

@@ -12,6 +12,7 @@
 - [ceph](NOTES/ceph.md)
 - [clickhouse](NOTES/clickhouse.md)
 - [cloudpods](NOTES/cloudpods.md)
+- [comedy](NOTES/comedy.md)
 - [davinci](NOTES/davinci.md)
 - [db](NOTES/db.md)
 - [debian](NOTES/debian.md)
