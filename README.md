@@ -85,6 +85,7 @@
 - [security](NOTES/security.md)
 - [selenium](NOTES/selenium.md)
 - [shell](NOTES/shell.md)
+- [spark](NOTES/spark.md)
 - [ss](NOTES/ss.md)
 - [strongMemory](NOTES/strongMemory.md)
 - [sublime](NOTES/sublime.md)
