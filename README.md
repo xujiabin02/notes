@@ -21,6 +21,7 @@
 - [docker-compose](NOTES/docker-compose.md)
 - [docker](NOTES/docker.md)
 - [dolphinscheduler](NOTES/dolphinscheduler.md)
+- [dss](NOTES/dss.md)
 - [elk](NOTES/elk.md)
 - [exsi](NOTES/exsi.md)
 - [flink](NOTES/flink.md)
