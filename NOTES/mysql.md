@@ -10,7 +10,7 @@ yum install -y net-tools
 # ERROR 2059 (HY000): Authentication plugin 'caching_sha2_password' cannot be loaded
 
 ```sql
-ALTER USER 'your_username'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'your_password';
+ALTER USER 'your_username'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'your_password';
 FLUSH PRIVILEGES;
 ```
 
