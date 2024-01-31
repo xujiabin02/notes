@@ -43,7 +43,7 @@ rtt min/avg/max/mdev = 54.784/54.932/55.011/0.218 ms
 client
 proto udp
 explicit-exit-notify
-remote 175.102.135.185 60319
+remote x.x.x.x 60319
 dev tun
 resolv-retry infinite
 nobind

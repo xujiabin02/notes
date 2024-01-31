@@ -391,7 +391,7 @@ git push origin :refs/tags/标签名
 
 # gitlab-runner
 
-
+`注意: git版本要升级到2.0+`
 
 ```sh
 curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
