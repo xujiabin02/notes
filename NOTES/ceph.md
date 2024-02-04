@@ -1,3 +1,13 @@
+# 生成链接
+
+```sh
+day=`date -d 'now + 1 year' +%s`
+echo $day
+s3cmd -c .s3cfg-netdisk signurl s3://bucketsystemtest/blob_20240131103514339.png $day
+```
+
+
+
 # nginx
 
 ```nginx
