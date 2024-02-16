@@ -1,3 +1,36 @@
+# class style  和 compostion api
+
+|                      |                                  |      |
+| -------------------- | -------------------------------- | ---- |
+| vue-facing-decorator | <script lang="ts"> 去掉其中setup |      |
+|                      |                                  |      |
+|                      |                                  |      |
+
+# vue-facing-decorator
+
+tsconfig.json启用装饰器
+
+```json
+{
+    "compilerOptions": {
+       "experimentalDecorators": true
+    }
+}
+
+```
+
+  <script lang="ts"> 去掉其中setup 语法糖   
+
+添加@Component装饰器(响应式)
+
+-
+
+组件属性需要在类属性的基础上使用@Prop
+
+-
+
+
+
 # copy json value path
 
 https://github.com/MaloPolese/copy-json-path.git

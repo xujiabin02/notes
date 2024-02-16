@@ -6,6 +6,7 @@
 - [Sentinel](NOTES/Sentinel.md)
 - [airflow](NOTES/airflow.md)
 - [algo](NOTES/algo.md)
+- [amd](NOTES/amd.md)
 - [ansible](NOTES/ansible.md)
 - [arm](NOTES/arm.md)
 - [centos](NOTES/centos.md)
