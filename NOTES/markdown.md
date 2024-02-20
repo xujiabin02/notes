@@ -1,10 +1,19 @@
 # 思维导图
 
-|      |      |      |
-| ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
+|              |               |      |
+| ------------ | ------------- | ---- |
+| 6:00         | 喝水,出发公司 |      |
+| 6:30         | 拉伸,运动     |      |
+| 7:30         | 早饭          |      |
+| 8:00         | 咖啡          |      |
+| 9:00 ~ 18:00 | work          |      |
+| 19:00        | 运动          |      |
+| 20:00        | 看书,娱乐     |      |
+| 22:00        | 洗漱,睡觉     |      |
+
+
+
+
 
 
 
@@ -205,7 +214,6 @@ Final milestone : milestone, m2, 18:14, 2min
 Typora 的渲染效果如下：
 
 ```
-PLAINTEXT
 gantt 
 dateFormat HH:mm
 axisFormat %H:%M
@@ -217,7 +225,17 @@ Final milestone : milestone, m2, 18:14, 2min
 
 Butterfly 的渲染效果如下：
 
-17:5017:5518:0018:0518:1018:15Initial milestonetaska2taska3Final milestone
+```mermaid
+gantt 
+dateFormat HH:mm
+axisFormat %H:%M
+Initial milestone : milestone, m1, 17:49,2min
+taska2 : 10min
+taska3 : 5min 
+Final milestone : milestone, m2, 18:14, 2min
+```
+
+
 
 ### 设置日期 Setting dates
 
