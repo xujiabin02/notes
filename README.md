@@ -42,6 +42,7 @@
 - [helm](NOTES/helm.md)
 - [house](NOTES/house.md)
 - [hudi](NOTES/hudi.md)
+- [humor](NOTES/humor.md)
 - [ipip](NOTES/ipip.md)
 - [iptables](NOTES/iptables.md)
 - [jinja2](NOTES/jinja2.md)
