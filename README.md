@@ -69,6 +69,7 @@
 - [nfs](NOTES/nfs.md)
 - [nginx](NOTES/nginx.md)
 - [node](NOTES/node.md)
+- [nvidia](NOTES/nvidia.md)
 - [nvlink](NOTES/nvlink.md)
 - [omicron](NOTES/omicron.md)
 - [oracle](NOTES/oracle.md)
