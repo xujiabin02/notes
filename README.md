@@ -10,6 +10,7 @@
 - [ansible](NOTES/ansible.md)
 - [arm](NOTES/arm.md)
 - [biren](NOTES/biren.md)
+- [business](NOTES/business.md)
 - [centos](NOTES/centos.md)
 - [ceph](NOTES/ceph.md)
 - [clickhouse](NOTES/clickhouse.md)

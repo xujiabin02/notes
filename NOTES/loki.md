@@ -1,3 +1,14 @@
+# 429 limit 问题
+
+```yml
+limits_config:
+  ingestion_rate_strategy: global
+  ingestion_rate_mb: 60
+  ingestion_burst_size_mb: 85
+```
+
+
+
 # promtail 取springboot日志(参考)
 
 ```yml
