@@ -79,6 +79,7 @@
 - [poem](NOTES/poem.md)
 - [postgresql](NOTES/postgresql.md)
 - [psy](NOTES/psy.md)
+- [pyramid](NOTES/pyramid.md)
 - [pytest](NOTES/pytest.md)
 - [python](NOTES/python.md)
 - [raid](NOTES/raid.md)
