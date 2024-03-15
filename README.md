@@ -110,7 +110,6 @@
 - [vscode](NOTES/vscode.md)
 - [vue_ts](NOTES/vue_ts.md)
 - [wails](NOTES/wails.md)
-- [web_service](NOTES/web_service)
 - [win2016](NOTES/win2016.md)
 - [xar](NOTES/xar.md)
 - [zabbix](NOTES/zabbix.md)
