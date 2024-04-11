@@ -1,4 +1,6 @@
+# aliyun镜像站
 
+https://mirrors.aliyun.com/apache/?spm=a2c6h.25603864.0.0.79d4432aKWqR5B
 
 hive数据同步
 
