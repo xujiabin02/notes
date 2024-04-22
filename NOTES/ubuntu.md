@@ -1,3 +1,19 @@
+# file连接数问题
+
+/etc/sysctl.conf
+
+```shell
+fs.file-max = 100000
+fs.inotify.max_user_watches=524288
+fs.inotify.max_user_instances=512
+```
+
+```shell
+sysctl -p
+```
+
+
+
 # 加固
 
 https://pboyd.io/posts/securing-a-linux-vm/

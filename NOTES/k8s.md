@@ -4,7 +4,7 @@ http://www.lishuai.fun/2021/12/31/k8s-pv-s3/#/安装
 
 https://zjj2wry.github.io/post/kubes/storage-hostpath-nfs/
 
-
+[k8s-s3](https://www.bboy.app/2023/05/11/使用k8s-csi-s3加minio作为你的k8s存储%2f)
 
 # configmap
 
