@@ -1,3 +1,27 @@
+# 清理失败的pods
+
+1. **查看Evicted的Pod**： 使用以下命令列出所有Evicted状态的Pod：
+
+   ```sh
+   kubectl get pods --field-selector=status.phase=Failed
+   ```
+
+2. **删除Evicted的Pod**： 一旦确定了需要清理的Pod，你可以使用 `kubectl delete` 命令删除它们，例如：
+
+   ```sh
+   kubectl delete pod <pod_name>
+   ```
+
+   或者，如果你想删除所有Evicted状态的Pod，你可以使用：
+
+   ```sh
+   kubectl delete pods --field-selector=status.phase=Failed
+   ```
+
+3. **调整资源配置**： 如果你发现Pod频繁Evicted，可能是因为集群资源不足。你可以考虑调整Pod的资源请求和限制，或者调整集群的资源配置，以确保Pod有足够的资源来运行。
+
+4. **排查原因**： 最后，要确保不断出现Evicted的问题得到解决，你可能需要排查造成Pod被终止的具体原因。这可能涉及查看事件、日志以及系统资源使用情况等方面的信息。
+
 # storageclass
 
 http://www.lishuai.fun/2021/12/31/k8s-pv-s3/#/安装
