@@ -1,3 +1,14 @@
+# 子chart
+
+|                                  |      |      |
+| -------------------------------- | ---- | ---- |
+| global                           |      |      |
+| mysubchart.key                   |      |      |
+| 依赖控制enable,tags,import-value |      |      |
+| helm pull会将依赖拉入charts/目录 |      |      |
+
+
+
 # helm chart 编排资源创建顺序_helm资源创建顺序_好记性vs烂笔头的博客-CSDN博客
 
 helm官方文档：https://helm.sh/docs/topics/charts_hooks/

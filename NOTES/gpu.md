@@ -1,3 +1,7 @@
+# gpu虚拟化调研
+
+https://www.ctyun.cn/developer/article/387067895132229
+
 # 报错systemctl 止住
 
 Failed to get properties: Transport endpoint is not connected

@@ -1,3 +1,43 @@
+# [loki](https://dbaplus.cn/news-134-4952-1.html)
+
+```shell
+helm upgrade --install loki-stack ./loki-stack -n loki-stack
+kubectl rollout restart -n loki-stack daemonsets/loki-stack-promtail
+```
+
+
+
+# promtail取k8s
+
+```yaml
+match:
+  # LogQL stream selector.
+  selector: <string>
+
+  # Names the pipeline. When defined, creates an additional label in
+  # the pipeline_duration_seconds histogram, where the value is
+  # concatenated with job_name using an underscore.
+  [pipeline_name: <string>]
+
+  # Nested set of pipeline stages only if the selector
+  # matches the labels of the log entries:
+  stages:
+    - [
+        <docker> |
+        <cri> |
+        <regex>
+        <json> |
+        <template> |
+        <match> |
+        <timestamp> |
+        <output> |
+        <labels> |
+        <metrics>
+      ]
+```
+
+
+
 # 429 limit 问题
 
 ```yml

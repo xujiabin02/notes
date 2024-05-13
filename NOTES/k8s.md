@@ -1,3 +1,11 @@
+# 批量查看image版本
+
+```shell
+kubectl get pods -n <namespace> -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[*].image}{"\n"}'
+```
+
+
+
 # 清理失败的pods
 
 1. **查看Evicted的Pod**： 使用以下命令列出所有Evicted状态的Pod：
