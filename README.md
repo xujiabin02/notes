@@ -79,6 +79,7 @@
 - [nvidia](NOTES/nvidia.md)
 - [nvlink](NOTES/nvlink.md)
 - [omicron](NOTES/omicron.md)
+- [openlens](NOTES/openlens.md)
 - [oracle](NOTES/oracle.md)
 - [pex](NOTES/pex.md)
 - [phi](NOTES/phi.md)

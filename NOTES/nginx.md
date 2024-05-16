@@ -6,6 +6,46 @@
 |                                            |      |      |
 |                                            |      |      |
 
+# 添加http => https
+
+```nginx
+# 定义HTTP服务器，将所有请求重定向到HTTPS
+server {
+    listen 80;
+    server_name your.domain.com; # 替换为你的域名
+
+    return 301 https://$host:443$request_uri; # 将HTTP流量重定向到HTTPS
+}
+
+# 定义HTTPS服务器并配置SSL证书
+server {
+    listen 443 ssl;
+    server_name your.domain.com; # 同样替换为你的域名
+
+    # SSL证书配置
+    ssl_certificate /path/to/your/domainName.pem; # SSL证书文件路径
+    ssl_certificate_key /path/to/your/domainName.key; # SSL私钥文件路径
+
+    # SSL会话参数及其他安全相关设置
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1.2 TLSv1.3; # 使用高版本TLS协议
+    ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH; # 强加密套件
+    ssl_prefer_server_ciphers on;
+
+    # 设置代理到后端服务器
+    location / {
+        proxy_pass http://localhost:8080; # 代理到本地8080端口的服务
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+
+
 # websocket
 
 ```nginx
