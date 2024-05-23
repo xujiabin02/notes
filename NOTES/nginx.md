@@ -1,3 +1,12 @@
+# 不限制上传大小
+
+```nginx
+        client_max_body_size 0;
+        client_body_buffer_size 0;
+```
+
+
+
 # 学习进展
 
 |                                            |      |      |
@@ -7,6 +16,85 @@
 |                                            |      |      |
 
 # 添加http => https
+
+```nginx
+upstream xx {
+    server x.x.x.x:xxxx;
+}
+
+# Specific servers based on host
+server {
+    listen 80;
+    server_name x.x.x.x;
+    access_log /var/log/nginx/aicloud.log main_ext;
+    location / {
+        proxy_pass http://xx;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /ws/ {
+        # 重定向 HTTP 的 /ws 请求到 HTTPS
+        return 301 https://$host$request_uri;
+    }
+}
+server {
+    listen 443 ssl http2;
+    server_name x.x.x.x;
+    access_log /var/log/nginx/aicloud.log main_ext;
+
+    ssl_certificate /etc/nginx/cert/x.x.x.x.pem;
+    ssl_certificate_key /etc/nginx/cert/x.x.x.x.key;
+#    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout 10m;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    location / {
+        proxy_pass http://xx;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /prod-api/resource/websocket {
+        proxy_pass http://xx;  # 后端 WebSocket 服务器地址和端口
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /ws/ {
+        # 处理 WebSocket 请求，重写 URL 去掉 /ws 并添加 /v1/k8s-ws/connect
+        rewrite ^/ws(.*)$ $1 break;
+        proxy_pass http://x.x.x.x:xxxx;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Optional: Handle WebSocket ping/pong
+        proxy_read_timeout 86400;
+    }
+}
+```
+
+
 
 ```nginx
 # 定义HTTP服务器，将所有请求重定向到HTTPS
@@ -48,6 +136,8 @@ server {
 
 # websocket
 
+http
+
 ```nginx
     location /websocket {
         proxy_pass http://oss;
@@ -55,6 +145,41 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
 }
+```
+
+ssl
+
+```nginx
+    location /prod-api/resource/websocket {
+        proxy_pass http://aicloud;  # 后端 WebSocket 服务器地址和端口
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+```
+
+webshell
+
+```nginx
+    location /ws/ {
+        # 处理 WebSocket 请求，重写 URL 去掉 /ws 并添加 /v1/k8s-ws/connect
+        rewrite ^/ws(.*)$ $1 break;
+        proxy_pass http://x.x.x.x:xx;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Optional: Handle WebSocket ping/pong
+        proxy_read_timeout 86400;
+    }
 ```
 
 

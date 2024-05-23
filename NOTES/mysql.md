@@ -1,3 +1,7 @@
+# 数据对比工具
+
+[schemasync](https://github.com/mmatuson/SchemaSync)
+
 # centos7 mysql
 
 ```sh

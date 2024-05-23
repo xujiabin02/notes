@@ -1,3 +1,71 @@
+在Ubuntu 22.04上使用`parted`工具进行磁盘分区可以按照以下步骤进行。请确保你有管理员权限，并备份重要数据以防操作失误导致数据丢失。
+
+1. **安装`parted`工具**（如果未安装）：
+    ```bash
+    sudo apt update
+    sudo apt install parted
+    ```
+
+2. **列出所有磁盘**：
+    ```bash
+    sudo parted -l
+    ```
+    这将列出系统中的所有磁盘及其分区信息。
+
+3. **启动`parted`工具**：
+    ```bash
+    sudo parted /dev/sdX
+    ```
+    替换`/dev/sdX`为你要操作的磁盘名称，例如`/dev/sda`。
+
+4. **创建新的分区表**（可选，如果你想清空磁盘）：
+    ```bash
+    (parted) mklabel gpt
+    ```
+    这里选择`gpt`分区表类型，你也可以选择`msdos`等其他类型。
+
+5. **创建新分区**：
+    ```bash
+    (parted) mkpart primary ext4 0% 50%
+    ```
+    这将在磁盘上创建一个占用前50%空间的主分区，并格式化为`ext4`文件系统。你可以根据需要调整大小和文件系统类型。
+
+6. **查看分区信息**：
+    ```bash
+    (parted) print
+    ```
+    这将显示当前磁盘上的所有分区信息。
+
+7. **退出`parted`工具**：
+    ```bash
+    (parted) quit
+    ```
+
+8. **格式化分区**（如果尚未格式化）：
+    ```bash
+    sudo mkfs.ext4 /dev/sdX1
+    ```
+    替换`/dev/sdX1`为你创建的分区名称。
+
+9. **挂载新分区**：
+    创建挂载点并挂载分区：
+    ```bash
+    sudo mkdir -p /mnt/my_partition
+    sudo mount /dev/sdX1 /mnt/my_partition
+    ```
+
+10. **设置开机自动挂载**：
+    编辑`/etc/fstab`文件：
+    ```bash
+    sudo nano /etc/fstab
+    ```
+    添加以下内容：
+    ```bash
+    /dev/sdX1  /mnt/my_partition  ext4  defaults  0  2
+    ```
+
+以上是使用`parted`在Ubuntu 22.04上进行磁盘分区的基本步骤。请根据实际情况调整具体命令和参数。
+
 # file连接数问题
 
 /etc/sysctl.conf
@@ -49,7 +117,7 @@ DNS=223.5.5.5
 
 ```shell
 systemctl enable systemd-resolved
-systemctl start systemd-resolved
+systemctl restart systemd-resolved
 ```
 
 
