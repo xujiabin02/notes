@@ -1,39 +1,23 @@
 # 大规模集群(监控,报警,日志分析查询)
 
-| 日志文本         | 单元行   | 大小  |
-| ---------------- | -------- | ----- |
-| nginx日志        | 单行     | 283B  |
-| spring cloud日志 | 多行堆栈 | 1~7KB |
-| golang           | 多行     | 1~5KB |
-| syslog,journal   | 单行     | 283B  |
-|                  |          |       |
+![158eafa5daf918e5a60860bf7a3e379c446ba4d1](https://yqfile.alicdn.com/158eafa5daf918e5a60860bf7a3e379c446ba4d1.jpeg)
 
+![AIOps|揭秘海量日志异常检测- 知乎](https://pic3.zhimg.com/80/v2-92d8bd9b3ce9a85ba35b1a8aa7aac4ce_1440w.webp)
 
+![img](https://pic4.zhimg.com/80/v2-5389761cbe8191518bb4aa749d75fbf7_1440w.webp)
 
+**可观测性数据**
 
-
-| 硬件配置 | 壁仞                                                         | A800                                                         |
-| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| CPU：    | 数量 2、主频 2.6GHz、物理核数32C;                            | 2*Intel Xeon Platinum 8358P @2.60GHz 32核                    |
-| 内存：   | 数量 16、类型 DDR4 RDIMM、频率3200MHz、容量32GB=1024GB       | 1024GB                                                       |
-| ;硬盘：  | 数量 2、类型 SSD、转速、容量960GB;数量 4、类型 SSD、转速、容量3.84TB; | 2*SSD 960G+ 1\*7.68T NVME SSD                                |
-| Raid卡： | 数量 1、缓存 2GB、Raid级别RAID 0,RAID 1,RAID 10,RAID 5,RAID 6,RAID 50,RAID 60; | Raid1                                                        |
-| 电源     | 4 * 2000W交流&240V高压直流电源模块(GW-R2-白金-轻载高效);     | 4 * 2000W                                                    |
-| 网卡     | 2 * 1端口100Gb Infiniband HDR/Ethernet适配卡(支持QSFP56光模块);2端口25Gb SFP28光接口MCX631432AN OCP3.0网卡;H3C服务器首次基础安装服务; | 4\*200Gbps IB计算+2\*200Gbps IB存储主备模式预留+2*10Gbps Eth NIC |
-| RDMA     | Roce                                                         | IB                                                           |
-| GPU      | 8 * BR BR104P 32GB GPU模块                                   | 8*Nvidia A800 80G SXM + Nvlink                               |
-
-
-
-## 如何保证报警
+## 如何保证快速预警
 
 - 及时性
 - 有效性
+- 精确送达到人
 - 可统一调度管理, 比如分组, 合并, 过滤, 抑制
 
 ## 如何保证高级查询
 
-- 聚合, 分组, 分布, sla统计, 条件判断, <!--(调用链)-->
+- 聚合, 分组, 分布, sla统计, 条件判断,业务调用链
 
 - 海量存储
 
@@ -51,68 +35,215 @@
 
 ---
 
+## 场景举例
+
+### 监控采集:   agent -> 报警存储
+
+healthy check
+
+- host alive
+- service alive
+
+负载
+
+- cpu
+- mem
+- disk
+- net traffic
+
+自定义 metrics
+
+- trace
+- handle count
+- exception
+- ...
+
+### 日志采集:  agent -> 日志存储
+
+- 堆栈trace
+- 订单跟踪
+- 分析查询
+- ...
+
+# 采集端
+
+### 对比
+
+| 采集agent       | 监控 | 日志                       |
+| --------------- | ---- | -------------------------- |
+| 热数据优先      | 高   | 高                         |
+| 及时性          | 高   | 中(有offset, position保障) |
+| agent带来的负载 | 低   | 随日志大小线性膨胀         |
+
+![image-20240524112045222](monitor.assets/image-20240524112045222.png)
+
+建议保障监控agent的快速通道第一优先级, 
+
+日志agent能做到统一管理(拥塞情况下控制资源占用)
+
+### 思路
+
+日志 -> 特征聚合 -> custom metrics -> 监控预警        (快速通道) 
+
+​         -> 高级查询 -> 挖掘价值 -> 行为分析 -> ...
 
 
-# 方案A ||
 
-在采集端计算, 分布存储,分散上报,统一将metrics上报给中心节点(高可用)
+| log collector/transform 分散压力的方案 | 性能 | 特别的点                                                     | 缺点                                           |
+| -------------------------------------- | ---- | ------------------------------------------------------------ | ---------------------------------------------- |
+| ilogtail                               | 高   | v2支持**采集**metrics,  [ui](https://ilogtail.gitbook.io/ilogtail-docs/benchmark/performance-compare-with-filebeat), [性能](https://ilogtail.gitbook.io/ilogtail-docs/benchmark/performance-compare-with-filebeat) |                                                |
+| promtail                               | 中   | 可以暴露/metrics                                             | 绑定loki,prometheus, 只采集console和log file源 |
+| filebeat(beats家族)                    | 中   | 无                                                           | 缺少 transform能力                             |
+| fluent-bit                             | 中   | 无                                                           |                                                |
+| vector                                 | 中   | 多数据源间transform暴露/metrics                              |                                                |
+
+- daemonset, sidecar, deployment的选择
+
+![image-20240524142050831](monitor.assets/image-20240524142050831.png)
+
+![20230927153626](https://download.flashcat.cloud/ulric/20230927153626.png)
+
+# 存储/查询
+
+
+
+|      | clickhouse                       | tidb                           |
+| ---- | -------------------------------- | ------------------------------ |
+|      | 列存储 Mergetree                 | 行存储                         |
+|      | 实践经验: 非事务型, 适用日志分析 | 实践经验: 事务型赛道,替换mysql |
+|      | olap                             | oltp/HATP                      |
+|      | 查询强悍,update较差              | 适用于数据分析                 |
+
+
+
+## 日志存储的方案
+
+|          | clickhouse | elasticsearch | loki |
+| -------- | ---------- | ------------- | ---- |
+| 水平扩容 | 支持       | 支持          | 较差 |
+| 好用程度 | 还行       | 还行          | 还行 |
+| 全文索引 | 无         | 有            | 无   |
+| 高级查询 | 快         | 慢            | 无   |
+
+
+
+常见日志文本大小
+
+| 日志文本         | 单元行   | 大小  |
+| ---------------- | -------- | ----- |
+| nginx日志        | 单行     | 283B  |
+| spring cloud日志 | 多行堆栈 | 1~7KB |
+| golang/k8s       | 多行     | 1~5KB |
+| syslog,journal   | 单行     | 283B  |
+|                  |          |       |
+
+
+
+## 日志分析
+
+**一眼看尽上亿日志**
+
+如果仅仅是浏览，人眼能看到的日志只占总量的极少部分。尤其在动辄上亿的量级下，我们往往只关注异常日志，偶尔查查某条链路日志。这种情况下数据的检索率，或许只有百万分之一。
+
+而业务上使用的数据库，某张表只有几千万条数据，一天却要查上亿次的情况屡见不鲜。
+
+大量日志写入后直到过期，也没有被检索过。通过分析日志来提高检索率，提高数据价值，很多时候不是不想，而是难度太高。比如有很多实践是用 hdfs 存储日志，flink 做分析，技术栈和工程复杂不说，添加新的分析模式不灵活，甚至无法发现新的模式。
+
+ClickHouse 最强大的地方，正是其强悍到令人发指的分析功能。如果只是用来存放、检索日志，无疑大材小用。如果做到存储分析一体，不仅架构上会简化，分析能力也可以大大提高，做到让死日志活起来。
+
+**全文检索**的问题
+
+- [跳数索引](https://juejin.cn/post/7130514546069864456)
+- ![image-20240524154526648](monitor.assets/image-20240524154526648.png)
+
+
+
+统计列的 TopN、占比、唯一数。
+
+
+
+![在这里插入图片描述](monitor.assets/208cde63f8e14ea7b9a78ee6f87aadfb.png)
+
+曾经业务方发现 MQ 消费堆积，因为有时候只有个别线程在进行消费，而在平时每个线程消费数量都很均匀，通过 thread_name 字段看直方图就一目了然了。
+
+![在这里插入图片描述](monitor.assets/c7edeb0f3cb84e90b102704fc45aaff8.png)
+
+
+
+优化方案
+
+- clickhouse 开启 keeper 去掉 zookeeper,  解决扩容瓶颈
+- chproxy配置写本地表分摊写压力
+- 存储策略,冷热分层(ssd+s3), TTL归档(降低存储成本)
+
+
+
+# 报警端
+
+| 分担prometheus压力的方案                               | 可选远程存储                              |      |
+| ------------------------------------------------------ | ----------------------------------------- | ---- |
+| 多个prometheus 拆角色                                  | Victoria Metrics/s3/clickhouse graphite表 |      |
+| **thanos多群集(s3存储) operator**                      | s3                                        |      |
+| telegraf Nightingale 夜莺监控报警 滴滴团队, UI能力较好 | prometheus/tsdb                           |      |
+|                                                        |                                           |      |
+|                                                        |                                           |      |
+
+
+
+## prometheus水平扩容
+
+### 单机房
+
+- 按group拆分prometheus成多个分摊压力
+- prometheus不同角色
+  - 仅采集角色 (多个)
+  - 存储角色  (远端存储s3/tsdb/clickhouse)
+
+### 多机房thanos方案
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/direct/47b04f9ecf6643959d8398eb0b94d559.png)
+
+# 可视化
+
+- 夜莺监控UI
+- grafana
+- ClickVisual
+- superset
+
+| grafana               | [ClickVisual](https://www.51cto.com/article/708742.html) | superset              | 夜莺监控UI |
+| --------------------- | -------------------------------------------------------- | --------------------- | ---------- |
+| clickhouse/prometheus | clickhouse                                               | clickhouse/prometheus | prometheus |
+|                       |                                                          |                       |            |
+|                       |                                                          |                       |            |
+|                       |                                                          |                       |            |
+
+# 组件的选择 ||
+
+|        |                           |      |
+| ------ | ------------------------- | ---- |
+| 采集   | ilogtail                  |      |
+| 存储   | clickhouse + prometheus   |      |
+| 查询   | clickhouse                |      |
+| 报警   | prometheus + alertmanager |      |
+| 可视化 | grafana/clickVisual       |      |
+
+# 后续的确认
+
+
 
 - 评估硬件瓶颈,  io, 网络, cpu
 
 - 合理压测评估软件瓶颈
-- 采集端/存储端/计算端选型
+
+- 采集端/存储端/计算端 的扩容缩容方案
+
 - 多机房部署, 统一管控
 
-
-
-| log collector 分散压力的方案 |                                                              |      |
-| ---------------------------- | ------------------------------------------------------------ | ---- |
-| ilogtail                     | [性能](https://ilogtail.gitbook.io/ilogtail-docs/benchmark/performance-compare-with-filebeat) |      |
-| promtail                     |                                                              |      |
-| filebeat(beats家族)          |                                                              |      |
-| fluntd                       |                                                              |      |
+  
 
 
 
-| 分担prometheus压力的方案                 |      |      |
-| ---------------------------------------- | ---- | ---- |
-| 维多利亚数据库(Victoria Metrics远程存储) |      |      |
-| **thanos多群集(s3存储) operator**        |      |      |
-| clickhouse graphite表存储                |      |      |
-| 夜莺监控报警telegraf  滴滴团队           |      |      |
-|                                          |      |      |
-
-
-
-| 日志存储的方案         |      |      |
-| ---------------------- | ---- | ---- |
-| **clickhouse or tidb** |      |      |
-| elasticsearch(graylog) |      |      |
-| <!--loki-->            |      |      |
-|                        |      |      |
-
-
-
-|      | 方案                                                         |      |
-| ---- | ------------------------------------------------------------ | ---- |
-|      | filebeat graylog(es/mongodb) prometheus alertmanager         |      |
-|      | promethues+graphana ,clickhouse + alertmanager,Victoria Metrics远程存储, ilogtail |      |
-|      |                                                              |      |
-|      |                                                              |      |
-
-
-
-# 方案B
-
-各集群独立? 好处是压力分散
-
-坏处是管理麻烦
-
-# 日志ilogtail+clickhouse
-
-
-
-## ilogtail压力扩容
+## 
 
 ## clickhouse压力扩容
 
@@ -129,14 +260,13 @@ CPU：我们测试使用了24核的服务器，当写入测试程序激励打到
 副本的存在对整体写入性能的影响不大。
 
 4. 总结
-总体来看，在理想情况下，clickhouse的写入性能能够达到官方宣称的200MB/s左右（https://clickhouse.com/docs/zh/introduction/performance/#shu-ju-de-xie-ru-xing-neng），且总体写入性能还可以通过多分片的方式来进行扩展。这样的表现基本能够满足我们的使用需求。
+总体来看，在理想情况下，clickhouse的写入性能能够达到官方宣称的200MB/s左右（https://clickhouse.com/docs/zh/introduction/performance/#shu-ju-de-xie-ru-xing-neng），
+5. 且总体写入性能还可以通过多分片的方式来进行扩展。这样的表现基本能够满足我们的使用需求。
 
 原文链接：https://blog.csdn.net/weixin_40104766/article/details/121323882
 
-# tidb调研
 
-# 报警 exporter+ custom_metrics + prometheus+alertmanager
 
-## prometheus压力扩容
 
-<!--如何保障api可接自愈-->
+
+**以上仅代表个人看法 , 欢迎指正, 我会根据大家建议随时调整方案**
