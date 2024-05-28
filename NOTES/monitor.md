@@ -1,3 +1,11 @@
+| 版本 | 变更             |      |
+| ---- | ---------------- | ---- |
+| v0.1 |                  |      |
+| v0.2 | 多机房thnaos方案 |      |
+|      |                  |      |
+
+
+
 # 大规模集群(监控,报警,日志分析查询)
 
 ![158eafa5daf918e5a60860bf7a3e379c446ba4d1](https://yqfile.alicdn.com/158eafa5daf918e5a60860bf7a3e379c446ba4d1.jpeg)
@@ -122,7 +130,7 @@ healthy check
 | -------- | ---------- | ------------- | ---- |
 | 水平扩容 | 支持       | 支持          | 较差 |
 | 好用程度 | 还行       | 还行          | 还行 |
-| 全文索引 | 无         | 有            | 无   |
+| 全文索引 | 有         | 有            | 无   |
 | 高级查询 | 快         | 慢            | 无   |
 
 
@@ -180,13 +188,13 @@ ClickHouse 最强大的地方，正是其强悍到令人发指的分析功能。
 
 # 报警端
 
-| 分担prometheus压力的方案                               | 可选远程存储                              |      |
-| ------------------------------------------------------ | ----------------------------------------- | ---- |
-| 多个prometheus 拆角色                                  | Victoria Metrics/s3/clickhouse graphite表 |      |
-| **thanos多群集(s3存储) operator**                      | s3                                        |      |
-| telegraf Nightingale 夜莺监控报警 滴滴团队, UI能力较好 | prometheus/tsdb                           |      |
-|                                                        |                                           |      |
-|                                                        |                                           |      |
+| 分担prometheus压力的方案                               | 可选远程存储                                     |      |
+| ------------------------------------------------------ | ------------------------------------------------ | ---- |
+| 多个prometheus 拆角色                                  | Victoria Metrics/s3<!--/clickhouse graphite表--> |      |
+| **thanos多群集(s3存储) operator**                      | s3                                               |      |
+| telegraf Nightingale 夜莺监控报警 滴滴团队, UI能力较好 | prometheus/tsdb                                  |      |
+|                                                        |                                                  |      |
+|                                                        |                                                  |      |
 
 
 
@@ -200,6 +208,20 @@ ClickHouse 最强大的地方，正是其强悍到令人发指的分析功能。
   - 存储角色  (远端存储s3/tsdb/clickhouse)
 
 ### 多机房thanos方案
+
+|      | sidecar模式                                                  | receiver模式                      |
+| ---- | ------------------------------------------------------------ | --------------------------------- |
+| 存储 | 机房本地数据默认6小时, 每2小时导入远程s3                     | 机房本地无状态,远程写入到Receiver |
+| 集成 | pod中添加sidecar                                             | 指定远程Receiver                  |
+| 查询 | Thanos Query 既可以 向A/B prometheus 查询最新数据, 也可以向 store api 查询历史数据 | Query 只能向 store api请求        |
+
+#### sidecar模式
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/direct/e05933d33ffd4f0e92aa2f2c117649c0.png)
+
+
+
+#### receiver模式
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/direct/47b04f9ecf6643959d8398eb0b94d559.png)
 
@@ -269,4 +291,4 @@ CPU：我们测试使用了24核的服务器，当写入测试程序激励打到
 
 
 
-**以上仅代表个人看法 , 欢迎指正, 我会根据大家建议随时调整方案**
+**以上仅代表个人看法 , 欢迎指正, 会根据大家建议随时调整方案**

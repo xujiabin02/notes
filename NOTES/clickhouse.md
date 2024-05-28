@@ -1,3 +1,11 @@
+# text search function
+
+https://clickhouse.com/docs/en/sql-reference/functions/string-search-functions
+
+# 全文索引
+
+https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/invertedindexes
+
 
 
 # 支撑700亿数据量的ClickHouse高可用架构实践
