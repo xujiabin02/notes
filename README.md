@@ -20,6 +20,7 @@
 - [cloud_product](NOTES/cloud_product.md)
 - [cloudpods](NOTES/cloudpods.md)
 - [comedy](NOTES/comedy.md)
+- [cursor](NOTES/cursor.md)
 - [davinci](NOTES/davinci.md)
 - [db](NOTES/db.md)
 - [debian](NOTES/debian.md)
