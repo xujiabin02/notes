@@ -1,3 +1,11 @@
+# [安装指定版本软件](https://makeoptim.com/tool/brew-install-specific-version/)
+
+```shell
+
+```
+
+
+
 # 切国内brew源
 
 在国内,使用brew极慢. 因为它需要访问国外的一些服务器.

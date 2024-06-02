@@ -1,3 +1,14 @@
+# 拿文件时间
+
+```shell
+change_time=$(stat -c "%y" $1 | awk -F"." '{print$1}' | sed 's/ //g' | sed 's/://g' | sed 's/-//g')
+git config --global log.date format:'%Y-%m-%d %H:%M:%S'
+change_time=$(git log --pretty=format:"%ad" -- $1|awk -F"." '{print$1}' | sed 's/ //g' | sed 's/://g' | sed 's/-//g')
+
+```
+
+
+
 # fatal: index-pack failed  过大
 
 ```shell
