@@ -18,6 +18,25 @@ ALTER USER 'your_username'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'your_
 FLUSH PRIVILEGES;
 ```
 
+或是命令行
+
+```shell
+      --default-authentication-plugin=mysql_native_password
+```
+
+
+
+或docker-compose添加
+
+```shell
+    command:
+      - "--lower-case-table-names=1"
+      - "--default-authentication-plugin=mysql_native_password"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_general_ci"
+      - "--explicit_defaults_for_timestamp=true"
+```
+
 
 
 # mysql8  docker 
