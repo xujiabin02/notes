@@ -205,7 +205,7 @@ insert into ocean_app_info_20220314  select * from  ocean_app_info;
 docker run --name m1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345678 -d mysql:8.0
 ```
 
-mysql5
+# mysql5 grant
 
 ```mysql
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'xxxx' WITH GRANT OPTION;
@@ -214,7 +214,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'jumpserver'@'111.198.33.81' IDENTIFIED BY 'xxx' 
 111.198.33.81
 ```
 
-mysql8
+# mysql8 grant
 
 
 
