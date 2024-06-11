@@ -8,6 +8,10 @@ https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/invertedin
 
 
 
+# 冷热分层实现
+
+https://www.cnblogs.com/cloudstorageangel/p/14269340.html
+
 # 支撑700亿数据量的ClickHouse高可用架构实践
 
 https://mp.weixin.qq.com/s?__biz=MzkwOTIxNDQ3OA==&mid=2247534096&idx=1&sn=4c33b99f37124ec29f9567755af66200&source=41#wechat_redirect

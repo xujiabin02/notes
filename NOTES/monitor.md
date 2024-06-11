@@ -103,7 +103,7 @@ healthy check
 | promtail                               | 中   | 可以暴露/metrics                                             | 绑定loki,prometheus, 只采集console和log file源 |
 | filebeat(beats家族)                    | 中   | 无                                                           | 缺少 transform能力                             |
 | fluent-bit                             | 中   | 无                                                           |                                                |
-| vector                                 | 中   | 多数据源间transform暴露/metrics                              |                                                |
+| vector                                 | 中   | 多数据源间transform暴露/metrics, [download](https://vector.dev/download/) |                                                |
 
 - daemonset, sidecar, deployment的选择
 
@@ -207,9 +207,15 @@ ClickHouse 最强大的地方，正是其强悍到令人发指的分析功能。
   - 仅采集角色 (多个)
   - 存储角色  (远端存储s3/tsdb/clickhouse)
 
+#### 联邦模式
+
+![联邦集群](https://raw.githubusercontent.com/suyanhj/image/master/img/202308050242636.png)
+
+
+
 ### 多机房thanos方案
 
-|      | sidecar模式                                                  | receiver模式                      | 联邦 |
+|      | sidecar模式                                                  | receiver模式                      |      |
 | ---- | ------------------------------------------------------------ | --------------------------------- | ---- |
 | 存储 | 机房本地数据默认6小时, 每2小时导入远程s3                     | 机房本地无状态,远程写入到Receiver |      |
 | 集成 | pod中添加sidecar                                             | 指定远程Receiver                  |      |

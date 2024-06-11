@@ -2,26 +2,30 @@
 
 # 软raid  mdadm
 
-创建
+## 创建
 
 ```
 mdadm -Cv /dev/md0  -a yes -n 3 -l 5  /dev/sdb /dev/sdc /dev/sdd
 mdadm -Cv /dev/md0  -a yes -n 4 -l 10  /dev/nvme5n1 /dev/nvme6n1 /dev/nvme7n1 /dev/nvme8n1
 ```
 
-格式化
+-n 为设备数量
+
+-l 为raid 等级
+
+## 格式化
 
 ```
 mkfs.xfs /dev/md0
 ```
 
-查uuid
+## 查uuid
 
 ```
 blkid
 ```
 
-写入自动挂载 /etc/fstab
+## 写入自动挂载 /etc/fstab
 
 ```sh
 UUID=b0fa49de-aa9e-4b4f-902e-64e52455804b /data xfs defaults 0 0

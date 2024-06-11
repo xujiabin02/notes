@@ -6,6 +6,19 @@ echo $day
 s3cmd -c .s3cfg-netdisk signurl s3://bucketsystemtest/blob_20240131103514339.png $day
 ```
 
+# help
+
+```shell
+ceph orch apply mds koenlifs --placement="3 dp01 dp02 dp03"
+radosgw-admin zonegroup create --rgw-zonegroup=default-zonegroup --master --default
+ceph orch apply rgw default-realm default-zone --placement="3 dp01 dp02 dp03"
+ceph orch apply rgw koenli-rgw default-realm default-zone --placement="3 dp01 dp02 dp03"
+
+ceph orch apply nfs nfs nfs-ganesha nfs-ns --placement="3 dp01 dp02 dp03"
+
+ceph orch apply rgw koenli-rgw default-realm default-zone --placement="3 dp01 dp02 dp03"
+```
+
 
 
 # nginx
