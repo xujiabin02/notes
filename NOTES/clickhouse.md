@@ -1,3 +1,7 @@
+# 部署keeper 
+
+https://developer.baidu.com/article/details/2946566
+
 # text search function
 
 https://clickhouse.com/docs/en/sql-reference/functions/string-search-functions
