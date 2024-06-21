@@ -95,6 +95,7 @@
 - [pex](NOTES/pex.md)
 - [phi](NOTES/phi.md)
 - [poem](NOTES/poem.md)
+- [point](NOTES/point.md)
 - [postgresql](NOTES/postgresql.md)
 - [prometheus](NOTES/prometheus.md)
 - [psy](NOTES/psy.md)

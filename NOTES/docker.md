@@ -2,6 +2,8 @@
 
 [git](https://gist.github.com/y0ngb1n/7e8f16af3242c7815e7ca2f0833d3ea6)
 
+[自建](https://github.com/brighill/registry-mirror)
+
 # ubuntu docker
 
 ```shell
