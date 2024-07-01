@@ -1,3 +1,94 @@
+# 链表添加白名单
+
+在 Kubernetes 中，`iptables` 规则和链的优先级关系取决于它们的作用位置和调用顺序。不同的 `iptables` 链在流量进入节点、在节点间转发以及从节点发出时起作用。理解这些链之间的关系有助于确定流量通过防火墙规则时的路径和优先级。
+
+### 核心`iptables`链
+
+- **INPUT**：处理进入本地节点的流量。
+- **FORWARD**：处理通过本地节点转发的流量。
+- **OUTPUT**：处理从本地节点发出的流量。
+
+### Kubernetes 特定链
+
+- **KUBE-EXTERNAL-SERVICES**：主要处理通过 `LoadBalancer` 类型服务暴露的外部服务流量。
+- **KUBE-FIREWALL**：用于防火墙规则，控制访问 Kubernetes 服务的流量。
+- **KUBE-FORWARD**：确保转发的流量遵循 Kubernetes 网络策略。
+- **KUBE-KUBELET-CANARY**：由 kubelet 用于检测和管理连接。
+- **KUBE-NODEPORTS**：处理通过 `NodePort` 类型服务暴露的端口。
+- **KUBE-PROXY-CANARY**：kube-proxy 用于检测和管理服务变化。
+- **KUBE-PROXY-FIREWALL**：kube-proxy 用于配置防火墙规则，确保服务间的连接安全。
+- **KUBE-SERVICES**：处理 Kubernetes 服务的流量，通过服务 IP 和端口映射到后端 Pod。
+
+### Calico 相关链
+
+Calico 是常用的 Kubernetes 网络插件，它在 `iptables` 中加入许多链来实施网络策略和安全功能。
+
+- **cali-FORWARD**：处理由 Calico 管理的转发流量。
+- **cali-INPUT**：处理由 Calico 管理的进入流量。
+- **cali-OUTPUT**：处理由 Calico 管理的流出流量。
+- 其他 `cali-` 前缀的链（例如 `cali-from-wl-dispatch`, `cali-to-host-endpoint` 等）用于特定的网络策略和安全规则。
+
+### 链之间的优先级和关系
+
+#### 核心链优先级
+
+- 流量进入节点：`PREROUTING` -> `INPUT` 或 `FORWARD`（取决于流量的目标）。
+- 流量离开节点：`OUTPUT` -> `POSTROUTING`。
+- 节点间转发的流量：`FORWARD`。
+
+#### Kubernetes 链优先级
+
+- `KUBE-SERVICES` 和 `KUBE-NODEPORTS` 链常在 `PREROUTING` 和 `OUTPUT` 链中被调用，以处理服务的 DNAT 和 SNAT。
+- `KUBE-FIREWALL` 和 `KUBE-PROXY-FIREWALL` 链用于防火墙规则，通常在 `FORWARD` 链中被调用。
+- `KUBE-FORWARD` 确保转发的流量遵循 Kubernetes 网络策略，通常在 `FORWARD` 链中被调用。
+
+#### Calico 链优先级
+
+- `cali-INPUT` 和 `cali-OUTPUT` 链分别在 `INPUT` 和 `OUTPUT` 链中处理由 Calico 管理的流量。
+- `cali-FORWARD` 链在 `FORWARD` 链中处理转发流量。
+- 其他 Calico 链则在上述主链（`cali-INPUT`, `cali-OUTPUT`, `cali-FORWARD`）中被调用，用于具体的网络策略实现。
+
+### 简化示例：流量进入 NodePort 服务
+
+1. **流量进入本地节点**：首先，通过 `PREROUTING` 链，然后到 `INPUT` 链。
+2. **经过 Kubernetes 链处理**：
+   - 流量匹配到 NodePort 服务时，通过 `KUBE-NODEPORTS` 链。
+   - 检查 Kubernetes 防火墙规则，通过 `KUBE-FIREWALL` 链。
+3. **经过 Calico 链处理**（如果使用 Calico）：
+   - 流量经过 `cali-INPUT` 链。
+   - 根据具体策略，可能经过其他 `cali-` 链。
+
+### 实际应用：添加白名单
+
+为了控制对特定 NodePort 服务的访问，我们通常在 `INPUT` 链添加规则，因为这是处理进入本地节点流量的第一个链。
+
+```sh
+# 允许特定IP访问NodePort
+sudo iptables -A INPUT -p tcp --dport 30001 -s 192.168.1.100 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 30001 -s 192.168.1.101 -j ACCEPT
+
+# 拒绝所有其他IP访问NodePort
+sudo iptables -A INPUT -p tcp --dport 30001 -j DROP
+
+# 保存规则
+sudo service iptables save  # 对于CentOS/RHEL
+sudo sh -c "iptables-save > /etc/iptables/rules.v4"  # 对于Ubuntu/Debian
+```
+
+### 高级配置：考虑其他链
+
+在某些情况下，您可能需要在 Calico 或 Kubernetes 链中添加规则。如果您使用 Calico，并且需要更复杂的网络策略控制，您可能会调整 `cali-INPUT`, `cali-FORWARD`, 或 `cali-OUTPUT` 链。
+
+例如：
+
+```sh
+sudo iptables -A cali-INPUT -p tcp --dport 30001 -s 192.168.1.100 -j ACCEPT
+sudo iptables -A cali-INPUT -p tcp --dport 30001 -s 192.168.1.101 -j ACCEPT
+sudo iptables -A cali-INPUT -p tcp --dport 30001 -j DROP
+```
+
+总结来说，不同的 `iptables` 链在处理流量时的调用顺序和优先级对于流量控制至关重要。理解这些链的关系可以帮助您正确配置防火墙规则以实现安全访问控制。对于大多数 NodePort 访问控制需求，在 `INPUT` 链中添加白名单规则是最直接和有效的方式。
+
 # cluster-api
 
 https://zhuanlan.zhihu.com/p/450835027
