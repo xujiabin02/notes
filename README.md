@@ -11,7 +11,7 @@
 - [pex deploy airflow](NOTES/airflow.md)
 - [# 基础算法超易懂！——简单DP](NOTES/algo.md)
 - [# amd显卡](NOTES/amd.md)
-- [[ara](https://github.com/ansible-community/ara)](NOTES/ansible.md)
+- [# ansible自动化](NOTES/ansible.md)
 - [nginx 作为底层](NOTES/apisix.md)
 - [# 代码迁移到arm64踩的坑](NOTES/arm.md)
 - [/etc/apt/sources.list添加](NOTES/biren.md)
