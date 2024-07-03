@@ -95,7 +95,7 @@
 - [brew install pyenv](NOTES/pex.md)
 - [https://developer.aliyun.com/article/1400145](NOTES/phi.md)
 - [`````](NOTES/poem.md)
-- [在V2EX论坛上，关于彩礼的讨论中，以下是前10的主要观点：](NOTES/point.md)
+- [ 观点](NOTES/point.md)
 - [ schema授权](NOTES/postgresql.md)
 - [https://blog.csdn.net/networken/article/details/136313609](NOTES/prometheus.md)
 - [ 情感投射](NOTES/psy.md)
