@@ -38,7 +38,7 @@
 - [ exsi](NOTES/exsi.md)
 - [ flink](NOTES/flink.md)
 - [ ftp](NOTES/ftp.md)
-- [| 经济下行期，日本逆势上涨的五大行业 |      |](NOTES/gettingmoney.md)
+- [ 经济下行](NOTES/gettingmoney.md)
 - [ 拿文件时间](NOTES/git.md)
 - [ gitlab-runner](NOTES/gitlab-ci.md)
 - [ 设计模式](NOTES/golang.md)
