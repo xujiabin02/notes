@@ -1,3 +1,7 @@
+# 壁仞
+
+添加ubuntu源
+
 /etc/apt/sources.list添加
 
 ```
