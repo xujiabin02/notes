@@ -1,3 +1,5 @@
+# kafka
+
 ##### group offset  和 auto.offset.reset消费起始位置设置
 
 设置作业从 kafka 消费数据最开始的起始位置，这一部分 Flink 也提供了非常好的封装。在构造好的 FlinkKafkaConsumer 类后面调用如下相应函数，设置合适的起始位置。

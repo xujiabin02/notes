@@ -62,7 +62,7 @@
 - [ 堡垒机](NOTES/jumpserver.md)
 - [ jupyter](NOTES/jupyter.md)
 - [ 链表添加白名单](NOTES/k8s.md)
-- [ group offset  和 auto.offset.reset消费起始位置设置](NOTES/kafka.md)
+- [ kafka](NOTES/kafka.md)
 - [](NOTES/kettle.md)
 - [ 反亲和](NOTES/kvm.md)
 - [ 个人用户登录](NOTES/ldap.md)
