@@ -50,7 +50,7 @@
 - [```diff](NOTES/grub.md)
 - [ aliyun镜像站](NOTES/hadoop.md)
 - [ 平滑重启](NOTES/hbase.md)
-- [ [hadoop namenode启动失败](https://www.cnblogs.com/yjt1993/p/10476933.html)](NOTES/hdfs.md)
+- [ hadoop](NOTES/hdfs.md)
 - [ helm](NOTES/helm.md)
 - [ 当下政府救楼市会用什么方法?](NOTES/house.md)
 - [ 数据湖产品调研](NOTES/hudi.md)

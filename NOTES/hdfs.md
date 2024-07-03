@@ -1,3 +1,5 @@
+# hadoop
+
 # [hadoop namenode启动失败](https://www.cnblogs.com/yjt1993/p/10476933.html)
 
 hadoop version=3.1.2
