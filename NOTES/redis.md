@@ -1,4 +1,4 @@
-
+# redis
 
 # Docker环境下安装部署Redis [Sentinel](https://juejin.cn/post/6997458845148659743)
 

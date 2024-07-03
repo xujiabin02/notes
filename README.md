@@ -104,7 +104,7 @@
 - [ 可视化](NOTES/python.md)
 - [[发散阅读](https://aijishu.com/a/1060000000225602)](NOTES/raid.md)
 - [ 家庭、国家、私有制的起源](NOTES/readbook.md)
-- [ Docker环境下安装部署Redis [Sentinel](https://juejin.cn/post/6997458845148659743)](NOTES/redis.md)
+- [ redis](NOTES/redis.md)
 - [^[+]{0,1}(\d+)$](NOTES/regex.md)
 - [突然悟到维持亲密关系的技巧](NOTES/relationship.md)
 - [**故障报告模板**](NOTES/report_template.md)
