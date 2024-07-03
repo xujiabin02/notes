@@ -13,7 +13,7 @@
 - [ amd显卡](NOTES/amd.md)
 - [ ansible自动化](NOTES/ansible.md)
 - [nginx 作为底层](NOTES/apisix.md)
-- [ 代码迁移到arm64踩的坑](NOTES/arm.md)
+- [ 国产化迁移](NOTES/arm.md)
 - [/etc/apt/sources.list添加](NOTES/biren.md)
 - [```](NOTES/business.md)
 - [Binary file centos.md matches](NOTES/centos.md)
