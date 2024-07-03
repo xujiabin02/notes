@@ -47,7 +47,7 @@
 - [ ubuntu22.04+3090驱动](NOTES/gpu_ubuntu.md)
 - [ grafana](NOTES/grafana.md)
 - [ clickhouse vs Greenplum](NOTES/greenplum.md)
-- [```diff](NOTES/grub.md)
+- [ grub](NOTES/grub.md)
 - [ aliyun镜像站](NOTES/hadoop.md)
 - [ 平滑重启](NOTES/hbase.md)
 - [ hadoop](NOTES/hdfs.md)

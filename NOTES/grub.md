@@ -1,3 +1,5 @@
+# grub
+
 ```diff
 vi /etc/default/grub
 #ubuntu
