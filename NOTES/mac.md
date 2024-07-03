@@ -1,3 +1,5 @@
+# mac
+
 # [安装指定版本软件](https://makeoptim.com/tool/brew-install-specific-version/)
 
 ```shell

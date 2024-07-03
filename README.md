@@ -70,7 +70,7 @@
 - [ 李敖](NOTES/li_ao.md)
 - [ 商业授权](NOTES/license.md)
 - [ log-opts](NOTES/loki.md)
-- [ [安装指定版本软件](https://makeoptim.com/tool/brew-install-specific-version/)](NOTES/mac.md)
+- [ mac](NOTES/mac.md)
 - [**01. 日志解析介绍**](NOTES/machine.md)
 - [ 思维导图](NOTES/markdown.md)
 - [ 表达与营销](NOTES/market.md)
