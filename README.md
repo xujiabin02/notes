@@ -16,7 +16,7 @@
 - [ 国产化迁移](NOTES/arm.md)
 - [ 壁仞](NOTES/biren.md)
 - [ 商业MVP](NOTES/business.md)
-- [Binary file centos.md matches](NOTES/centos.md)
+- [ Centos](NOTES/centos.md)
 - [ Ceph](NOTES/ceph.md)
 - [ 部署keeper ](NOTES/clickhouse.md)
 - [ 运维](NOTES/cloud_product.md)
