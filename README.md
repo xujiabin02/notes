@@ -58,7 +58,7 @@
 - [ 路由器防火墙解封](NOTES/ipip.md)
 - [ docker添加iptable](NOTES/iptables.md)
 - [ 空白控制](NOTES/jinja2.md)
-- [https://www.jitanglaile.com/article/48](NOTES/jira.md)
+- [ jira](NOTES/jira.md)
 - [ 堡垒机](NOTES/jumpserver.md)
 - [ jupyter](NOTES/jupyter.md)
 - [ 链表添加白名单](NOTES/k8s.md)
