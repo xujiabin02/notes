@@ -20,6 +20,7 @@
 - 添加以下源地址
 
 	```json
+	,
 	"registry-mirrors": [
 	    "https://docker.chenby.cn",
 	    "docker.awsl9527.cn"
