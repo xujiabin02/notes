@@ -1,7 +1,7 @@
-## Windows Docker配置镜像源的两种方法
+## Windows Docker配置镜像源
 
 更新时间 2022.04.14
-通过**Docker-Desktop**界面操作和修改**daemon.json**两种方法配置国内镜像源
+通过**Docker-Desktop**界面操作配置镜像源
 
 ### 方法一：通过Docker-Desktop配置
 
