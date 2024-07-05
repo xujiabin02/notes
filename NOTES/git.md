@@ -9,10 +9,13 @@ change_time=$(git log --pretty=format:"%ad" -- $1|awk -F"." '{print$1}' | sed 's
 
 
 
-# fatal: index-pack failed  过大
+# fatal: index-pack failed 或500错误 过大
 
 ```shell
 git config --global http.postBuffer 524288000
+#或
+cd you_repo
+git config http.postBuffer 157286400
 ```
 
 
