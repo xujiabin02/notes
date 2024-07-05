@@ -32,6 +32,7 @@
 - [devops](NOTES/devops.md)
 - [docker-compose](NOTES/docker-compose.md)
 - [docker](NOTES/docker.md)
+- [docker_desktop](NOTES/docker_desktop.md)
 - [dolphinscheduler](NOTES/dolphinscheduler.md)
 - [dss](NOTES/dss.md)
 - [elk](NOTES/elk.md)
