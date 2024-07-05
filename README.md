@@ -1,4 +1,5 @@
 - [AIops](NOTES/AIops.md)
+- [CRD](NOTES/CRD.md)
 - [Calibre](NOTES/Calibre.md)
 - [CgroupsSystemd](NOTES/CgroupsSystemd.md)
 - [DataLake](NOTES/DataLake.md)
