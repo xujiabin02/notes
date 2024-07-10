@@ -1,3 +1,34 @@
+# nginx
+
+# 空主机头
+
+80
+
+```nginx
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name _;
+        return 403;
+}
+```
+
+
+
+443
+
+```nginx
+server {
+        listen 443 ssl default_server;
+        server_name _;
+        ssl_certificate xx;
+        ssl_certificate_key x;
+        return 403;
+}
+```
+
+
+
 # 不限制上传大小
 
 ```nginx
