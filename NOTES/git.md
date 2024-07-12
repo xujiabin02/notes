@@ -9,6 +9,16 @@ change_time=$(git log --pretty=format:"%ad" -- $1|awk -F"." '{print$1}' | sed 's
 
 ```
 
+# 保存密码
+
+```shell
+长期存储密码：
+
+git config --global credential.helper store
+
+git config credential.helper store
+```
+
 
 
 # fatal: index-pack failed 或500错误 过大
