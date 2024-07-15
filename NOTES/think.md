@@ -170,3 +170,74 @@ https://v2ex.com/t/937139#reply40
 2. **分组讨论**：将团队分成小组进行讨论，再汇总各组的意见，确保多样性和独立性。
 
 通过这些基本思想和具体策略，我们可以有效减少认知偏差，提高决策的质量和准确性。在实践中，不同的情境和问题可能需要不同的策略组合，但总体目标是通过增强理性思维、优化决策流程和促进多样性来减少偏差的影响。
+
+
+
+## flow
+
+```mermaid
+flowchart TB
+ a --> b(ai) & c[haha] & d 
+```
+
+
+
+```mermaid
+flowchart BT
+    c1-->a2
+    subgraph one
+    a --> b(ai) & c[haha] & d 
+    end
+    subgraph two
+    b1-->b2
+    end
+    subgraph three
+    c1-->c2
+    end
+
+```
+
+
+
+
+
+```mermaid
+flowchart LR
+  subgraph TOP
+    direction TB
+    subgraph B1
+        direction RL
+        i1 -->f1
+    end
+    subgraph B2
+        direction BT
+        i2 -->f2
+    end
+  end
+  A --> TOP --> B
+  B1 --> B2
+```
+
+
+
+click
+
+```mermaid
+flowchart LR
+    A-->B
+    B-->C
+    C-->D
+    click A callback "Tooltip for a callback"
+    click B "https://www.github.com" "This is a tooltip for a link"
+    click C call callback() "Tooltip for a callback"
+    click D href "https://www.github.com" "This is a tooltip for a link"
+
+```
+
+
+
+
+
+## logseq入门
+
+https://www.heithon.fun/article/2e86048b-fe3a-4363-841c-ccdf82276790

@@ -354,3 +354,6 @@ https://zhuanlan.zhihu.com/p/144052435
 
 
 
+## 推荐系统-golang微服务
+
+[book](https://github.com/solidglue/Recommender_System?tab=readme-ov-file)
