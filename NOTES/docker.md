@@ -8,6 +8,31 @@
 
 [自建](https://github.com/brighill/registry-mirror)
 
+```shell
+使用教程
+
+为了加速镜像拉取，使用以下命令设置registry mirror
+支持系统：Ubuntu 16.04+、Debian 8+、CentOS 7+
+
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<EOF
+{
+    "registry-mirrors": [
+        "https://hub.uuuadc.top",
+        "https://docker.anyhub.us.kg",
+        "https://dockerhub.jobcher.com",
+        "https://dockerhub.icu",
+        "https://docker.ckyl.me",
+        "https://docker.awsl9527.cn"
+    ]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+
+
 # ubuntu docker
 
 ```shell

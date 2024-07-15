@@ -6,6 +6,8 @@ privileged: true
 
 
 
+
+
 | 管理                                             |      |                                            |
 | ------------------------------------------------ | ---- | ------------------------------------------ |
 | [bytebase](https://github.com/bytebase/bytebase) |      | [doc](https://icode.best/i/59591647113977) |
@@ -19,6 +21,14 @@ privileged: true
 |                                                  |      |                                            |
 
 
+
+## schemasync
+
+
+
+```shell
+pip install -i https://mirrors.aliyun.com/pypi/simple/ mysqlclient
+```
 
 
 
