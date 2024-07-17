@@ -183,18 +183,18 @@ flowchart TB
 
 
 ```mermaid
-flowchart BT
-    c1-->a2
+flowchart TB
+    c1:::doing-->a2
     subgraph one
-    a --> b(ai) & c[haha] & d 
+    a --> b{{ai}} & c[haha] & d 
     end
     subgraph two
     b1-->b2
     end
     subgraph three
-    c1-->c2
+    c1 --o c2
     end
-
+ classDef doing fill:#f96
 ```
 
 
