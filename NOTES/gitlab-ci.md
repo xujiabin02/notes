@@ -1,3 +1,9 @@
+# gitlab-ci
+
+## gitlab-ci template
+
+[link](https://gitlab.com/gitlab-org/gitlab-foss/tree/master/lib/gitlab/ci/templates)
+
 # gitlab-runner
 
 `注意: git版本要升级到2.0+`

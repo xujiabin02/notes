@@ -24,6 +24,7 @@
 - [cloudpods](NOTES/cloudpods.md)
 - [comedy](NOTES/comedy.md)
 - [configs](NOTES/configs.md)
+- [cuda](NOTES/cuda.md)
 - [cursor](NOTES/cursor.md)
 - [davinci](NOTES/davinci.md)
 - [db](NOTES/db.md)
