@@ -2,6 +2,12 @@
 
 [install](https://mirrors.ustc.edu.cn/help/docker-ce.html)
 
+## 扫描硬件
+
+ 启动：
+
+docker run -itd --privileged -v /sbin/dmidecode:/sbin/dmidecode -v /dev/mem:/dev/mem -p 端口:端口 --name 容器名 镜像名:版本号 /bin/bash
+
 # orbstack.app  achive
 
 [download](https://docs.orbstack.dev/downgrade)
