@@ -123,6 +123,7 @@
 - [selenium](NOTES/selenium.md)
 - [shell](NOTES/shell.md)
 - [shoot](NOTES/shoot.md)
+- [solar_energy](NOTES/solar_energy.md)
 - [spark](NOTES/spark.md)
 - [sqllite](NOTES/sqllite.md)
 - [ss](NOTES/ss.md)
