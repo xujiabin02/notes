@@ -116,6 +116,7 @@
 - [relationship](NOTES/relationship.md)
 - [report_template](NOTES/report_template.md)
 - [rights_protect](NOTES/rights_protect.md)
+- [roce](NOTES/roce.md)
 - [rss](NOTES/rss.md)
 - [ruoyi-cloud-plus](NOTES/ruoyi-cloud-plus.md)
 - [ruoyi](NOTES/ruoyi.md)

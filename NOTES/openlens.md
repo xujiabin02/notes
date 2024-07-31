@@ -9,7 +9,7 @@ brew install --cask openlens
 # extension
 
 ```shell
-@alebcay/openlens-node-pod-menu  
+@alebcay/openlens-node-pod-menu
 @andrea-falco/lens-multi-pod-logs
 lens-extension-network-policy-viewer
 @nevalla/kube-resource-map
