@@ -2,6 +2,18 @@
 
 https://www.ctyun.cn/developer/article/387067895132229
 
+## ibping
+
+在启动Server端口时要指定 dev
+
+```shell
+ibping -S  -C mlx5_0
+```
+
+访问时也要
+
+
+
 # 报错systemctl 止住
 
 Failed to get properties: Transport endpoint is not connected

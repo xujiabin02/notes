@@ -357,3 +357,379 @@ https://zhuanlan.zhihu.com/p/144052435
 ## 推荐系统-golang微服务
 
 [book](https://github.com/solidglue/Recommender_System?tab=readme-ov-file)
+
+## 猫狗分类
+
+```python
+from torchvision import models
+
+# 从课程镜像服务器上下载 AlexNet 预训练模型
+torch.utils.model_zoo.load_url(
+    "https://cdn.aibydoing.com/aibydoing/files/alexnet-owt-4df8aa71.pth"
+)
+alexnet = models.alexnet(pretrained=True)
+alexnet
+```
+
+    Downloading: "https://cdn.aibydoing.com/aibydoing/files/alexnet-owt-4df8aa71.pth" to /root/.cache/torch/hub/checkpoints/alexnet-owt-4df8aa71.pth
+    10.1%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    28.5%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    43.4%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    61.3%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    77.9%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    90.8%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    96.0%IOPub message rate exceeded.
+    The Jupyter server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--ServerApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    ServerApp.rate_limit_window=3.0 (secs)
+    
+    Downloading: "https://download.pytorch.org/models/alexnet-owt-7be5be79.pth" to /root/.cache/torch/hub/checkpoints/alexnet-owt-7be5be79.pth
+    100.0%
+
+
+
+
+
+    AlexNet(
+      (features): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(11, 11), stride=(4, 4), padding=(2, 2))
+        (1): ReLU(inplace=True)
+        (2): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+        (3): Conv2d(64, 192, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (4): ReLU(inplace=True)
+        (5): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+        (6): Conv2d(192, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (7): ReLU(inplace=True)
+        (8): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (9): ReLU(inplace=True)
+        (10): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (11): ReLU(inplace=True)
+        (12): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+      )
+      (avgpool): AdaptiveAvgPool2d(output_size=(6, 6))
+      (classifier): Sequential(
+        (0): Dropout(p=0.5, inplace=False)
+        (1): Linear(in_features=9216, out_features=4096, bias=True)
+        (2): ReLU(inplace=True)
+        (3): Dropout(p=0.5, inplace=False)
+        (4): Linear(in_features=4096, out_features=4096, bias=True)
+        (5): ReLU(inplace=True)
+        (6): Linear(in_features=4096, out_features=1000, bias=True)
+      )
+    )
+
+
+
+
+```python
+for param in alexnet.parameters():
+    print(param.requires_grad)
+```
+
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+    True
+
+
+
+```python
+# 不需要更新权重
+for param in alexnet.parameters():
+    param.requires_grad = False
+    print(param.requires_grad)
+```
+
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+    False
+
+
+
+```python
+classifier = list(alexnet.classifier.children())  # 读取分类器全部层
+# 将最后一层由 Linear(4096, 1000) 改为 Linear(4096, 2)
+classifier[-1] = torch.nn.Linear(4096, 2)
+alexnet.classifier = torch.nn.Sequential(*classifier)  # 修改原分类器
+alexnet
+```
+
+
+
+
+    AlexNet(
+      (features): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(11, 11), stride=(4, 4), padding=(2, 2))
+        (1): ReLU(inplace=True)
+        (2): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+        (3): Conv2d(64, 192, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (4): ReLU(inplace=True)
+        (5): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+        (6): Conv2d(192, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (7): ReLU(inplace=True)
+        (8): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (9): ReLU(inplace=True)
+        (10): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (11): ReLU(inplace=True)
+        (12): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+      )
+      (avgpool): AdaptiveAvgPool2d(output_size=(6, 6))
+      (classifier): Sequential(
+        (0): Dropout(p=0.5, inplace=False)
+        (1): Linear(in_features=9216, out_features=4096, bias=True)
+        (2): ReLU(inplace=True)
+        (3): Dropout(p=0.5, inplace=False)
+        (4): Linear(in_features=4096, out_features=4096, bias=True)
+        (5): ReLU(inplace=True)
+        (6): Linear(in_features=4096, out_features=2, bias=True)
+      )
+    )
+
+
+
+
+```python
+# 如果 GPU 可用则使用 CUDA 加速，否则使用 CPU 设备计算
+dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+dev
+```
+
+
+
+
+    device(type='cuda')
+
+
+
+
+```python
+criterion = torch.nn.CrossEntropyLoss()  # 交叉熵损失函数
+optimizer = torch.optim.Adam(
+    filter(lambda p: p.requires_grad, alexnet.parameters()), lr=0.001
+)  # 优化器
+# 学习率衰减，每迭代 1 次，衰减为初始学习率 0.5
+lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
+
+criterion, optimizer, lr_scheduler
+```
+
+
+
+
+    (CrossEntropyLoss(),
+     Adam (
+     Parameter Group 0
+         amsgrad: False
+         betas: (0.9, 0.999)
+         eps: 1e-08
+         initial_lr: 0.001
+         lr: 0.001
+         weight_decay: 0
+     ),
+     <torch.optim.lr_scheduler.StepLR at 0x7f1e4db351c0>)
+
+
+
+
+```python
+epochs = 2
+model = alexnet.to(dev)
+print("Start Training...")
+for epoch in range(epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        images = images.to(dev)  # 添加 .to(dev)
+        labels = labels.to(dev)  # 添加 .to(dev)
+
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if (i + 1) % 100 == 0:
+            print(
+                "Epoch [{}/{}], Batch [{}/{}], Train loss: {:.3f}".format(
+                    epoch + 1, epochs, i + 1, len(train_loader), loss.item()
+                )
+            )
+
+    correct = 0
+    total = 0
+    for images, labels in val_loader:
+        images = images.to(dev)  # 添加 .to(dev)
+        labels = labels.to(dev)  # 添加 .to(dev)
+
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+
+        correct += (predicted == labels).sum().item()
+        total += labels.size(0)
+
+    print("============ Test accuracy: {:.3f} =============".format(correct / total))
+
+    lr_scheduler.step()  # 设置学习率衰减
+```
+
+    Start Training...
+    Epoch [1/2], Batch [100/313], Train loss: 0.081
+    Epoch [1/2], Batch [200/313], Train loss: 0.072
+    Epoch [1/2], Batch [300/313], Train loss: 0.238
+    ============ Test accuracy: 0.952 =============
+    Epoch [2/2], Batch [100/313], Train loss: 0.071
+    Epoch [2/2], Batch [200/313], Train loss: 0.032
+    Epoch [2/2], Batch [300/313], Train loss: 0.013
+    ============ Test accuracy: 0.960 =============
+
+
+
+```python
+torch.save(model.state_dict(), "model.pt")
+"done."
+```
+
+
+
+
+    'done.'
+
+
+
+
+```python
+model_saved = alexnet
+model_saved.load_state_dict(torch.load("model.pt"))
+model_saved
+```
+
+
+
+
+
+
+```python
+import requests
+
+# 随机返回一只猫咪或狗狗的图片
+random_api = "https://random-cat-dog.onrender.com"
+content = requests.get(random_api).json()
+with open("1.jpg", "wb") as f:
+    f.write(requests.get(content["url"]).content)
+plt.title(content["species"])
+plt.imshow(io.imread("1.jpg"))
+```
+
+
+
+
+    <matplotlib.image.AxesImage at 0x7f1e4c174fa0>
+
+```python
+IMAGE = io.imread("test.jpg")
+IMAGE = data_transforms["val"](IMAGE).unsqueeze(0)  # PyTorch 模型输入必须为 B*C*H*W
+IMAGE.size()
+```
+
+
+
+
+    torch.Size([1, 3, 224, 224])
+
+
+
+
+```python
+torch.argmax(model_saved(IMAGE.to(dev)))  # 对测试数据进行推理
+```
+
+
+
+
+    tensor(0, device='cuda:0')
+
+
+

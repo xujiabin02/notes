@@ -109,6 +109,7 @@
 - [pytest](NOTES/pytest.md)
 - [python](NOTES/python.md)
 - [raid](NOTES/raid.md)
+- [rdma](NOTES/rdma.md)
 - [readbook](NOTES/readbook.md)
 - [redis](NOTES/redis.md)
 - [regex](NOTES/regex.md)
