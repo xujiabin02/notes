@@ -6,6 +6,13 @@
 | [operator](./operator.md)   |      |      |
 | [多region](./region_k8s.md) |      |      |
 
+## calico更改首选网卡
+
+```yaml
+        - name: IP_AUTODETECTION_METHOD
+          value: interface=eth0|en0|en2
+```
+
 
 
 # 链表添加白名单
