@@ -129,3 +129,9 @@ ping google.com
 ```
 
 如果一切顺利，你的 Intel E810-C ICE 网卡应该已经在 Ubuntu 20.04 上正常工作了。
+
+
+
+## fio磁盘性能测试
+
+[doc](https://halysl.github.io/2020/05/12/fio测试磁盘性能)
