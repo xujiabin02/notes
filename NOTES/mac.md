@@ -6,7 +6,25 @@
 
 ```
 
+## iphone安装app
 
+https://riid7yr8pux.feishu.cn/docx/YEsxdm9EioqW7SxQE4xcOBNrn5d
+
+## git扩展
+
+```shell
+brew install git-extra
+#常用
+git summary
+git brv
+```
+
+## 微信防撤回
+
+下载WeChatHooks.pkg
+先安装微信, 然后安装 WeChatHooks.pkg,顶部出现 WeChatHooks即为成功
+
+截屏问题: 安全与隐私->录屏->删除再重新添加微信
 
 # 切国内brew源
 
@@ -541,3 +559,4 @@ hdiutil burn -erase app.iso
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210622155930353.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTI5MDczNA==,size_16,color_FFFFFF,t_70#pic_center)————————————————
 版权声明：本文为CSDN博主「快乐小运维」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/weixin_45290734/article/details/118109141
+
