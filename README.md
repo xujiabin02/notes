@@ -29,7 +29,7 @@
 - [davinci](NOTES/davinci.md)
 - [db](NOTES/db.md)
 - [debian](NOTES/debian.md)
-- [deep](NOTES/deep.md)
+- [deepspeed](NOTES/deepspeed.md)
 - [design](NOTES/design.md)
 - [develop](NOTES/develop.md)
 - [devops](NOTES/devops.md)
