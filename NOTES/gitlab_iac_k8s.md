@@ -1,5 +1,11 @@
 # gitlab iac 对接k8s
 
+- 修改 /etc/gitlab/gitlab.rb 配置
+
+  ```bash
+  gitlab_kas['enable'] = true
+  ```
+
 - runner
 
   - helm pull gitlab/gitlab-runner --version=0.42.0
