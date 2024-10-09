@@ -46,6 +46,7 @@
 - [gettingmoney](NOTES/gettingmoney.md)
 - [git](NOTES/git.md)
 - [gitlab-ci](NOTES/gitlab-ci.md)
+- [gitlab_iac_k8s](NOTES/gitlab_iac_k8s.md)
 - [golang](NOTES/golang.md)
 - [gpt](NOTES/gpt.md)
 - [gpu](NOTES/gpu.md)
