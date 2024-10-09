@@ -6,6 +6,16 @@
 | [operator](./operator.md)   |      |      |
 | [多region](./region_k8s.md) |      |      |
 
+## ulimit,  sysctl.conf
+
+```shell
+fs.file-max = 2097152
+fs.inotify.max_user_watches = 524288
+fs.inotify.max_user_instances = 512
+```
+
+
+
 ## calico更改首选网卡
 
 ```yaml

@@ -13,6 +13,6 @@ https://262235.xyz/index.php/archives/438/
 
 
 ```shell
-iptables -I INPUT -p tcp --dport 80 -m set ! --match-set office_ip src -j REJECT
+iptables -I INPUT -p tcp --dport 80 -m set ! --match-set office_ip src -j REJECTl
 ```
 
