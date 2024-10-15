@@ -106,6 +106,7 @@
 - [poem](NOTES/poem.md)
 - [point](NOTES/point.md)
 - [postgresql](NOTES/postgresql.md)
+- [prometheus-operator](NOTES/prometheus-operator.md)
 - [prometheus](NOTES/prometheus.md)
 - [psy](NOTES/psy.md)
 - [pyramid](NOTES/pyramid.md)
