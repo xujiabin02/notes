@@ -22,6 +22,7 @@
 - [clickhouse](NOTES/clickhouse.md)
 - [cloud_product](NOTES/cloud_product.md)
 - [cloudpods](NOTES/cloudpods.md)
+- [code_encrypt](NOTES/code_encrypt.md)
 - [comedy](NOTES/comedy.md)
 - [configs](NOTES/configs.md)
 - [cuda](NOTES/cuda.md)
