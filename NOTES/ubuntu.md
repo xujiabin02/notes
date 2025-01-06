@@ -115,10 +115,12 @@ sudo apt-mark unhold linux-generic linux-image-generic linux-headers-generic
 
 # resolv问题
 
-vi /etc/systemd/resolv.conf
+vim /etc/systemd/resolved.conf
 
-```
-DNS=223.5.5.5
+```ini
+[Resolve]
+DNS=8.8.8.8 8.8.4.4
+FallbackDNS=1.1.1.1 1.0.0.1
 ```
 
 ```shell

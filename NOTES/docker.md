@@ -45,10 +45,18 @@ sudo systemctl restart docker
 
 # ubuntu docker
 
+1. 
+
 ```shell
 curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+或 2.
+
+```shell
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
 ```
 
 
@@ -61,8 +69,6 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
   "log-opts": {"max-size": "10m", "max-file": "3"}
 }
 ```
-
-
 
 # network host
 
