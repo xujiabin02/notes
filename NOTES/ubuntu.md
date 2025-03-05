@@ -106,6 +106,7 @@ unset HISFILE
 ```shell
 # 禁用内核更新
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+
 # 恢复内核更新
 sudo apt-mark unhold linux-generic linux-image-generic linux-headers-generic
 
@@ -317,3 +318,6 @@ resize2fs /dev/ubuntu-vg/ubuntu-lv
 
 
 
+如果是xfs, 还需要执行  
+
+xfs_growfs /
