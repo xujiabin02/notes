@@ -147,6 +147,7 @@
 - [tornado](NOTES/tornado.md)
 - [typora](NOTES/typora.md)
 - [ubuntu](NOTES/ubuntu.md)
+- [ubuntu_optmize](NOTES/ubuntu_optmize.md)
 - [vim](NOTES/vim.md)
 - [vmware](NOTES/vmware.md)
 - [vpn](NOTES/vpn.md)
