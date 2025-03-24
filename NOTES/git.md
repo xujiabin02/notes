@@ -692,7 +692,6 @@ stash 命令能够将还未 commit 的代码存起来，让你的工作目录变
 
 ```sh
 git stash
-复制代码
 ```
 
 就这么简单，代码就被存起来了。
@@ -701,7 +700,6 @@ git stash
 
 ```sh
 git stash apply
-复制代码
 ```
 
 ### 相关命令
@@ -1205,4 +1203,47 @@ https://username:password@***********.com
 ```
 git config --global credential.helper store
 ```
+
+
+
+中文显示问题
+
+`````shell
+➜  NOTES git:(master) ✗ git status               
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   "\347\201\253\350\275\246\345\244\264\347\211\210.md"
+`````
+
+首先，确认你的终端支持 UTF-8 编码：
+
+```shell
+echo $LANG
+```
+
+如果输出不是 `UTF-8`，可以暂时设置：
+
+```shell
+export LANG=en_US.UTF-8
+```
+
+或者：
+
+```bash
+export LC_ALL=en_US.UTF-8
+```
+
+检查git配置
+
+```bash
+git config --global core.quotepath false
+```
+
+
+
+
 
