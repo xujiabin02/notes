@@ -175,6 +175,7 @@
 - [包管理vendor_mod](NOTES/包管理vendor_mod.md)
 - [信息来源](NOTES/信息来源.md)
 - [健身康复](NOTES/健身康复.md)
+- [安全合规](NOTES/安全合规.md)
 - [数据质量](NOTES/数据质量.md)
 - [深度睡眠](NOTES/深度睡眠.md)
 - [火车头版](NOTES/火车头版.md)
