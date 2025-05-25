@@ -1,5 +1,82 @@
 # mac
 
+### 快速切换: 右shift中文，左shift英文
+
+右shift
+
+```json
+{
+    "description": "right Shift  =>  left_command + Space ",
+    "manipulators": [
+        {
+            "conditions": [
+                {
+                    "input_sources": [
+                        {
+                            "language": "en"
+                        }
+                    ],
+                    "type": "input_source_if"
+                }
+            ],
+            "from": {
+                "key_code": "right_shift"
+            },
+            "to": [
+                {
+                    "key_code": "right_shift",
+                    "lazy": true
+                }
+            ],
+            "to_if_alone": [
+                {
+                    "key_code": "spacebar",
+                    "modifiers": [
+                        "left_command"
+                    ]
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
+```
+
+左shift
+
+```json
+{
+    "description": "短按 shift 切换 EN",
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "left_shift"
+            },
+            "to": [
+                {
+                    "key_code": "left_shift"
+                }
+            ],
+            "to_if_alone": [
+                {
+                    "select_input_source": {
+                        "language": "en"
+                    }
+                }
+            ],
+            "to_if_held_down": [
+                {
+                    "key_code": "left_shift"
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
+```
+
+
+
 # [安装指定版本软件](https://makeoptim.com/tool/brew-install-specific-version/)
 
 ```shell
