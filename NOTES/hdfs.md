@@ -46,4 +46,4 @@ hdfs dfsadmin -safemode leave
 
 借鉴：http://support.transwarp.cn/t/namenode/2242
 
- 
+ ``

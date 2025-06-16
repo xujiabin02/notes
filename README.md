@@ -92,6 +92,7 @@
 - [monitor](NOTES/monitor.md)
 - [mssql](NOTES/mssql.md)
 - [mysql](NOTES/mysql.md)
+- [nccl](NOTES/nccl.md)
 - [nextcloud](NOTES/nextcloud.md)
 - [nexus](NOTES/nexus.md)
 - [nfs](NOTES/nfs.md)
