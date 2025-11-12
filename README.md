@@ -81,6 +81,7 @@
 - [li_ao](NOTES/li_ao.md)
 - [license](NOTES/license.md)
 - [loki](NOTES/loki.md)
+- [lora-complete-guide](NOTES/lora-complete-guide.md)
 - [mac](NOTES/mac.md)
 - [machine](NOTES/machine.md)
 - [markdown](NOTES/markdown.md)
